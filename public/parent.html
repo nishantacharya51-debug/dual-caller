@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Family Monitor - Parent Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="shield-icon" aria-hidden="true">🛡️</div>
+                    <h1>Parent Dashboard</h1>
+                </div>
+                <div class="user-info">
+                    <span id="username-display" class="username-badge"></span>
+                    <span id="family-code-display" class="family-badge"></span>
+                    <button id="logout-btn" class="btn btn-small btn-danger">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- Connection Status -->
+            <div class="status-bar" role="status" aria-live="polite">
+                <div class="status-indicator" id="connection-status">
+                    <span class="status-dot disconnected"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+            </div>
+
+            <!-- Family Code Share -->
+            <section class="family-code-section">
+                <h3>Your Family Code</h3>
+                <div class="family-code-display">
+                    <code id="family-code-value"></code>
+                    <button id="copy-code-btn" class="btn btn-small" 
+                            aria-label="Copy family code">📋 Copy</button>
+                </div>
+                <p class="small muted">Share this code with your child to connect</p>
+            </section>
+
+            <!-- Children Status -->
+            <section class="children-panel" aria-label="Children Status">
+                <h3>Children</h3>
+                <div id="children-list" class="children-list">
+                    <p class="muted">No children connected. Share your family code.</p>
+                </div>
+            </section>
+
+            <!-- Video Viewing Area -->
+            <section class="video-section" aria-label="Child Video Stream">
+                <h3>Live Video Stream</h3>
+                <div class="video-container large">
+                    <video id="remote-video" autoplay playsinline
+                           aria-label="Child's camera stream"></video>
+                    <div id="video-placeholder" class="video-placeholder">
+                        <p>No active video stream</p>
+                        <p class="small">Request camera access from a connected child</p>
+                    </div>
+                    <div id="stream-info" class="stream-info" hidden>
+                        <span class="rec-dot"></span>
+                        <span id="stream-child-name">--</span> is sharing
+                        <span class="encrypted-badge" title="End-to-end encrypted">🔒 E2E</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Log -->
+            <section class="log-panel" aria-label="Activity Log">
+                <h3>Activity Log</h3>
+                <div id="activity-log" class="activity-log" role="log" aria-live="polite">
+                    <div class="log-entry">
+                        <span class="log-time">--:--</span>
+                        <span class="log-message">Waiting for connection...</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/encryption.js"></script>
+    <script src="/js/webrtc.js"></script>
+    <script src="/js/parent.js"></script>
+</body>
+</html>

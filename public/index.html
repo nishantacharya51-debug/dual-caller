@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Secure Family Monitor - Login</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <div class="shield-icon" aria-hidden="true">🛡️</div>
+                <h1>Secure Family Monitor</h1>
+            </div>
+            <p class="tagline">Privacy-first parental monitoring with full consent</p>
+        </header>
+
+        <main class="auth-container">
+            <!-- Privacy Notice -->
+            <div class="privacy-notice" role="alert">
+                <h3>🔒 Privacy & Consent Promise</h3>
+                <ul>
+                    <li>Camera is <strong>never</strong> accessed without explicit permission</li>
+                    <li>Your browser will always ask before enabling the camera</li>
+                    <li>Children can start and stop sharing at any time</li>
+                    <li>Video streams are encrypted end-to-end via WebRTC</li>
+                    <li>No video is recorded or stored on any server</li>
+                </ul>
+            </div>
+
+            <!-- Login Tab / Register Tab -->
+            <div class="auth-tabs" role="tablist">
+                <button class="tab-btn active" data-tab="login" role="tab" 
+                        aria-selected="true" aria-controls="login-panel">
+                    Login
+                </button>
+                <button class="tab-btn" data-tab="register" role="tab" 
+                        aria-selected="false" aria-controls="register-panel">
+                    Register
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-panel" class="auth-panel active" role="tabpanel">
+                <form id="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" name="username" 
+                               required minlength="3" maxlength="30"
+                               autocomplete="username" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" 
+                               required minlength="8" maxlength="128"
+                               autocomplete="current-password" placeholder="Enter password">
+                        <button type="button" class="toggle-password" 
+                                aria-label="Toggle password visibility">👁️</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div id="login-error" class="error-message" role="alert" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-panel" class="auth-panel" role="tabpanel" hidden>
+                <form id="register-form" novalidate>
+                    <div class="form-group">
+                        <label for="reg-username">Username</label>
+                        <input type="text" id="reg-username" name="username" 
+                               required minlength="3" maxlength="30"
+                               autocomplete="username" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" 
+                               required minlength="8" maxlength="128"
+                               autocomplete="new-password" placeholder="Min 8 characters">
+                        <div class="password-strength" id="password-strength"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">I am a</label>
+                        <select id="reg-role" name="role" required>
+                            <option value="">Select role...</option>
+                            <option value="parent">Parent</option>
+                            <option value="child">Child</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="family-code-group">
+                        <label for="reg-family-code">Family Code</label>
+                        <input type="text" id="reg-family-code" name="familyCode" 
+                               minlength="6" maxlength="20"
+                               placeholder="Enter or leave blank to generate">
+                        <small class="form-hint" id="family-code-hint">
+                            Parents: Leave blank to auto-generate. Children: Enter your family's code.
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <div id="register-error" class="error-message" role="alert" aria-live="polite"></div>
+                    <div id="register-success" class="success-message" role="alert" aria-live="polite"></div>
+                </form>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>🔐 All video transmissions use WebRTC with DTLS/SRTP encryption</p>
+            <p>Camera access requires explicit browser permission every time</p>
+        </footer>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

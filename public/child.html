@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Family Monitor - Child Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="shield-icon" aria-hidden="true">🛡️</div>
+                    <h1>Child Dashboard</h1>
+                </div>
+                <div class="user-info">
+                    <span id="username-display" class="username-badge"></span>
+                    <span id="family-code-display" class="family-badge"></span>
+                    <button id="logout-btn" class="btn btn-small btn-danger">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- Connection Status -->
+            <div class="status-bar" role="status" aria-live="polite">
+                <div class="status-indicator" id="connection-status">
+                    <span class="status-dot disconnected"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+                <div class="status-indicator" id="camera-status">
+                    <span class="camera-icon">📷</span>
+                    <span class="status-text">Camera Off</span>
+                </div>
+            </div>
+
+            <!-- Camera Active Warning Banner -->
+            <div id="camera-active-banner" class="camera-active-banner" hidden role="alert">
+                <div class="pulse-dot"></div>
+                <span>🔴 CAMERA IS ACTIVE - Your parent can see this video</span>
+                <button id="emergency-stop" class="btn btn-danger btn-small">
+                    Stop Immediately
+                </button>
+            </div>
+
+            <!-- Consent & Camera Controls -->
+            <section class="control-panel" aria-label="Camera Controls">
+                <div class="consent-info">
+                    <h2>📹 Camera Sharing Controls</h2>
+                    <p>You are in full control. Your camera will only turn on when:</p>
+                    <ol>
+                        <li>You click the "Start Camera" button below</li>
+                        <li>Your browser asks for permission (you must click "Allow")</li>
+                        <li>You approve your parent's viewing request</li>
+                    </ol>
+                    <p><strong>You can stop sharing at any time.</strong></p>
+                </div>
+
+                <div class="camera-controls">
+                    <button id="start-camera-btn" class="btn btn-primary btn-large">
+                        📷 Start Camera
+                    </button>
+                    <button id="stop-camera-btn" class="btn btn-danger btn-large" disabled>
+                        ⏹️ Stop Camera
+                    </button>
+                </div>
+            </section>
+
+            <!-- Local Video Preview -->
+            <section class="video-section" aria-label="Camera Preview">
+                <h3>Your Camera Preview</h3>
+                <div class="video-container">
+                    <video id="local-video" autoplay playsinline muted
+                           aria-label="Your camera preview"></video>
+                    <div id="video-placeholder" class="video-placeholder">
+                        <p>Camera is off</p>
+                        <p class="small">Click "Start Camera" to begin</p>
+                    </div>
+                    <div id="recording-indicator" class="recording-indicator" hidden>
+                        <span class="rec-dot"></span> LIVE
+                    </div>
+                </div>
+            </section>
+
+            <!-- Parent Requests -->
+            <section id="parent-requests" class="requests-panel" hidden aria-label="Parent Requests">
+                <h3>Parent Viewing Requests</h3>
+                <div id="requests-list" class="requests-list"></div>
+            </section>
+
+            <!-- Connected Family Members -->
+            <section class="family-panel" aria-label="Connected Family Members">
+                <h3>Connected Family Members</h3>
+                <div id="family-members" class="family-members-list">
+                    <p class="muted">No family members connected</p>
+                </div>
+            </section>
+
+            <!-- Activity Log -->
+            <section class="log-panel" aria-label="Activity Log">
+                <h3>Activity Log</h3>
+                <div id="activity-log" class="activity-log" role="log" aria-live="polite">
+                    <div class="log-entry">
+                        <span class="log-time">--:--</span>
+                        <span class="log-message">Waiting for connection...</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/encryption.js"></script>
+    <script src="/js/webrtc.js"></script>
+    <script src="/js/child.js"></script>
+</body>
+</html>
