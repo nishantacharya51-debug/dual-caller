@@ -5,31 +5,557 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Child Dashboard | SecureFamily</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #6366f1;
+  --secondary: #8b5cf6;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --light: #f1f5f9;
+  --gray: #64748b;
+  --border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(255, 255, 255, 0.03);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #050810;
+  color: var(--light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.bg-animation {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 20s infinite ease-in-out;
+}
+
+.orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -100px; left: -100px; }
+.orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #8b5cf6, transparent); bottom: -100px; right: -100px; animation-delay: -10s; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(100px, -50px); }
+}
+
+.dashboard {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.premium-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.logo-container { display: flex; align-items: center; gap: 14px; }
+
+.logo-icon {
+  font-size: 32px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.logo-title { font-size: 22px; font-weight: 800; color: white; }
+.logo-subtitle { font-size: 12px; color: var(--gray); }
+
+.header-right { display: flex; align-items: center; gap: 16px; }
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 8px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--success), #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.user-name { font-size: 14px; font-weight: 600; }
+
+.user-role {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--gray);
+}
+
+.role-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.logout-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--light);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.logout-btn:hover { background: var(--danger); }
+
+.status-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-pill.connected {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.status-pill.active {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.security-pill {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+.pulse-green { background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
+.pulse-gray { background: var(--gray); }
+.pulse-red { background: var(--danger); }
+
+.live-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.live-banner.hidden { display: none; }
+
+.live-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 20px var(--danger);
+  animation: pulse 1s infinite;
+}
+
+.live-text { flex: 1; }
+.live-title { font-weight: 700; color: #fca5a5; }
+.live-subtitle { font-size: 12px; color: var(--gray); }
+
+.stop-btn {
+  padding: 10px 20px;
+  background: var(--danger);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+.premium-card {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+}
+
+.card-title h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.card-badge {
+  padding: 4px 12px;
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.card-badge.live {
+  background: var(--danger);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.video-container {
+  position: relative;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0e1a, #050810);
+}
+
+.video-overlay.hidden {
+  display: none;
+}
+
+.overlay-content { text-align: center; color: var(--gray); }
+.camera-icon-large { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+.overlay-content h3 { font-size: 20px; color: white; margin-bottom: 8px; }
+.overlay-content p { font-size: 14px; }
+
+.live-indicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.9);
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.live-indicator.show { display: flex; }
+
+.rec-dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+.control-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.control-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--success), #059669);
+  color: white;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+}
+
+.primary-btn.active {
+  background: linear-gradient(135deg, var(--danger), #dc2626);
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+}
+
+.danger-btn {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--light);
+}
+
+.danger-btn:hover:not(:disabled) {
+  background: var(--danger);
+}
+
+.request-item {
+  padding: 16px;
+  background: var(--glass);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.request-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.request-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--warning), #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.request-name { font-weight: 700; font-size: 15px; }
+.request-text { font-size: 12px; color: var(--gray); }
+
+.request-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.approve-btn {
+  background: linear-gradient(135deg, var(--success), #059669);
+  color: white;
+}
+
+.deny-btn {
+  background: linear-gradient(135deg, var(--danger), #dc2626);
+  color: white;
+}
+
+.family-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.family-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.member-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.member-info { flex: 1; }
+.member-name { font-weight: 600; font-size: 14px; }
+.member-role { font-size: 12px; color: var(--gray); }
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--gray);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.activity-log {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.log-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: var(--glass);
+  border-radius: 8px;
+  font-size: 13px;
+  border-left: 3px solid transparent;
+}
+
+.log-item.success { border-left-color: var(--success); }
+.log-item.error { border-left-color: var(--danger); }
+.log-item.info { border-left-color: var(--primary); }
+
+.log-time { color: var(--gray); font-size: 11px; font-family: monospace; }
+.log-msg { color: var(--light); flex: 1; }
+
+.mini-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--gray);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hidden { display: none !important; }
+</style>
 </head>
 <body>
+
 <div class="bg-animation">
   <div class="bg-orb orb1"></div>
   <div class="bg-orb orb2"></div>
-  <div class="bg-orb orb3"></div>
 </div>
 
 <div class="dashboard">
-  <!-- Premium Header -->
   <header class="premium-header">
-    <div class="header-left">
-      <div class="logo-container">
-        <div class="logo-icon">🛡️</div>
-        <div>
-          <h1 class="logo-title">SecureFamily</h1>
-          <p class="logo-subtitle">Child Dashboard</p>
-        </div>
+    <div class="logo-container">
+      <div class="logo-icon">🛡️</div>
+      <div>
+        <h1 class="logo-title">SecureFamily</h1>
+        <p class="logo-subtitle">Child Dashboard</p>
       </div>
     </div>
     <div class="header-right">
       <div class="user-chip">
         <div class="user-avatar" id="user-avatar">C</div>
-        <div class="user-info">
+        <div>
           <div class="user-name" id="uname"></div>
           <div class="user-role">
             <span class="role-dot"></span>
@@ -37,113 +563,84 @@
           </div>
         </div>
       </div>
-      <button class="logout-btn" onclick="logout()" title="Logout">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-      </button>
+      <button class="logout-btn" id="btn-logout">⏻</button>
     </div>
   </header>
 
-  <!-- Status Bar -->
   <div class="status-container">
     <div class="status-pill" id="conn-pill">
       <span class="pill-dot pulse-gray"></span>
       <span id="conn-stat">Connecting...</span>
     </div>
     <div class="status-pill" id="cam-pill">
-      <span class="pill-icon">📷</span>
+      <span>📷</span>
       <span id="cam-stat">Camera Off</span>
     </div>
     <div class="status-pill security-pill">
-      <span class="pill-icon">🔒</span>
+      <span>🔒</span>
       <span>E2E Encrypted</span>
     </div>
   </div>
 
-  <!-- LIVE Banner (Hidden by default) -->
   <div class="live-banner hidden" id="cam-banner">
     <div class="live-dot"></div>
     <div class="live-text">
       <div class="live-title">Camera is LIVE</div>
       <div class="live-subtitle">Your parent can see this stream</div>
     </div>
-    <button class="stop-btn" onclick="stopCam()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-        <rect x="6" y="6" width="12" height="12" rx="2"/>
-      </svg>
-      Stop
-    </button>
+    <button class="stop-btn" id="btn-emergency-stop">Stop</button>
   </div>
 
-  <!-- Main Grid -->
   <div class="main-grid">
-    <!-- Video Section -->
-    <div class="premium-card video-card">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="card-icon">📺</span>
-          <h2>Live Camera</h2>
-        </div>
-        <div class="card-badge" id="video-badge">Standby</div>
-      </div>
-      
-      <div class="video-container">
-        <video id="local-vid" autoplay playsinline muted></video>
-        
-        <div class="video-overlay" id="ph">
-          <div class="overlay-content">
-            <div class="camera-icon-large">📷</div>
-            <h3>Camera Ready</h3>
-            <p>Click "Start Camera" to begin streaming</p>
+    <div>
+      <div class="premium-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-icon">📺</span>
+            <h2>Live Camera</h2>
           </div>
+          <div class="card-badge" id="video-badge">Standby</div>
         </div>
         
-        <div class="live-indicator" id="live-badge">
-          <div class="rec-dot"></div>
-          <span>LIVE</span>
-        </div>
-        
-        <div class="video-stats" id="video-stats">
-          <div class="stat-item">
-            <span class="stat-label">Quality</span>
-            <span class="stat-value">HD</span>
+        <div class="video-container">
+          <video id="local-vid" autoplay playsinline muted></video>
+          <div class="video-overlay" id="ph">
+            <div class="overlay-content">
+              <div class="camera-icon-large">📷</div>
+              <h3>Camera Ready</h3>
+              <p>Click "Start Camera" to begin</p>
+            </div>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Encryption</span>
-            <span class="stat-value">🔒 AES-256</span>
+          <div class="live-indicator" id="live-badge">
+            <div class="rec-dot"></div>
+            <span>LIVE</span>
           </div>
         </div>
-      </div>
 
-      <div class="control-panel">
-        <button class="control-btn primary-btn" id="btn-start" onclick="startCam()">
-          <span class="btn-icon">📷</span>
-          <span class="btn-text">Start Camera</span>
-        </button>
-        <button class="control-btn danger-btn" id="btn-stop" onclick="stopCam()" disabled>
-          <span class="btn-icon">⏹</span>
-          <span class="btn-text">Stop Camera</span>
-        </button>
+        <div class="control-panel">
+          <button class="control-btn primary-btn" id="btn-start">
+            <span>📷</span>
+            <span id="start-text">Start Camera</span>
+          </button>
+          <button class="control-btn danger-btn" id="btn-stop" disabled>
+            <span>⏹</span>
+            <span>Stop Camera</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Side Panel -->
-    <div class="side-panel">
-      <!-- Parent Request Card -->
-      <div class="premium-card request-card hidden" id="req-card">
+    <div>
+      <div class="premium-card hidden" id="req-card" style="border-color:rgba(245,158,11,0.3)">
         <div class="card-header">
           <div class="card-title">
-            <span class="card-icon pulse-icon">🔔</span>
+            <span class="card-icon">🔔</span>
             <h2>Parent Request</h2>
           </div>
         </div>
         <div id="req-list"></div>
       </div>
 
-      <!-- Family Members -->
       <div class="premium-card">
         <div class="card-header">
           <div class="card-title">
@@ -159,56 +656,28 @@
         </div>
       </div>
 
-      <!-- Activity Log -->
       <div class="premium-card">
         <div class="card-header">
           <div class="card-title">
             <span class="card-icon">📋</span>
-            <h2>Activity Log</h2>
+            <h2>Activity</h2>
           </div>
-          <button class="mini-btn" onclick="clearLog()">Clear</button>
+          <button class="mini-btn" id="btn-clear-log">Clear</button>
         </div>
         <div class="activity-log" id="log"></div>
       </div>
     </div>
   </div>
-
-  <!-- Footer -->
-  <footer class="premium-footer">
-    <div class="footer-content">
-      <span>🔒 End-to-end encrypted via WebRTC</span>
-      <span>•</span>
-      <span>Camera controlled by you</span>
-    </div>
-  </footer>
-</div>
-
-<!-- Permission Modal (First Time Only) -->
-<div class="modal-overlay" id="permission-modal">
-  <div class="modal-card">
-    <div class="modal-icon">🎥</div>
-    <h2>Camera Permission Required</h2>
-    <p>SecureFamily needs access to your camera to stream video to your parent.</p>
-    <ul class="permission-list">
-      <li>✅ You control when camera is on</li>
-      <li>✅ End-to-end encrypted</li>
-      <li>✅ No recording or storage</li>
-      <li>✅ Stop anytime with one click</li>
-    </ul>
-    <button class="modal-btn" onclick="requestPermissionOnce()">
-      Grant Permission
-    </button>
-    <button class="modal-btn-secondary" onclick="closeModal()">Not Now</button>
-  </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+console.log('✅ Child Dashboard loaded');
+
 const token = sessionStorage.getItem('token');
 const user = JSON.parse(sessionStorage.getItem('user') || 'null');
 if (!token || !user || user.role !== 'child') window.location.href = '/';
 
-// Setup user info
 document.getElementById('uname').textContent = user.username;
 document.getElementById('fcode').textContent = 'Code: ' + user.familyCode;
 document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
@@ -223,65 +692,50 @@ const rtcConfig = {
   ] 
 };
 
-// Check if permission was granted before
 const permissionGranted = localStorage.getItem('camera_permission_granted') === 'true';
-
 let socket = null;
 
 function connectSocket() {
-  socket = io({ 
-    auth: { token },
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionAttempts: 10
-  });
+  socket = io({ auth: { token }, reconnection: true });
 
   socket.on('connect', () => {
-    updateConnStatus(true);
-    addLog('✅ Connected to server', 'success');
-    
+    updateConn(true);
+    addLog('✅ Connected', 'success');
     if (camOn) socket.emit('camera-permission-granted');
     
-    // AUTO-START camera if permission was granted before
     if (permissionGranted && !camOn) {
       setTimeout(() => {
-        addLog('🔄 Auto-starting camera (permission remembered)', 'info');
-        startCamSilent();
+        addLog('🔄 Auto-starting camera', 'info');
+        startCam(true);
       }, 500);
-    } else if (!permissionGranted) {
-      // Show permission modal first time
-      setTimeout(() => {
-        document.getElementById('permission-modal').classList.add('show');
-      }, 800);
     }
   });
 
   socket.on('disconnect', () => {
-    updateConnStatus(false);
+    updateConn(false);
     addLog('❌ Disconnected', 'error');
   });
 
   socket.on('reconnect', () => {
-    addLog('🔄 Reconnected!', 'success');
-    updateConnStatus(true);
+    addLog('🔄 Reconnected', 'success');
+    updateConn(true);
     if (camOn) socket.emit('camera-permission-granted');
   });
 
   socket.on('family-status', (data) => updateFam(data));
   
   socket.on('family-member-connected', (d) => {
-    addLog(`✅ ${d.username} (${d.role}) joined`, 'success');
+    addLog('✅ ' + d.username + ' joined', 'success');
     if (camOn) setTimeout(() => socket.emit('camera-permission-granted'), 500);
   });
   
   socket.on('family-member-disconnected', (d) => {
-    addLog(`👋 ${d.username} left`, 'info');
+    addLog('👋 ' + d.username + ' left', 'info');
   });
 
   socket.on('parent-requests-camera', (data) => {
-    addLog(`📞 ${data.parentUsername} wants to view your camera`, 'info');
+    addLog('📞 ' + data.parentUsername + ' wants to view camera', 'info');
     showRequest(data);
-    playNotificationSound();
   });
 
   socket.on('webrtc-answer', async (data) => {
@@ -295,7 +749,7 @@ function connectSocket() {
   });
 }
 
-function updateConnStatus(connected) {
+function updateConn(connected) {
   const pill = document.getElementById('conn-pill');
   const stat = document.getElementById('conn-stat');
   const dot = pill.querySelector('.pill-dot');
@@ -313,52 +767,22 @@ function updateConnStatus(connected) {
 
 connectSocket();
 
-// Modal functions
-function closeModal() {
-  document.getElementById('permission-modal').classList.remove('show');
-}
-
-async function requestPermissionOnce() {
-  closeModal();
-  await startCam();
-  if (camOn) {
-    localStorage.setItem('camera_permission_granted', 'true');
-    addLog('✅ Permission saved - auto-start enabled', 'success');
-  }
-}
-
-// Silent auto-start (no button interaction needed)
-async function startCamSilent() {
-  await startCam(true);
-}
-
-async function startCam(silent = false) {
+async function startCam(silent) {
   if (camOn) return;
   
   const btn = document.getElementById('btn-start');
-  const placeholder = document.getElementById('ph');
   const video = document.getElementById('local-vid');
-  const liveBadge = document.getElementById('live-badge');
-  const banner = document.getElementById('cam-banner');
-  const stopBtn = document.getElementById('btn-stop');
-  const camStat = document.getElementById('cam-stat');
-  const camPill = document.getElementById('cam-pill');
-  const videoBadge = document.getElementById('video-badge');
-  const videoStats = document.getElementById('video-stats');
+  const placeholder = document.getElementById('ph');
   
   if (!silent) {
     btn.disabled = true;
-    btn.querySelector('.btn-text').textContent = 'Requesting...';
-    addLog('📷 Requesting camera access...', 'info');
+    document.getElementById('start-text').textContent = 'Requesting...';
+    addLog('📷 Requesting camera...', 'info');
   }
   
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { 
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-        facingMode: 'user' 
-      },
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
       audio: false
     });
     
@@ -366,37 +790,29 @@ async function startCam(silent = false) {
     localStorage.setItem('camera_permission_granted', 'true');
     
     video.srcObject = localStream;
-    video.onloadedmetadata = () => {
-      video.play().catch(err => console.log('Play error:', err));
-    };
+    video.onloadedmetadata = () => video.play().catch(() => {});
     
     placeholder.classList.add('hidden');
-    liveBadge.classList.add('show');
-    banner.classList.remove('hidden');
-    camStat.textContent = 'Camera ON';
-    camPill.classList.add('active');
-    videoBadge.textContent = 'LIVE';
-    videoBadge.classList.add('live');
-    videoStats.classList.add('show');
-    stopBtn.disabled = false;
+    document.getElementById('live-badge').classList.add('show');
+    document.getElementById('cam-banner').classList.remove('hidden');
+    document.getElementById('cam-stat').textContent = 'Camera ON';
+    document.getElementById('cam-pill').classList.add('active');
+    document.getElementById('video-badge').textContent = 'LIVE';
+    document.getElementById('video-badge').classList.add('live');
+    document.getElementById('btn-stop').disabled = false;
     btn.disabled = false;
     btn.classList.add('active');
-    btn.querySelector('.btn-text').textContent = 'Camera Active';
-    btn.querySelector('.btn-icon').textContent = '✅';
+    document.getElementById('start-text').textContent = 'Camera Active';
     
     socket.emit('camera-permission-granted');
-    addLog('✅ Camera started successfully', 'success');
+    addLog('✅ Camera started', 'success');
     
   } catch (err) {
     btn.disabled = false;
-    btn.querySelector('.btn-text').textContent = 'Start Camera';
-    btn.querySelector('.btn-icon').textContent = '📷';
-    
+    document.getElementById('start-text').textContent = 'Start Camera';
+    addLog('❌ ' + err.message, 'error');
     if (err.name === 'NotAllowedError') {
-      addLog('❌ Camera permission denied', 'error');
       localStorage.removeItem('camera_permission_granted');
-    } else {
-      addLog('❌ ' + err.message, 'error');
     }
   }
 }
@@ -406,36 +822,22 @@ function stopCam() {
     localStream.getTracks().forEach(t => t.stop()); 
     localStream = null; 
   }
-  
   peerConnections.forEach(pc => pc.close());
   peerConnections.clear();
   camOn = false;
   
-  const video = document.getElementById('local-vid');
-  const placeholder = document.getElementById('ph');
-  const liveBadge = document.getElementById('live-badge');
-  const banner = document.getElementById('cam-banner');
-  const startBtn = document.getElementById('btn-start');
-  const stopBtn = document.getElementById('btn-stop');
-  const camStat = document.getElementById('cam-stat');
-  const camPill = document.getElementById('cam-pill');
-  const videoBadge = document.getElementById('video-badge');
-  const videoStats = document.getElementById('video-stats');
-  
-  video.srcObject = null;
-  placeholder.classList.remove('hidden');
-  liveBadge.classList.remove('show');
-  banner.classList.add('hidden');
-  camStat.textContent = 'Camera Off';
-  camPill.classList.remove('active');
-  videoBadge.textContent = 'Standby';
-  videoBadge.classList.remove('live');
-  videoStats.classList.remove('show');
-  startBtn.disabled = false;
-  startBtn.classList.remove('active');
-  startBtn.querySelector('.btn-text').textContent = 'Start Camera';
-  startBtn.querySelector('.btn-icon').textContent = '📷';
-  stopBtn.disabled = true;
+  document.getElementById('local-vid').srcObject = null;
+  document.getElementById('ph').classList.remove('hidden');
+  document.getElementById('live-badge').classList.remove('show');
+  document.getElementById('cam-banner').classList.add('hidden');
+  document.getElementById('cam-stat').textContent = 'Camera Off';
+  document.getElementById('cam-pill').classList.remove('active');
+  document.getElementById('video-badge').textContent = 'Standby';
+  document.getElementById('video-badge').classList.remove('live');
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-start').classList.remove('active');
+  document.getElementById('start-text').textContent = 'Start Camera';
+  document.getElementById('btn-stop').disabled = true;
   
   if (socket && socket.connected) socket.emit('camera-permission-revoked');
   addLog('⏹ Camera stopped', 'info');
@@ -446,23 +848,25 @@ function showRequest(data) {
   const list = document.getElementById('req-list');
   const div = document.createElement('div');
   div.className = 'request-item';
-  div.innerHTML = `
-    <div class="request-header">
-      <div class="request-avatar">${data.parentUsername.charAt(0).toUpperCase()}</div>
-      <div class="request-info">
-        <div class="request-name">${data.parentUsername}</div>
-        <div class="request-text">wants to view your camera</div>
-      </div>
-    </div>
-    <div class="request-actions">
-      <button class="action-btn approve-btn" onclick="approve('${data.parentSocketId}', true, this)">
-        ✓ Allow
-      </button>
-      <button class="action-btn deny-btn" onclick="approve('${data.parentSocketId}', false, this)">
-        ✗ Deny
-      </button>
-    </div>`;
+  div.innerHTML = 
+    '<div class="request-header">' +
+      '<div class="request-avatar">' + data.parentUsername.charAt(0).toUpperCase() + '</div>' +
+      '<div>' +
+        '<div class="request-name">' + data.parentUsername + '</div>' +
+        '<div class="request-text">wants to view your camera</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="request-actions">' +
+      '<button class="action-btn approve-btn" data-sid="' + data.parentSocketId + '" data-ok="true">✓ Allow</button>' +
+      '<button class="action-btn deny-btn" data-sid="' + data.parentSocketId + '" data-ok="false">✗ Deny</button>' +
+    '</div>';
   list.appendChild(div);
+  
+  div.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      approve(this.getAttribute('data-sid'), this.getAttribute('data-ok') === 'true', this);
+    });
+  });
 }
 
 async function approve(parentSocketId, ok, btn) {
@@ -479,10 +883,10 @@ async function approve(parentSocketId, ok, btn) {
   }
   
   if (ok) {
-    addLog('✅ Approved - Starting encrypted stream', 'success');
+    addLog('✅ Approved - Starting stream', 'success');
     await sendOffer(parentSocketId);
   } else {
-    addLog('❌ Denied parent request', 'info');
+    addLog('❌ Denied request', 'info');
   }
 }
 
@@ -496,12 +900,6 @@ async function sendOffer(targetSocketId) {
     if (e.candidate) socket.emit('webrtc-ice-candidate', { targetSocketId, candidate: e.candidate });
   };
   
-  pc.onconnectionstatechange = () => {
-    if (pc.connectionState === 'connected') {
-      addLog('🔒 Encrypted stream active', 'success');
-    }
-  };
-  
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
   socket.emit('webrtc-offer', { targetSocketId, offer });
@@ -510,74 +908,48 @@ async function sendOffer(targetSocketId) {
 function updateFam(data) {
   const list = document.getElementById('fam-list');
   list.innerHTML = '';
-  const all = [...data.parents, ...data.children.filter(c => c.userId !== user.id)];
+  const all = data.parents.concat(data.children.filter(c => c.userId !== user.id));
   
   if (all.length === 0) { 
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">👥</div>
-        <p>No family members online</p>
-      </div>`;
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><p>No family members online</p></div>';
     return; 
   }
   
   all.forEach(m => {
     const div = document.createElement('div');
     div.className = 'family-item';
-    div.innerHTML = `
-      <div class="member-avatar ${m.role}">${m.username.charAt(0).toUpperCase()}</div>
-      <div class="member-info">
-        <div class="member-name">${m.username}</div>
-        <div class="member-role">${m.role === 'parent' ? '👨‍👩 Parent' : '🧒 Child'}</div>
-      </div>
-      <div class="member-status">
-        <span class="online-dot"></span>
-        Online
-      </div>
-    `;
+    div.innerHTML = 
+      '<div class="member-avatar">' + m.username.charAt(0).toUpperCase() + '</div>' +
+      '<div class="member-info">' +
+        '<div class="member-name">' + m.username + '</div>' +
+        '<div class="member-role">' + (m.role === 'parent' ? '👨‍👩 Parent' : '🧒 Child') + '</div>' +
+      '</div>';
     list.appendChild(div);
   });
 }
 
-function addLog(msg, type = 'info') {
+document.getElementById('btn-start').addEventListener('click', () => startCam(false));
+document.getElementById('btn-stop').addEventListener('click', stopCam);
+document.getElementById('btn-emergency-stop').addEventListener('click', stopCam);
+document.getElementById('btn-clear-log').addEventListener('click', () => {
+  document.getElementById('log').innerHTML = '';
+});
+document.getElementById('btn-logout').addEventListener('click', () => {
+  stopCam();
+  if (socket) socket.disconnect();
+  sessionStorage.clear();
+  window.location.href = '/';
+});
+
+function addLog(msg, type) {
   const log = document.getElementById('log');
   const t = new Date().toLocaleTimeString();
   const div = document.createElement('div');
-  div.className = 'log-item ' + type;
-  div.innerHTML = `
-    <span class="log-time">${t}</span>
-    <span class="log-msg">${msg}</span>
-  `;
+  div.className = 'log-item ' + (type || 'info');
+  div.innerHTML = '<span class="log-time">' + t + '</span><span class="log-msg">' + msg + '</span>';
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
-  
   while (log.children.length > 50) log.removeChild(log.firstChild);
-}
-
-function clearLog() {
-  document.getElementById('log').innerHTML = '';
-}
-
-function playNotificationSound() {
-  try {
-    const audio = new AudioContext();
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-    osc.connect(gain);
-    gain.connect(audio.destination);
-    osc.frequency.value = 800;
-    gain.gain.setValueAtTime(0.3, audio.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.3);
-    osc.start(audio.currentTime);
-    osc.stop(audio.currentTime + 0.3);
-  } catch(e) {}
-}
-
-function logout() { 
-  stopCam(); 
-  if (socket) socket.disconnect();
-  sessionStorage.clear(); 
-  window.location.href = '/'; 
 }
 
 document.addEventListener('visibilitychange', () => {
@@ -585,17 +957,14 @@ document.addEventListener('visibilitychange', () => {
     const video = document.getElementById('local-vid');
     if (video.srcObject !== localStream) {
       video.srcObject = localStream;
-      video.play().catch(e => {});
+      video.play().catch(() => {});
     }
     if (socket && !socket.connected) socket.connect();
   }
 });
 
 window.addEventListener('beforeunload', () => stopCam());
-
-setInterval(() => {
-  if (socket && socket.connected) socket.emit('ping');
-}, 20000);
+setInterval(() => { if (socket && socket.connected) socket.emit('ping'); }, 20000);
 </script>
 </body>
 </html>
