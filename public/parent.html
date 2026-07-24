@@ -3,82 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parent Dashboard</title>
+<title>Parent Dashboard | SecureFamily</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
-<style>
-  .video-wrap {
-    position: relative;
-    background: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    aspect-ratio: 16/9;
-    min-height: 300px;
-  }
-  .video-wrap video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-  }
-  .placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #657786;
-    font-size: 2rem;
-    background: #000;
-  }
-  .placeholder.hidden { display: none !important; }
-</style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div class="header-row">
-      <div class="logo"><span>🛡️</span><h1>Parent Dashboard</h1></div>
-      <div>
-        <span class="badge" id="uname"></span>
-        <span class="badge blue" id="fcode"></span>
-        <button class="btn danger sm" onclick="logout()">Logout</button>
+<div class="bg-animation">
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+</div>
+
+<div class="dashboard">
+  <!-- Premium Header -->
+  <header class="premium-header">
+    <div class="header-left">
+      <div class="logo-container">
+        <div class="logo-icon">🛡️</div>
+        <div>
+          <h1 class="logo-title">SecureFamily</h1>
+          <p class="logo-subtitle">Parent Dashboard</p>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="user-chip">
+        <div class="user-avatar parent-avatar" id="user-avatar">P</div>
+        <div class="user-info">
+          <div class="user-name" id="uname"></div>
+          <div class="user-role">
+            <span class="role-dot"></span>
+            <span>Parent</span>
+          </div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Logout">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Status Bar -->
+  <div class="status-container">
+    <div class="status-pill" id="conn-pill">
+      <span class="pill-dot pulse-gray"></span>
+      <span id="conn-stat">Connecting...</span>
+    </div>
+    <div class="status-pill" id="stream-pill">
+      <span class="pill-icon">📺</span>
+      <span id="stream-stat">No Stream</span>
+    </div>
+    <div class="status-pill security-pill">
+      <span class="pill-icon">🔒</span>
+      <span>E2E Encrypted</span>
+    </div>
+  </div>
+
+  <!-- Family Code Card -->
+  <div class="family-code-card">
+    <div class="code-content">
+      <div class="code-icon">👨‍👩‍👦</div>
+      <div class="code-info">
+        <div class="code-label">Your Family Code</div>
+        <div class="code-value" id="fc-big"></div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyCode()" id="copy-btn">
+      <span id="copy-icon">📋</span>
+      <span id="copy-text">Copy Code</span>
+    </button>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- Video Section -->
+    <div class="premium-card video-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="card-icon">📺</span>
+          <h2>Live Video Stream</h2>
+        </div>
+        <div class="card-badge" id="video-badge">Waiting</div>
+      </div>
+      
+      <div class="video-container large">
+        <video id="remote-vid" autoplay playsinline></video>
+        
+        <div class="video-overlay" id="ph">
+          <div class="overlay-content">
+            <div class="camera-icon-large">📺</div>
+            <h3>No Active Stream</h3>
+            <p>Request camera access from a connected child</p>
+          </div>
+        </div>
+        
+        <div class="live-indicator" id="live-badge">
+          <div class="rec-dot"></div>
+          <span>LIVE</span>
+        </div>
+        
+        <div class="stream-info-badge" id="stream-info">
+          <span class="stream-info-item">
+            <span class="info-label">Watching:</span>
+            <span class="info-value" id="watching-name">-</span>
+          </span>
+          <span class="stream-info-item">
+            <span class="info-label">🔒</span>
+            <span class="info-value">E2E Encrypted</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <!-- Children List -->
+      <div class="premium-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-icon">🧒</span>
+            <h2>Children</h2>
+          </div>
+          <span class="count-badge" id="child-count">0</span>
+        </div>
+        <div id="child-list" class="children-list">
+          <div class="empty-state">
+            <div class="empty-icon">👶</div>
+            <p>No children connected</p>
+            <small>Share your family code above</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="premium-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-icon">📋</span>
+            <h2>Activity Log</h2>
+          </div>
+          <button class="mini-btn" onclick="clearLog()">Clear</button>
+        </div>
+        <div class="activity-log" id="log"></div>
       </div>
     </div>
   </div>
 
-  <div class="statusbar">
-    <span id="conn-stat">🔴 Connecting...</span>
-    <span id="stream-stat">📺 No Stream</span>
-  </div>
-
-  <div class="card" style="text-align:center">
-    <h3>👨‍👩‍👦 Your Family Code</h3>
-    <div style="font-size:2em;font-weight:bold;color:#4a90d9;letter-spacing:4px;margin:0.5em 0" id="fc-big"></div>
-    <button class="btn sm" onclick="copyCode()">📋 Copy</button>
-    <p style="color:#888;font-size:0.85em">Share this with your child to connect</p>
-  </div>
-
-  <div class="card">
-    <h3>🧒 Children</h3>
-    <div id="child-list"><p style="color:#888">No children connected</p></div>
-  </div>
-
-  <div class="card">
-    <h3>📺 Live Video</h3>
-    <div class="video-wrap">
-      <video id="remote-vid" autoplay playsinline></video>
-      <div class="placeholder" id="ph">
-        <span>📺</span>
-        <small style="font-size:0.5em;margin-top:10px">No active stream</small>
-      </div>
+  <!-- Footer -->
+  <footer class="premium-footer">
+    <div class="footer-content">
+      <span>🔒 End-to-end encrypted via WebRTC DTLS/SRTP</span>
+      <span>•</span>
+      <span>Child controls all camera access</span>
     </div>
-  </div>
-
-  <div class="card">
-    <h3>📋 Activity</h3>
-    <div class="log" id="log"></div>
-  </div>
+  </footer>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -87,9 +169,9 @@ const token = sessionStorage.getItem('token');
 const user = JSON.parse(sessionStorage.getItem('user') || 'null');
 if (!token || !user || user.role !== 'parent') window.location.href = '/';
 
-document.getElementById('uname').textContent = '👤 ' + user.username;
-document.getElementById('fcode').textContent = '👨‍👩‍👦 ' + user.familyCode;
+document.getElementById('uname').textContent = user.username;
 document.getElementById('fc-big').textContent = user.familyCode;
+document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
 
 const availableCams = new Map();
 const peerConnections = new Map();
@@ -101,6 +183,7 @@ const rtcConfig = {
 };
 
 let socket = null;
+let currentStreamName = '';
 
 function connectSocket() {
   socket = io({ 
@@ -111,77 +194,83 @@ function connectSocket() {
   });
 
   socket.on('connect', () => {
-    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
-    addLog('✅ Connected to server');
+    updateConnStatus(true);
+    addLog('✅ Connected to server', 'success');
   });
 
   socket.on('disconnect', () => {
-    document.getElementById('conn-stat').innerHTML = '🔴 Disconnected';
-    addLog('❌ Disconnected');
+    updateConnStatus(false);
+    addLog('❌ Disconnected', 'error');
   });
 
   socket.on('reconnect', () => {
-    addLog('🔄 Reconnected!');
-    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
+    addLog('🔄 Reconnected!', 'success');
+    updateConnStatus(true);
   });
 
   socket.on('family-status', (data) => updateChildren(data.children));
 
   socket.on('family-member-connected', (d) => {
-    if (d.role === 'child') addLog(`✅ ${d.username} joined`);
+    if (d.role === 'child') addLog(`✅ ${d.username} joined`, 'success');
   });
 
   socket.on('family-member-disconnected', (d) => {
-    addLog(`👋 ${d.username} left`);
+    addLog(`👋 ${d.username} left`, 'info');
     for (const [sid, c] of availableCams) if (c.childId === d.userId) availableCams.delete(sid);
     refreshUI();
   });
 
   socket.on('child-camera-available', (data) => {
     availableCams.set(data.childSocketId, data);
-    addLog(`📷 ${data.childUsername}'s camera available`);
+    addLog(`📷 ${data.childUsername}'s camera available`, 'success');
     refreshUI();
   });
 
   socket.on('child-camera-unavailable', (data) => {
     for (const [sid, c] of availableCams) if (c.childId === data.childId) availableCams.delete(sid);
-    addLog(`📷 ${data.childUsername} turned off camera`);
+    addLog(`📷 ${data.childUsername} turned off camera`, 'info');
     refreshUI();
-    document.getElementById('remote-vid').srcObject = null;
-    document.getElementById('ph').classList.remove('hidden');
-    document.getElementById('stream-stat').innerHTML = '📺 No Stream';
+    stopViewing();
   });
 
   socket.on('camera-request-response', (data) => {
-    if (data.approved) addLog(`✅ ${data.childUsername} approved`);
-    else addLog(`❌ ${data.childUsername} denied`);
+    if (data.approved) addLog(`✅ ${data.childUsername} approved`, 'success');
+    else addLog(`❌ ${data.childUsername} denied`, 'error');
   });
 
   socket.on('webrtc-offer', async (data) => {
-    addLog('🔒 Receiving encrypted stream...');
+    addLog('🔒 Receiving encrypted stream...', 'info');
+    currentStreamName = data.senderUsername || 'Child';
+    
     const pc = new RTCPeerConnection(rtcConfig);
     peerConnections.set(data.senderSocketId, pc);
     
     pc.ontrack = (e) => {
       const video = document.getElementById('remote-vid');
       const placeholder = document.getElementById('ph');
+      const videoBadge = document.getElementById('video-badge');
+      const streamInfo = document.getElementById('stream-info');
+      const liveBadge = document.getElementById('live-badge');
+      const streamStat = document.getElementById('stream-stat');
+      const streamPill = document.getElementById('stream-pill');
       
       video.srcObject = e.streams[0];
-      video.onloadedmetadata = () => {
-        video.play().catch(err => console.log('Play error:', err));
-      };
+      video.onloadedmetadata = () => video.play().catch(() => {});
       
       placeholder.classList.add('hidden');
-      document.getElementById('stream-stat').innerHTML = '🔴 LIVE 🔒 E2E Encrypted';
-      addLog('✅ Video stream active');
+      videoBadge.textContent = 'LIVE';
+      videoBadge.classList.add('live');
+      streamInfo.classList.add('show');
+      liveBadge.classList.add('show');
+      streamStat.textContent = 'Live Streaming';
+      streamPill.classList.add('active');
+      document.getElementById('watching-name').textContent = currentStreamName;
+      
+      addLog('✅ Video stream active', 'success');
     };
     
     pc.onicecandidate = (e) => {
       if (e.candidate) socket.emit('webrtc-ice-candidate', { targetSocketId: data.senderSocketId, candidate: e.candidate });
-    };
-    
-    pc.onconnectionstatechange = () => {
-      addLog(`🔗 Connection: ${pc.connectionState}`);
     };
     
     await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
@@ -196,6 +285,33 @@ function connectSocket() {
   });
 }
 
+function updateConnStatus(connected) {
+  const pill = document.getElementById('conn-pill');
+  const stat = document.getElementById('conn-stat');
+  const dot = pill.querySelector('.pill-dot');
+  
+  if (connected) {
+    stat.textContent = 'Connected';
+    dot.className = 'pill-dot pulse-green';
+    pill.classList.add('connected');
+  } else {
+    stat.textContent = 'Disconnected';
+    dot.className = 'pill-dot pulse-red';
+    pill.classList.remove('connected');
+  }
+}
+
+function stopViewing() {
+  document.getElementById('remote-vid').srcObject = null;
+  document.getElementById('ph').classList.remove('hidden');
+  document.getElementById('video-badge').textContent = 'Waiting';
+  document.getElementById('video-badge').classList.remove('live');
+  document.getElementById('stream-info').classList.remove('show');
+  document.getElementById('live-badge').classList.remove('show');
+  document.getElementById('stream-stat').textContent = 'No Stream';
+  document.getElementById('stream-pill').classList.remove('active');
+}
+
 connectSocket();
 
 let connectedChildren = [];
@@ -206,10 +322,17 @@ function updateChildren(children) {
 
 function refreshUI() {
   const list = document.getElementById('child-list');
+  const count = document.getElementById('child-count');
+  count.textContent = connectedChildren.length;
   list.innerHTML = '';
   
   if (connectedChildren.length === 0) {
-    list.innerHTML = '<p style="color:#888">No children connected. Share family code: <strong>' + user.familyCode + '</strong></p>';
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">👶</div>
+        <p>No children connected</p>
+        <small>Share family code: <strong>${user.familyCode}</strong></small>
+      </div>`;
     return;
   }
   
@@ -218,13 +341,22 @@ function refreshUI() {
     for (const [sid, c] of availableCams) if (c.childId === child.userId) socketId = sid;
     
     const div = document.createElement('div');
-    div.className = 'member';
+    div.className = 'child-item ' + (socketId ? 'available' : '');
     div.innerHTML = `
-      <div>
-        <strong>${child.username}</strong>
-        ${socketId ? '<span style="color:#27ae60;margin-left:0.5em">📷 Available</span>' : '<span style="color:#888;margin-left:0.5em">📷 Off</span>'}
+      <div class="child-avatar">${child.username.charAt(0).toUpperCase()}</div>
+      <div class="child-info">
+        <div class="child-name">${child.username}</div>
+        <div class="child-status">
+          ${socketId 
+            ? '<span class="status-live">📷 Camera Available</span>' 
+            : '<span class="status-off">📷 Camera Off</span>'}
+        </div>
       </div>
-      ${socketId ? `<button class="btn primary sm" onclick="requestView('${socketId}', this)">👁️ Request View</button>` : ''}
+      ${socketId 
+        ? `<button class="view-btn" onclick="requestView('${socketId}', this)">
+             <span>👁️</span> View
+           </button>` 
+        : ''}
     `;
     list.appendChild(div);
   });
@@ -233,25 +365,45 @@ function refreshUI() {
 function requestView(socketId, btn) {
   socket.emit('request-view-camera', { childSocketId: socketId });
   btn.disabled = true;
-  btn.textContent = '⏳ Waiting...';
-  addLog('📞 Sent request - waiting for approval');
+  btn.innerHTML = '<span>⏳</span> Waiting...';
+  addLog('📞 Sent request - waiting for approval', 'info');
   setTimeout(() => { 
-    if (btn) { btn.disabled = false; btn.textContent = '👁️ Request View'; }
+    if (btn && btn.disabled) { 
+      btn.disabled = false; 
+      btn.innerHTML = '<span>👁️</span> View';
+    }
   }, 15000);
 }
 
 function copyCode() {
   navigator.clipboard.writeText(user.familyCode);
-  addLog('📋 Family code copied');
+  const icon = document.getElementById('copy-icon');
+  const text = document.getElementById('copy-text');
+  icon.textContent = '✅';
+  text.textContent = 'Copied!';
+  addLog('📋 Family code copied', 'success');
+  setTimeout(() => {
+    icon.textContent = '📋';
+    text.textContent = 'Copy Code';
+  }, 2000);
 }
 
-function addLog(msg) {
+function addLog(msg, type = 'info') {
   const log = document.getElementById('log');
   const t = new Date().toLocaleTimeString();
   const div = document.createElement('div');
-  div.innerHTML = `<span style="color:#888">${t}</span> ${msg}`;
+  div.className = 'log-item ' + type;
+  div.innerHTML = `
+    <span class="log-time">${t}</span>
+    <span class="log-msg">${msg}</span>
+  `;
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
+  while (log.children.length > 50) log.removeChild(log.firstChild);
+}
+
+function clearLog() {
+  document.getElementById('log').innerHTML = '';
 }
 
 function logout() {
@@ -261,15 +413,10 @@ function logout() {
   window.location.href = '/';
 }
 
-// Auto-reconnect on visibility change
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && socket && !socket.connected) {
-    addLog('🔄 Reconnecting...');
-    socket.connect();
-  }
+  if (!document.hidden && socket && !socket.connected) socket.connect();
 });
 
-// Keep alive
 setInterval(() => {
   if (socket && socket.connected) socket.emit('ping');
 }, 20000);
