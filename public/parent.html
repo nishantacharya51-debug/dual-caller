@@ -1,89 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Family Monitor - Parent Dashboard</title>
-    <link rel="stylesheet" href="/css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parent Dashboard</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .video-wrap {
+    position: relative;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    min-height: 300px;
+  }
+  .video-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #657786;
+    font-size: 2rem;
+    background: #000;
+  }
+  .placeholder.hidden { display: none !important; }
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="header-top">
-                <div class="logo">
-                    <div class="shield-icon" aria-hidden="true">🛡️</div>
-                    <h1>Parent Dashboard</h1>
-                </div>
-                <div class="user-info">
-                    <span id="username-display" class="username-badge"></span>
-                    <span id="family-code-display" class="family-badge"></span>
-                    <button id="logout-btn" class="btn btn-small btn-danger">Logout</button>
-                </div>
-            </div>
-        </header>
-
-        <main class="dashboard">
-            <!-- Connection Status -->
-            <div class="status-bar" role="status" aria-live="polite">
-                <div class="status-indicator" id="connection-status">
-                    <span class="status-dot disconnected"></span>
-                    <span class="status-text">Disconnected</span>
-                </div>
-            </div>
-
-            <!-- Family Code Share -->
-            <section class="family-code-section">
-                <h3>Your Family Code</h3>
-                <div class="family-code-display">
-                    <code id="family-code-value"></code>
-                    <button id="copy-code-btn" class="btn btn-small" 
-                            aria-label="Copy family code">📋 Copy</button>
-                </div>
-                <p class="small muted">Share this code with your child to connect</p>
-            </section>
-
-            <!-- Children Status -->
-            <section class="children-panel" aria-label="Children Status">
-                <h3>Children</h3>
-                <div id="children-list" class="children-list">
-                    <p class="muted">No children connected. Share your family code.</p>
-                </div>
-            </section>
-
-            <!-- Video Viewing Area -->
-            <section class="video-section" aria-label="Child Video Stream">
-                <h3>Live Video Stream</h3>
-                <div class="video-container large">
-                    <video id="remote-video" autoplay playsinline
-                           aria-label="Child's camera stream"></video>
-                    <div id="video-placeholder" class="video-placeholder">
-                        <p>No active video stream</p>
-                        <p class="small">Request camera access from a connected child</p>
-                    </div>
-                    <div id="stream-info" class="stream-info" hidden>
-                        <span class="rec-dot"></span>
-                        <span id="stream-child-name">--</span> is sharing
-                        <span class="encrypted-badge" title="End-to-end encrypted">🔒 E2E</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Activity Log -->
-            <section class="log-panel" aria-label="Activity Log">
-                <h3>Activity Log</h3>
-                <div id="activity-log" class="activity-log" role="log" aria-live="polite">
-                    <div class="log-entry">
-                        <span class="log-time">--:--</span>
-                        <span class="log-message">Waiting for connection...</span>
-                    </div>
-                </div>
-            </section>
-        </main>
+<div class="app">
+  <div class="header">
+    <div class="header-row">
+      <div class="logo"><span>🛡️</span><h1>Parent Dashboard</h1></div>
+      <div>
+        <span class="badge" id="uname"></span>
+        <span class="badge blue" id="fcode"></span>
+        <button class="btn danger sm" onclick="logout()">Logout</button>
+      </div>
     </div>
+  </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/encryption.js"></script>
-    <script src="/js/webrtc.js"></script>
-    <script src="/js/parent.js"></script>
+  <div class="statusbar">
+    <span id="conn-stat">🔴 Connecting...</span>
+    <span id="stream-stat">📺 No Stream</span>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <h3>👨‍👩‍👦 Your Family Code</h3>
+    <div style="font-size:2em;font-weight:bold;color:#4a90d9;letter-spacing:4px;margin:0.5em 0" id="fc-big"></div>
+    <button class="btn sm" onclick="copyCode()">📋 Copy</button>
+    <p style="color:#888;font-size:0.85em">Share this with your child to connect</p>
+  </div>
+
+  <div class="card">
+    <h3>🧒 Children</h3>
+    <div id="child-list"><p style="color:#888">No children connected</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📺 Live Video</h3>
+    <div class="video-wrap">
+      <video id="remote-vid" autoplay playsinline></video>
+      <div class="placeholder" id="ph">
+        <span>📺</span>
+        <small style="font-size:0.5em;margin-top:10px">No active stream</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Activity</h3>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const token = sessionStorage.getItem('token');
+const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+if (!token || !user || user.role !== 'parent') window.location.href = '/';
+
+document.getElementById('uname').textContent = '👤 ' + user.username;
+document.getElementById('fcode').textContent = '👨‍👩‍👦 ' + user.familyCode;
+document.getElementById('fc-big').textContent = user.familyCode;
+
+const availableCams = new Map();
+const peerConnections = new Map();
+const rtcConfig = { 
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' }
+  ]
+};
+
+let socket = null;
+
+function connectSocket() {
+  socket = io({ 
+    auth: { token },
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 10
+  });
+
+  socket.on('connect', () => {
+    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
+    addLog('✅ Connected to server');
+  });
+
+  socket.on('disconnect', () => {
+    document.getElementById('conn-stat').innerHTML = '🔴 Disconnected';
+    addLog('❌ Disconnected');
+  });
+
+  socket.on('reconnect', () => {
+    addLog('🔄 Reconnected!');
+    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
+  });
+
+  socket.on('family-status', (data) => updateChildren(data.children));
+
+  socket.on('family-member-connected', (d) => {
+    if (d.role === 'child') addLog(`✅ ${d.username} joined`);
+  });
+
+  socket.on('family-member-disconnected', (d) => {
+    addLog(`👋 ${d.username} left`);
+    for (const [sid, c] of availableCams) if (c.childId === d.userId) availableCams.delete(sid);
+    refreshUI();
+  });
+
+  socket.on('child-camera-available', (data) => {
+    availableCams.set(data.childSocketId, data);
+    addLog(`📷 ${data.childUsername}'s camera available`);
+    refreshUI();
+  });
+
+  socket.on('child-camera-unavailable', (data) => {
+    for (const [sid, c] of availableCams) if (c.childId === data.childId) availableCams.delete(sid);
+    addLog(`📷 ${data.childUsername} turned off camera`);
+    refreshUI();
+    document.getElementById('remote-vid').srcObject = null;
+    document.getElementById('ph').classList.remove('hidden');
+    document.getElementById('stream-stat').innerHTML = '📺 No Stream';
+  });
+
+  socket.on('camera-request-response', (data) => {
+    if (data.approved) addLog(`✅ ${data.childUsername} approved`);
+    else addLog(`❌ ${data.childUsername} denied`);
+  });
+
+  socket.on('webrtc-offer', async (data) => {
+    addLog('🔒 Receiving encrypted stream...');
+    const pc = new RTCPeerConnection(rtcConfig);
+    peerConnections.set(data.senderSocketId, pc);
+    
+    pc.ontrack = (e) => {
+      const video = document.getElementById('remote-vid');
+      const placeholder = document.getElementById('ph');
+      
+      video.srcObject = e.streams[0];
+      video.onloadedmetadata = () => {
+        video.play().catch(err => console.log('Play error:', err));
+      };
+      
+      placeholder.classList.add('hidden');
+      document.getElementById('stream-stat').innerHTML = '🔴 LIVE 🔒 E2E Encrypted';
+      addLog('✅ Video stream active');
+    };
+    
+    pc.onicecandidate = (e) => {
+      if (e.candidate) socket.emit('webrtc-ice-candidate', { targetSocketId: data.senderSocketId, candidate: e.candidate });
+    };
+    
+    pc.onconnectionstatechange = () => {
+      addLog(`🔗 Connection: ${pc.connectionState}`);
+    };
+    
+    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('webrtc-answer', { targetSocketId: data.senderSocketId, answer });
+  });
+
+  socket.on('webrtc-ice-candidate', async (data) => {
+    const pc = peerConnections.get(data.senderSocketId);
+    if (pc) try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
+  });
+}
+
+connectSocket();
+
+let connectedChildren = [];
+function updateChildren(children) {
+  connectedChildren = children;
+  refreshUI();
+}
+
+function refreshUI() {
+  const list = document.getElementById('child-list');
+  list.innerHTML = '';
+  
+  if (connectedChildren.length === 0) {
+    list.innerHTML = '<p style="color:#888">No children connected. Share family code: <strong>' + user.familyCode + '</strong></p>';
+    return;
+  }
+  
+  connectedChildren.forEach(child => {
+    let socketId = null;
+    for (const [sid, c] of availableCams) if (c.childId === child.userId) socketId = sid;
+    
+    const div = document.createElement('div');
+    div.className = 'member';
+    div.innerHTML = `
+      <div>
+        <strong>${child.username}</strong>
+        ${socketId ? '<span style="color:#27ae60;margin-left:0.5em">📷 Available</span>' : '<span style="color:#888;margin-left:0.5em">📷 Off</span>'}
+      </div>
+      ${socketId ? `<button class="btn primary sm" onclick="requestView('${socketId}', this)">👁️ Request View</button>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function requestView(socketId, btn) {
+  socket.emit('request-view-camera', { childSocketId: socketId });
+  btn.disabled = true;
+  btn.textContent = '⏳ Waiting...';
+  addLog('📞 Sent request - waiting for approval');
+  setTimeout(() => { 
+    if (btn) { btn.disabled = false; btn.textContent = '👁️ Request View'; }
+  }, 15000);
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(user.familyCode);
+  addLog('📋 Family code copied');
+}
+
+function addLog(msg) {
+  const log = document.getElementById('log');
+  const t = new Date().toLocaleTimeString();
+  const div = document.createElement('div');
+  div.innerHTML = `<span style="color:#888">${t}</span> ${msg}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function logout() {
+  peerConnections.forEach(pc => pc.close());
+  if (socket) socket.disconnect();
+  sessionStorage.clear();
+  window.location.href = '/';
+}
+
+// Auto-reconnect on visibility change
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && socket && !socket.connected) {
+    addLog('🔄 Reconnecting...');
+    socket.connect();
+  }
+});
+
+// Keep alive
+setInterval(() => {
+  if (socket && socket.connected) socket.emit('ping');
+}, 20000);
+</script>
 </body>
 </html>
