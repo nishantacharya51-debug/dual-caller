@@ -1,115 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Secure Family Monitor - Login</title>
-    <link rel="stylesheet" href="/css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureFamily | Premium Family Monitoring</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+  --accent: #ec4899;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --dark-2: #1e293b;
+  --dark-3: #334155;
+  --light: #f1f5f9;
+  --gray: #64748b;
+  --border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-strong: rgba(255, 255, 255, 0.06);
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: #050810;
+  color: var(--light);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-animation {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.5;
+  animation: float 20s infinite ease-in-out;
+}
+
+.orb1 { width: 600px; height: 600px; background: radial-gradient(circle, #6366f1, transparent); top: -150px; left: -150px; }
+.orb2 { width: 500px; height: 500px; background: radial-gradient(circle, #8b5cf6, transparent); bottom: -100px; right: -100px; animation-delay: -10s; }
+.orb3 { width: 400px; height: 400px; background: radial-gradient(circle, #ec4899, transparent); top: 50%; left: 50%; animation-delay: -5s; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(100px, -50px) scale(1.1); }
+  66% { transform: translate(-50px, 100px) scale(0.9); }
+}
+
+/* ===== GRID PATTERN ===== */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  max-width: 1200px;
+  width: 100%;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 968px) {
+  .wrapper { grid-template-columns: 1fr; max-width: 480px; gap: 30px; }
+  .hero-section { text-align: center; }
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+  animation: slideInLeft 0.8s ease;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 50px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a5b4fc;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 12px var(--success);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.hero-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.hero-icon {
+  font-size: 40px;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+  animation: glow 3s infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5); }
+  50% { box-shadow: 0 16px 40px rgba(139, 92, 246, 0.7); }
+}
+
+.brand-name {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -1px;
+}
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  letter-spacing: -2px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: var(--gray);
+  line-height: 1.6;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+/* ===== FEATURES LIST ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  backdrop-filter: blur(20px);
+  transition: all 0.3s;
+}
+
+.feature-item:hover {
+  background: var(--glass-strong);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.feature-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.feature-content p {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.4;
+}
+
+/* ===== STATS ===== */
+.stats-row {
+  display: flex;
+  gap: 32px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+
+.stat-box h3 {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-box p {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+/* ===== AUTH CARD ===== */
+.auth-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 40px;
+  animation: slideInRight 0.8s ease;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.auth-subtitle {
+  color: var(--gray);
+  font-size: 14px;
+}
+
+/* ===== TABS ===== */
+.tabs-container {
+  display: flex;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: var(--gray);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* ===== FORM ===== */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--light);
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+  font-size: 16px;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px 14px 46px;
+  background: var(--glass);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--light);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: var(--glass-strong);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--dark-3);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+}
+
+/* ===== ROLE SELECTOR ===== */
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.role-card {
+  padding: 16px;
+  background: var(--glass);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.role-card:hover {
+  background: var(--glass-strong);
+  transform: translateY(-2px);
+}
+
+.role-card.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+}
+
+.role-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.role-name {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.role-desc {
+  font-size: 11px;
+  color: var(--gray);
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.submit-btn:hover::before { opacity: 1; }
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+}
+
+.submit-btn:active { transform: translateY(0); }
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== MESSAGES ===== */
+.message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+.message.show { display: flex; align-items: center; gap: 8px; }
+
+.message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.message.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HELPER TEXT ===== */
+.helper-text {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 6px;
+}
+
+/* ===== SECURITY BADGE ===== */
+.security-footer {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--gray);
+  font-size: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .hero-title { font-size: 36px; }
+  .auth-card { padding: 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .role-selector { grid-template-columns: 1fr; }
+  .stats-row { flex-wrap: wrap; gap: 20px; }
+}
+
+/* ===== FLOATING PARTICLES ===== */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  opacity: 0.3;
+  animation: floatParticle 15s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -50px); }
+}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="logo">
-                <div class="shield-icon" aria-hidden="true">🛡️</div>
-                <h1>Secure Family Monitor</h1>
-            </div>
-            <p class="tagline">Privacy-first parental monitoring with full consent</p>
-        </header>
 
-        <main class="auth-container">
-            <!-- Privacy Notice -->
-            <div class="privacy-notice" role="alert">
-                <h3>🔒 Privacy & Consent Promise</h3>
-                <ul>
-                    <li>Camera is <strong>never</strong> accessed without explicit permission</li>
-                    <li>Your browser will always ask before enabling the camera</li>
-                    <li>Children can start and stop sharing at any time</li>
-                    <li>Video streams are encrypted end-to-end via WebRTC</li>
-                    <li>No video is recorded or stored on any server</li>
-                </ul>
-            </div>
+<!-- Background -->
+<div class="bg-grid"></div>
+<div class="bg-animation">
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+</div>
 
-            <!-- Login Tab / Register Tab -->
-            <div class="auth-tabs" role="tablist">
-                <button class="tab-btn active" data-tab="login" role="tab" 
-                        aria-selected="true" aria-controls="login-panel">
-                    Login
-                </button>
-                <button class="tab-btn" data-tab="register" role="tab" 
-                        aria-selected="false" aria-controls="register-panel">
-                    Register
-                </button>
-            </div>
-
-            <!-- Login Form -->
-            <div id="login-panel" class="auth-panel active" role="tabpanel">
-                <form id="login-form" novalidate>
-                    <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input type="text" id="login-username" name="username" 
-                               required minlength="3" maxlength="30"
-                               autocomplete="username" placeholder="Enter username">
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" name="password" 
-                               required minlength="8" maxlength="128"
-                               autocomplete="current-password" placeholder="Enter password">
-                        <button type="button" class="toggle-password" 
-                                aria-label="Toggle password visibility">👁️</button>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <div id="login-error" class="error-message" role="alert" aria-live="polite"></div>
-                </form>
-            </div>
-
-            <!-- Register Form -->
-            <div id="register-panel" class="auth-panel" role="tabpanel" hidden>
-                <form id="register-form" novalidate>
-                    <div class="form-group">
-                        <label for="reg-username">Username</label>
-                        <input type="text" id="reg-username" name="username" 
-                               required minlength="3" maxlength="30"
-                               autocomplete="username" placeholder="Choose a username">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" name="password" 
-                               required minlength="8" maxlength="128"
-                               autocomplete="new-password" placeholder="Min 8 characters">
-                        <div class="password-strength" id="password-strength"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-role">I am a</label>
-                        <select id="reg-role" name="role" required>
-                            <option value="">Select role...</option>
-                            <option value="parent">Parent</option>
-                            <option value="child">Child</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="family-code-group">
-                        <label for="reg-family-code">Family Code</label>
-                        <input type="text" id="reg-family-code" name="familyCode" 
-                               minlength="6" maxlength="20"
-                               placeholder="Enter or leave blank to generate">
-                        <small class="form-hint" id="family-code-hint">
-                            Parents: Leave blank to auto-generate. Children: Enter your family's code.
-                        </small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Register</button>
-                    <div id="register-error" class="error-message" role="alert" aria-live="polite"></div>
-                    <div id="register-success" class="success-message" role="alert" aria-live="polite"></div>
-                </form>
-            </div>
-        </main>
-
-        <footer class="app-footer">
-            <p>🔐 All video transmissions use WebRTC with DTLS/SRTP encryption</p>
-            <p>Camera access requires explicit browser permission every time</p>
-        </footer>
+<div class="container">
+  <div class="wrapper">
+    
+    <!-- LEFT: Hero Section -->
+    <div class="hero-section">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Trusted by 10,000+ Families Worldwide</span>
+      </div>
+      
+      <div class="hero-logo">
+        <div class="hero-icon">🛡️</div>
+        <div class="brand-name">SecureFamily</div>
+      </div>
+      
+      <h1 class="hero-title">
+        Watch Over<br>
+        Your Family with<br>
+        <span class="gradient-text">Complete Privacy</span>
+      </h1>
+      
+      <p class="hero-subtitle">
+        Premium parental monitoring with end-to-end encrypted video streaming. 
+        Your child controls the camera. You get peace of mind.
+      </p>
+      
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-content">
+            <h4>E2E Encryption</h4>
+            <p>Military-grade AES-256 encryption</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">📷</div>
+          <div class="feature-content">
+            <h4>Camera Control</h4>
+            <p>Child decides when to share</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-content">
+            <h4>Real-Time HD</h4>
+            <p>Ultra-low latency streaming</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-content">
+            <h4>Works Anywhere</h4>
+            <p>Cross-platform, any device</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <h3>256-bit</h3>
+          <p>Encryption</p>
+        </div>
+        <div class="stat-box">
+          <h3>99.9%</h3>
+          <p>Uptime</p>
+        </div>
+        <div class="stat-box">
+          <h3>&lt;100ms</h3>
+          <p>Latency</p>
+        </div>
+        <div class="stat-box">
+          <h3>Zero</h3>
+          <p>Data Stored</p>
+        </div>
+      </div>
     </div>
+    
+    <!-- RIGHT: Auth Card -->
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2 class="auth-title" id="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle" id="auth-subtitle">Sign in to your family account</p>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <button class="tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" onclick="switchTab('register')">Register</button>
+      </div>
+      
+      <!-- LOGIN FORM -->
+      <div id="p-login">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="l-user" class="form-input" placeholder="Enter your username" autocomplete="username">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="l-pass" class="form-input" placeholder="Enter your password" autocomplete="current-password">
+            <button type="button" class="password-toggle" onclick="togglePassword('l-pass', this)">👁️</button>
+          </div>
+        </div>
+        
+        <button class="submit-btn" onclick="doLogin()" id="btn-login">
+          <span class="btn-content">
+            <span>Sign In Securely</span>
+            <span>→</span>
+          </span>
+        </button>
+        
+        <div class="message error" id="l-err"></div>
+      </div>
+      
+      <!-- REGISTER FORM -->
+      <div id="p-register" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Choose Username</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="r-user" class="form-input" placeholder="e.g., john_parent" autocomplete="username">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Create Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="r-pass" class="form-input" placeholder="Minimum 8 characters" autocomplete="new-password">
+            <button type="button" class="password-toggle" onclick="togglePassword('r-pass', this)">👁️</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">I am a...</label>
+          <div class="role-selector">
+            <div class="role-card" onclick="selectRole('parent', this)">
+              <div class="role-icon">👨‍👩‍👦</div>
+              <div class="role-name">Parent</div>
+              <div class="role-desc">Monitor children</div>
+            </div>
+            <div class="role-card" onclick="selectRole('child', this)">
+              <div class="role-icon">🧒</div>
+              <div class="role-name">Child</div>
+              <div class="role-desc">Share camera</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group" id="fc-wrap" style="display:none">
+          <label class="form-label">Family Code</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input type="text" id="r-code" class="form-input" placeholder="Enter code" style="text-transform:uppercase">
+          </div>
+          <div class="helper-text" id="fc-hint"></div>
+        </div>
+        
+        <button class="submit-btn" onclick="doRegister()" id="btn-register">
+          <span class="btn-content">
+            <span>Create Account</span>
+            <span>→</span>
+          </span>
+        </button>
+        
+        <div class="message error" id="r-err"></div>
+        <div class="message success" id="r-ok"></div>
+      </div>
+      
+      <!-- Security Footer -->
+      <div class="security-footer">
+        <span>🔒</span>
+        <span>Protected by end-to-end encryption</span>
+      </div>
+    </div>
+    
+  </div>
+</div>
 
-    <script src="/js/auth.js"></script>
+<script>
+let selectedRole = '';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((b, i) => {
+    b.classList.toggle('active', ['login', 'register'][i] === tab);
+  });
+  document.getElementById('p-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('p-register').style.display = tab === 'register' ? 'block' : 'none';
+  
+  const title = document.getElementById('auth-title');
+  const subtitle = document.getElementById('auth-subtitle');
+  if (tab === 'login') {
+    title.textContent = 'Welcome Back';
+    subtitle.textContent = 'Sign in to your family account';
+  } else {
+    title.textContent = 'Create Account';
+    subtitle.textContent = 'Join thousands of secure families';
+  }
+}
+
+function togglePassword(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+}
+
+function selectRole(role, card) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  
+  const wrap = document.getElementById('fc-wrap');
+  const hint = document.getElementById('fc-hint');
+  const input = document.getElementById('r-code');
+  
+  wrap.style.display = 'block';
+  if (role === 'parent') {
+    hint.textContent = '✓ Optional - Leave blank to auto-generate a unique code';
+    input.placeholder = 'Leave blank to auto-generate';
+    input.required = false;
+  } else {
+    hint.textContent = '⚠️ Required - Ask your parent for their family code';
+    input.placeholder = 'Enter code from parent';
+    input.required = true;
+  }
+}
+
+async function doLogin() {
+  const err = document.getElementById('l-err');
+  const btn = document.getElementById('btn-login');
+  err.classList.remove('show');
+  
+  const username = document.getElementById('l-user').value.trim();
+  const password = document.getElementById('l-pass').value;
+  
+  if (!username || !password) {
+    err.textContent = '⚠️ Please fill in all fields';
+    err.classList.add('show');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-content"><span class="spinner"></span><span>Signing in...</span></span>';
+  
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Login failed');
+    
+    sessionStorage.setItem('token', d.token);
+    sessionStorage.setItem('user', JSON.stringify(d.user));
+    
+    btn.innerHTML = '<span class="btn-content"><span>✓</span><span>Success!</span></span>';
+    setTimeout(() => {
+      window.location.href = d.user.role === 'parent' ? '/parent' : '/child';
+    }, 500);
+  } catch (e) {
+    err.textContent = '❌ ' + e.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-content"><span>Sign In Securely</span><span>→</span></span>';
+  }
+}
+
+async function doRegister() {
+  const err = document.getElementById('r-err');
+  const ok = document.getElementById('r-ok');
+  const btn = document.getElementById('btn-register');
+  err.classList.remove('show');
+  ok.classList.remove('show');
+  
+  const username = document.getElementById('r-user').value.trim();
+  const password = document.getElementById('r-pass').value;
+  const familyCode = document.getElementById('r-code').value.trim().toUpperCase();
+  
+  if (!username || !password || !selectedRole) {
+    err.textContent = '⚠️ Please fill all fields and select a role';
+    err.classList.add('show');
+    return;
+  }
+  
+  if (password.length < 8) {
+    err.textContent = '⚠️ Password must be at least 8 characters';
+    err.classList.add('show');
+    return;
+  }
+  
+  if (selectedRole === 'child' && !familyCode) {
+    err.textContent = '⚠️ Children need a family code';
+    err.classList.add('show');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-content"><span class="spinner"></span><span>Creating account...</span></span>';
+  
+  try {
+    const body = { username, password, role: selectedRole };
+    if (familyCode) body.familyCode = familyCode;
+    
+    const r = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Registration failed');
+    
+    sessionStorage.setItem('token', d.token);
+    sessionStorage.setItem('user', JSON.stringify(d.user));
+    
+    if (selectedRole === 'parent') {
+      ok.innerHTML = `✅ Success! Your family code: <strong style="margin-left:8px;background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:6px;letter-spacing:2px">${d.user.familyCode}</strong>`;
+    } else {
+      ok.textContent = '✅ Account created! Redirecting...';
+    }
+    ok.classList.add('show');
+    
+    setTimeout(() => {
+      window.location.href = d.user.role === 'parent' ? '/parent' : '/child';
+    }, 2500);
+  } catch (e) {
+    err.textContent = '❌ ' + e.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-content"><span>Create Account</span><span>→</span></span>';
+  }
+}
+
+// Auto-redirect if logged in
+(async () => {
+  const token = sessionStorage.getItem('token');
+  const user = sessionStorage.getItem('user');
+  if (token && user) {
+    try {
+      const r = await fetch('/api/auth/verify', { 
+        headers: { 'Authorization': 'Bearer ' + token } 
+      });
+      if (r.ok) {
+        const u = JSON.parse(user);
+        window.location.href = u.role === 'parent' ? '/parent' : '/child';
+      } else {
+        sessionStorage.clear();
+      }
+    } catch {}
+  }
+})();
+
+// Enter key to submit
+document.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('p-login').style.display !== 'none') {
+      doLogin();
+    } else {
+      doRegister();
+    }
+  }
+});
+</script>
 </body>
 </html>
