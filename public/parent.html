@@ -44,9 +44,8 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .pulse-gray { background: var(--gray); }
 .pulse-red { background: var(--danger); }
 
-/* AUTO-CONNECT TOGGLE */
 .auto-toggle { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05)); border: 1px solid rgba(99,102,241,0.3); border-radius: 14px; margin-bottom: 20px; }
-.toggle-switch { position: relative; width: 50px; height: 28px; }
+.toggle-switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; border-radius: 28px; transition: 0.3s; }
 .toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
@@ -89,6 +88,25 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .stream-info-item { display: flex; flex-direction: column; gap: 2px; }
 .info-label { color: var(--gray); font-size: 10px; text-transform: uppercase; }
 .info-value { color: var(--light); font-weight: 600; }
+
+/* CAMERA CONTROL BUTTONS ON VIDEO */
+.video-controls { position: absolute; top: 16px; left: 16px; display: none; gap: 8px; }
+.video-controls.show { display: flex; }
+.cam-control-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.3s; }
+.cam-control-btn:hover { background: rgba(99,102,241,0.9); border-color: var(--primary); transform: translateY(-2px); }
+.cam-control-btn.active { background: rgba(99,102,241,0.9); border-color: var(--primary); }
+
+/* CAMERA SWITCH FLOATING BUTTONS */
+.camera-switch-panel { display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.camera-switch-panel.show { display: grid; }
+.cam-switch-card { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--glass); border: 2px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.3s; }
+.cam-switch-card:hover { border-color: var(--primary); background: rgba(99,102,241,0.1); }
+.cam-switch-card.active { border-color: var(--primary); background: rgba(99,102,241,0.15); box-shadow: 0 4px 12px rgba(99,102,241,0.2); }
+.cam-switch-icon { font-size: 28px; }
+.cam-switch-info { flex: 1; }
+.cam-switch-title { font-weight: 700; font-size: 14px; color: white; }
+.cam-switch-desc { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
 .children-list { display: flex; flex-direction: column; gap: 10px; }
 .child-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; }
 .child-item.available { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
@@ -160,7 +178,6 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
     </div>
   </div>
 
-  <!-- AUTO-CONNECT TOGGLE -->
   <div class="auto-toggle">
     <label class="toggle-switch">
       <input type="checkbox" id="auto-connect-toggle">
@@ -203,13 +220,26 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
             <div class="overlay-content">
               <div class="camera-icon-large">📺</div>
               <h3>Waiting for Child</h3>
-              <p>Video will appear when child comes online</p>
+              <p>Video will appear automatically when child comes online</p>
             </div>
           </div>
           <div class="live-indicator" id="live-badge">
             <div class="rec-dot"></div>
             <span>LIVE</span>
           </div>
+          
+          <!-- CAMERA CONTROL BUTTONS -->
+          <div class="video-controls" id="video-controls">
+            <button class="cam-control-btn" id="btn-cam-front" data-facing="user">
+              <span>🤳</span>
+              <span>Front</span>
+            </button>
+            <button class="cam-control-btn" id="btn-cam-back" data-facing="environment">
+              <span>📷</span>
+              <span>Back</span>
+            </button>
+          </div>
+          
           <div class="stream-info-badge" id="stream-info">
             <div class="stream-info-item">
               <span class="info-label">Watching</span>
@@ -218,6 +248,24 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
             <div class="stream-info-item">
               <span class="info-label">🔒 Security</span>
               <span class="info-value">E2E Encrypted</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMERA SWITCH PANEL (Below video) -->
+        <div class="camera-switch-panel" id="camera-switch-panel">
+          <div class="cam-switch-card active" id="cam-front-card" data-facing="user">
+            <div class="cam-switch-icon">🤳</div>
+            <div class="cam-switch-info">
+              <div class="cam-switch-title">Front Camera</div>
+              <div class="cam-switch-desc">Selfie view</div>
+            </div>
+          </div>
+          <div class="cam-switch-card" id="cam-back-card" data-facing="environment">
+            <div class="cam-switch-icon">📷</div>
+            <div class="cam-switch-info">
+              <div class="cam-switch-title">Back Camera</div>
+              <div class="cam-switch-desc">Main camera</div>
             </div>
           </div>
         </div>
@@ -273,10 +321,10 @@ const peerConnections = new Map();
 const requestedChildren = new Set();
 const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
 
-// AUTO-CONNECT SETTING
 let autoConnect = localStorage.getItem('auto_connect') === 'true';
+let currentStreamingChild = null;
+let currentCameraFacing = 'user';
 
-// Enable by default first time
 if (!localStorage.getItem('auto_connect_set')) {
   autoConnect = true;
   localStorage.setItem('auto_connect', 'true');
@@ -327,13 +375,11 @@ function connectSocket() {
     refreshUI();
   });
 
-  // AUTO-REQUEST when child camera becomes available
   socket.on('child-camera-available', (data) => {
     availableCams.set(data.childSocketId, data);
     addLog('📷 ' + data.childUsername + "'s camera available", 'success');
     refreshUI();
     
-    // AUTO-CONNECT if enabled and not already requested
     if (autoConnect && !requestedChildren.has(data.childId)) {
       requestedChildren.add(data.childId);
       addLog('🚀 Auto-connecting to ' + data.childUsername, 'info');
@@ -362,6 +408,7 @@ function connectSocket() {
   socket.on('webrtc-offer', async (data) => {
     addLog('🔒 Receiving encrypted stream...', 'info');
     currentStreamName = data.senderUsername || 'Child';
+    currentStreamingChild = data.senderSocketId;
     
     const pc = new RTCPeerConnection(rtcConfig);
     peerConnections.set(data.senderSocketId, pc);
@@ -380,7 +427,11 @@ function connectSocket() {
       document.getElementById('stream-pill').classList.add('active');
       document.getElementById('watching-name').textContent = currentStreamName;
       
-      addLog('✅ Video active', 'success');
+      // SHOW CAMERA CONTROL BUTTONS
+      document.getElementById('video-controls').classList.add('show');
+      document.getElementById('camera-switch-panel').classList.add('show');
+      
+      addLog('✅ Video active - You can switch camera', 'success');
     };
     
     pc.onicecandidate = (e) => {
@@ -398,6 +449,36 @@ function connectSocket() {
     if (pc) try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
   });
 }
+
+// CAMERA SWITCH BUTTON HANDLERS
+function switchCamera(facingMode) {
+  if (!currentStreamingChild) {
+    addLog('⚠️ No active stream', 'error');
+    return;
+  }
+  
+  currentCameraFacing = facingMode;
+  const cameraName = facingMode === 'environment' ? 'Back' : 'Front';
+  addLog('🔄 Switching child to ' + cameraName + ' camera', 'info');
+  
+  socket.emit('switch-camera-request', {
+    targetSocketId: currentStreamingChild,
+    facingMode: facingMode
+  });
+  
+  // Update UI
+  document.querySelectorAll('.cam-control-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-facing') === facingMode);
+  });
+  document.querySelectorAll('.cam-switch-card').forEach(card => {
+    card.classList.toggle('active', card.getAttribute('data-facing') === facingMode);
+  });
+}
+
+document.getElementById('btn-cam-front').addEventListener('click', () => switchCamera('user'));
+document.getElementById('btn-cam-back').addEventListener('click', () => switchCamera('environment'));
+document.getElementById('cam-front-card').addEventListener('click', () => switchCamera('user'));
+document.getElementById('cam-back-card').addEventListener('click', () => switchCamera('environment'));
 
 function updateConn(connected) {
   const pill = document.getElementById('conn-pill');
@@ -424,6 +505,9 @@ function stopViewing() {
   document.getElementById('live-badge').classList.remove('show');
   document.getElementById('stream-stat').textContent = 'No Stream';
   document.getElementById('stream-pill').classList.remove('active');
+  document.getElementById('video-controls').classList.remove('show');
+  document.getElementById('camera-switch-panel').classList.remove('show');
+  currentStreamingChild = null;
 }
 
 connectSocket();
