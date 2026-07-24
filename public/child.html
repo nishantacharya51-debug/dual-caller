@@ -7,533 +7,104 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --primary: #6366f1;
-  --secondary: #8b5cf6;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --dark: #0f172a;
-  --light: #f1f5f9;
-  --gray: #64748b;
-  --border: rgba(255, 255, 255, 0.08);
+  --primary: #6366f1; --secondary: #8b5cf6; --success: #10b981;
+  --danger: #ef4444; --warning: #f59e0b; --light: #f1f5f9;
+  --gray: #64748b; --border: rgba(255, 255, 255, 0.08);
   --glass: rgba(255, 255, 255, 0.03);
 }
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: #050810;
-  color: var(--light);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.bg-animation {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-  animation: float 20s infinite ease-in-out;
-}
-
+body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light); min-height: 100vh; overflow-x: hidden; }
+.bg-animation { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 20s infinite ease-in-out; }
 .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -100px; left: -100px; }
 .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #8b5cf6, transparent); bottom: -100px; right: -100px; animation-delay: -10s; }
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(100px, -50px); }
-}
-
-.dashboard {
-  position: relative;
-  z-index: 1;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 24px;
-  min-height: 100vh;
-}
-
-.premium-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 28px;
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
+@keyframes float { 0%,100% { transform: translate(0,0); } 50% { transform: translate(100px,-50px); } }
+.dashboard { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 24px; min-height: 100vh; }
+.premium-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
 .logo-container { display: flex; align-items: center; gap: 14px; }
-
-.logo-icon {
-  font-size: 32px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-}
-
+.logo-icon { font-size: 32px; background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
 .logo-title { font-size: 22px; font-weight: 800; color: white; }
 .logo-subtitle { font-size: 12px; color: var(--gray); }
-
 .header-right { display: flex; align-items: center; gap: 16px; }
-
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px 8px 8px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: 50px;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--success), #059669);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: white;
-}
-
+.user-chip { display: flex; align-items: center; gap: 12px; padding: 8px 16px 8px 8px; background: var(--glass); border: 1px solid var(--border); border-radius: 50px; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--success), #059669); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; }
 .user-name { font-size: 14px; font-weight: 600; }
-
-.user-role {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--gray);
-}
-
-.role-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--success);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-.logout-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  color: var(--light);
-  cursor: pointer;
-  font-size: 20px;
-}
-
+.user-role { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--gray); }
+.role-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+.logout-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--glass); border: 1px solid var(--border); color: var(--light); cursor: pointer; font-size: 20px; }
 .logout-btn:hover { background: var(--danger); }
-
-.status-container {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: 50px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.status-pill.connected {
-  border-color: rgba(16, 185, 129, 0.3);
-  background: rgba(16, 185, 129, 0.1);
-}
-
-.status-pill.active {
-  border-color: rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.security-pill {
-  border-color: rgba(99, 102, 241, 0.3);
-  background: rgba(99, 102, 241, 0.1);
-}
-
+.status-container { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.status-pill { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: 50px; font-size: 13px; font-weight: 500; }
+.status-pill.connected { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
+.status-pill.active { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
+.security-pill { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); }
 .pill-dot { width: 8px; height: 8px; border-radius: 50%; }
 .pulse-green { background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
 .pulse-gray { background: var(--gray); }
 .pulse-red { background: var(--danger); }
-
-.live-banner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 24px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 16px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
+.live-banner { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; margin-bottom: 20px; flex-wrap: wrap; }
 .live-banner.hidden { display: none; }
-
-.live-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--danger);
-  box-shadow: 0 0 20px var(--danger);
-  animation: pulse 1s infinite;
-}
-
+.live-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 20px var(--danger); animation: pulse 1s infinite; }
 .live-text { flex: 1; }
 .live-title { font-weight: 700; color: #fca5a5; }
 .live-subtitle { font-size: 12px; color: var(--gray); }
-
-.stop-btn {
-  padding: 10px 20px;
-  background: var(--danger);
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 20px;
-}
-
-@media (max-width: 1024px) {
-  .main-grid { grid-template-columns: 1fr; }
-}
-
-.premium-card {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 20px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.card-icon {
-  font-size: 20px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border-radius: 10px;
-}
-
-.card-title h2 {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.card-badge {
-  padding: 4px 12px;
-  background: rgba(100, 116, 139, 0.2);
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--gray);
-}
-
-.card-badge.live {
-  background: var(--danger);
-  color: white;
-  animation: pulse 1.5s infinite;
-}
-
-.video-container {
-  position: relative;
-  background: #000;
-  border-radius: 16px;
-  overflow: hidden;
-  aspect-ratio: 16/9;
-  border: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.video-container video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #000;
-}
-
-.video-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0a0e1a, #050810);
-}
-
-.video-overlay.hidden {
-  display: none;
-}
-
+.stop-btn { padding: 10px 20px; background: var(--danger); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-family: inherit; }
+.main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+@media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+.premium-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.card-title { display: flex; align-items: center; gap: 12px; }
+.card-icon { font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; }
+.card-title h2 { font-size: 16px; font-weight: 700; }
+.card-badge { padding: 4px 12px; background: rgba(100,116,139,0.2); border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--gray); }
+.card-badge.live { background: var(--danger); color: white; animation: pulse 1.5s infinite; }
+.video-container { position: relative; background: #000; border-radius: 16px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--border); margin-bottom: 20px; }
+.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+.video-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0a0e1a, #050810); }
+.video-overlay.hidden { display: none; }
 .overlay-content { text-align: center; color: var(--gray); }
 .camera-icon-large { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
 .overlay-content h3 { font-size: 20px; color: white; margin-bottom: 8px; }
 .overlay-content p { font-size: 14px; }
-
-.live-indicator {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(239, 68, 68, 0.9);
-  border-radius: 8px;
-  color: white;
-  font-weight: 700;
-  font-size: 13px;
-}
-
+.live-indicator { position: absolute; top: 16px; right: 16px; display: none; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(239,68,68,0.9); border-radius: 8px; color: white; font-weight: 700; font-size: 13px; }
 .live-indicator.show { display: flex; }
-
-.rec-dot {
-  width: 8px;
-  height: 8px;
-  background: white;
-  border-radius: 50%;
-  animation: pulse 1s infinite;
-}
-
-.control-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.control-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px 24px;
-  border: none;
-  border-radius: 14px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  font-family: inherit;
-}
-
+.rec-dot { width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1s infinite; }
+.control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.control-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; }
 .control-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.primary-btn {
-  background: linear-gradient(135deg, var(--success), #059669);
-  color: white;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-}
-
-.primary-btn.active {
-  background: linear-gradient(135deg, var(--danger), #dc2626);
-}
-
-.primary-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-}
-
-.danger-btn {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  color: var(--light);
-}
-
-.danger-btn:hover:not(:disabled) {
-  background: var(--danger);
-}
-
-.request-item {
-  padding: 16px;
-  background: var(--glass);
-  border-radius: 12px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.request-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.request-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--warning), #d97706);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: white;
-}
-
-.request-name { font-weight: 700; font-size: 15px; }
-.request-text { font-size: 12px; color: var(--gray); }
-
-.request-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.action-btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.approve-btn {
-  background: linear-gradient(135deg, var(--success), #059669);
-  color: white;
-}
-
-.deny-btn {
-  background: linear-gradient(135deg, var(--danger), #dc2626);
-  color: white;
-}
-
-.family-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.family-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.member-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: white;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
+.primary-btn { background: linear-gradient(135deg, var(--success), #059669); color: white; }
+.primary-btn.active { background: linear-gradient(135deg, var(--danger), #dc2626); }
+.danger-btn { background: var(--glass); border: 1px solid var(--border); color: var(--light); }
+.family-list { display: flex; flex-direction: column; gap: 10px; }
+.family-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; }
+.member-avatar { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
 .member-info { flex: 1; }
 .member-name { font-weight: 600; font-size: 14px; }
 .member-role { font-size: 12px; color: var(--gray); }
-
-.empty-state {
-  padding: 40px 20px;
-  text-align: center;
-  color: var(--gray);
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-  opacity: 0.5;
-}
-
-.activity-log {
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.log-item {
-  display: flex;
-  gap: 12px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
-  background: var(--glass);
-  border-radius: 8px;
-  font-size: 13px;
-  border-left: 3px solid transparent;
-}
-
+.empty-state { padding: 40px 20px; text-align: center; color: var(--gray); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+.activity-log { max-height: 220px; overflow-y: auto; }
+.log-item { display: flex; gap: 12px; padding: 10px 12px; margin-bottom: 6px; background: var(--glass); border-radius: 8px; font-size: 13px; border-left: 3px solid transparent; }
 .log-item.success { border-left-color: var(--success); }
 .log-item.error { border-left-color: var(--danger); }
 .log-item.info { border-left-color: var(--primary); }
-
 .log-time { color: var(--gray); font-size: 11px; font-family: monospace; }
 .log-msg { color: var(--light); flex: 1; }
-
-.mini-btn {
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--gray);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-}
-
+.mini-btn { padding: 6px 12px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--gray); font-size: 12px; cursor: pointer; font-family: inherit; }
 .hidden { display: none !important; }
+
+/* AUTO-APPROVE TOGGLE */
+.auto-toggle { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; margin-bottom: 20px; }
+.toggle-switch { position: relative; width: 50px; height: 28px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; border-radius: 28px; transition: 0.3s; }
+.toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+.toggle-switch input:checked + .toggle-slider { background: var(--success); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+.toggle-info { flex: 1; }
+.toggle-title { font-weight: 700; font-size: 14px; color: white; }
+.toggle-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -579,6 +150,18 @@ body {
     <div class="status-pill security-pill">
       <span>🔒</span>
       <span>E2E Encrypted</span>
+    </div>
+  </div>
+
+  <!-- AUTO-APPROVE TOGGLE -->
+  <div class="auto-toggle">
+    <label class="toggle-switch">
+      <input type="checkbox" id="auto-approve-toggle">
+      <span class="toggle-slider"></span>
+    </label>
+    <div class="toggle-info">
+      <div class="toggle-title">✨ Auto-Approve Mode</div>
+      <div class="toggle-desc">Automatically start camera & approve parent requests</div>
     </div>
   </div>
 
@@ -631,16 +214,6 @@ body {
     </div>
 
     <div>
-      <div class="premium-card hidden" id="req-card" style="border-color:rgba(245,158,11,0.3)">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-icon">🔔</span>
-            <h2>Parent Request</h2>
-          </div>
-        </div>
-        <div id="req-list"></div>
-      </div>
-
       <div class="premium-card">
         <div class="card-header">
           <div class="card-title">
@@ -672,7 +245,7 @@ body {
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-console.log('✅ Child Dashboard loaded');
+console.log('✅ Child Dashboard');
 
 const token = sessionStorage.getItem('token');
 const user = JSON.parse(sessionStorage.getItem('user') || 'null');
@@ -685,14 +258,21 @@ document.getElementById('user-avatar').textContent = user.username.charAt(0).toU
 let localStream = null;
 let camOn = false;
 const peerConnections = new Map();
-const rtcConfig = { 
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
-  ] 
-};
+const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
 
+// AUTO-APPROVE SETTINGS (saved in browser)
+let autoApprove = localStorage.getItem('auto_approve') === 'true';
 const permissionGranted = localStorage.getItem('camera_permission_granted') === 'true';
+
+// Set toggle state
+document.getElementById('auto-approve-toggle').checked = autoApprove;
+
+document.getElementById('auto-approve-toggle').addEventListener('change', function(e) {
+  autoApprove = e.target.checked;
+  localStorage.setItem('auto_approve', autoApprove);
+  addLog(autoApprove ? '✨ Auto-Approve ON' : '⏸️ Auto-Approve OFF', 'success');
+});
+
 let socket = null;
 
 function connectSocket() {
@@ -701,8 +281,10 @@ function connectSocket() {
   socket.on('connect', () => {
     updateConn(true);
     addLog('✅ Connected', 'success');
+    
     if (camOn) socket.emit('camera-permission-granted');
     
+    // AUTO-START CAMERA if permission granted before
     if (permissionGranted && !camOn) {
       setTimeout(() => {
         addLog('🔄 Auto-starting camera', 'info');
@@ -733,9 +315,36 @@ function connectSocket() {
     addLog('👋 ' + d.username + ' left', 'info');
   });
 
-  socket.on('parent-requests-camera', (data) => {
+  // AUTO-APPROVE PARENT REQUEST
+  socket.on('parent-requests-camera', async (data) => {
     addLog('📞 ' + data.parentUsername + ' wants to view camera', 'info');
-    showRequest(data);
+    
+    if (autoApprove) {
+      // Auto-approve if enabled
+      addLog('✨ Auto-approving request', 'success');
+      
+      // Start camera if not on
+      if (!camOn) {
+        await startCam(true);
+        // Wait for camera to be ready
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      
+      if (camOn && localStream) {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
+        addLog('✅ Auto-approved - Starting stream', 'success');
+        await sendOffer(data.parentSocketId);
+      }
+    } else {
+      // Show manual approval (fallback)
+      const approve = confirm(data.parentUsername + ' wants to view your camera. Allow?');
+      if (approve && camOn) {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
+        await sendOffer(data.parentSocketId);
+      } else {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: false });
+      }
+    }
   });
 
   socket.on('webrtc-answer', async (data) => {
@@ -789,6 +398,15 @@ async function startCam(silent) {
     camOn = true;
     localStorage.setItem('camera_permission_granted', 'true');
     
+    // Auto-enable auto-approve on first camera start
+    if (!localStorage.getItem('auto_approve_set')) {
+      autoApprove = true;
+      localStorage.setItem('auto_approve', 'true');
+      localStorage.setItem('auto_approve_set', 'true');
+      document.getElementById('auto-approve-toggle').checked = true;
+      addLog('✨ Auto-Approve enabled by default', 'success');
+    }
+    
     video.srcObject = localStream;
     video.onloadedmetadata = () => video.play().catch(() => {});
     
@@ -841,53 +459,6 @@ function stopCam() {
   
   if (socket && socket.connected) socket.emit('camera-permission-revoked');
   addLog('⏹ Camera stopped', 'info');
-}
-
-function showRequest(data) {
-  document.getElementById('req-card').classList.remove('hidden');
-  const list = document.getElementById('req-list');
-  const div = document.createElement('div');
-  div.className = 'request-item';
-  div.innerHTML = 
-    '<div class="request-header">' +
-      '<div class="request-avatar">' + data.parentUsername.charAt(0).toUpperCase() + '</div>' +
-      '<div>' +
-        '<div class="request-name">' + data.parentUsername + '</div>' +
-        '<div class="request-text">wants to view your camera</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="request-actions">' +
-      '<button class="action-btn approve-btn" data-sid="' + data.parentSocketId + '" data-ok="true">✓ Allow</button>' +
-      '<button class="action-btn deny-btn" data-sid="' + data.parentSocketId + '" data-ok="false">✗ Deny</button>' +
-    '</div>';
-  list.appendChild(div);
-  
-  div.querySelectorAll('.action-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      approve(this.getAttribute('data-sid'), this.getAttribute('data-ok') === 'true', this);
-    });
-  });
-}
-
-async function approve(parentSocketId, ok, btn) {
-  if (ok && !camOn) { 
-    alert('Please start your camera first!'); 
-    return; 
-  }
-  
-  socket.emit('approve-camera-request', { parentSocketId, approved: ok });
-  btn.parentElement.parentElement.remove();
-  
-  if (document.getElementById('req-list').children.length === 0) {
-    document.getElementById('req-card').classList.add('hidden');
-  }
-  
-  if (ok) {
-    addLog('✅ Approved - Starting stream', 'success');
-    await sendOffer(parentSocketId);
-  } else {
-    addLog('❌ Denied request', 'info');
-  }
 }
 
 async function sendOffer(targetSocketId) {
