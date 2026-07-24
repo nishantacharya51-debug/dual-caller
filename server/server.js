@@ -250,6 +250,14 @@ io.on('connection', (socket) => {
       senderSocketId: socket.id
     });
   });
+  // CAMERA SWITCH REQUEST (Parent → Child)
+socket.on('switch-camera-request', (data) => {
+  console.log(`🔄 ${username} switching camera to ${data.facingMode}`);
+  io.to(data.targetSocketId).emit('switch-camera-request', {
+    facingMode: data.facingMode,
+    senderSocketId: socket.id
+  });
+});
 
   socket.on('ping', () => socket.emit('pong'));
 
