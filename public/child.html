@@ -1,118 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Family Monitor - Child Dashboard</title>
-    <link rel="stylesheet" href="/css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Child Dashboard</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .video-wrap {
+    position: relative;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    min-height: 200px;
+  }
+  .video-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #657786;
+    font-size: 2rem;
+    background: #000;
+    z-index: 1;
+  }
+  .placeholder.hidden {
+    display: none !important;
+  }
+  .live-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #e74c3c;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    z-index: 2;
+    display: none;
+  }
+  .live-badge.show {
+    display: block;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="header-top">
-                <div class="logo">
-                    <div class="shield-icon" aria-hidden="true">🛡️</div>
-                    <h1>Child Dashboard</h1>
-                </div>
-                <div class="user-info">
-                    <span id="username-display" class="username-badge"></span>
-                    <span id="family-code-display" class="family-badge"></span>
-                    <button id="logout-btn" class="btn btn-small btn-danger">Logout</button>
-                </div>
-            </div>
-        </header>
-
-        <main class="dashboard">
-            <!-- Connection Status -->
-            <div class="status-bar" role="status" aria-live="polite">
-                <div class="status-indicator" id="connection-status">
-                    <span class="status-dot disconnected"></span>
-                    <span class="status-text">Disconnected</span>
-                </div>
-                <div class="status-indicator" id="camera-status">
-                    <span class="camera-icon">📷</span>
-                    <span class="status-text">Camera Off</span>
-                </div>
-            </div>
-
-            <!-- Camera Active Warning Banner -->
-            <div id="camera-active-banner" class="camera-active-banner" hidden role="alert">
-                <div class="pulse-dot"></div>
-                <span>🔴 CAMERA IS ACTIVE - Your parent can see this video</span>
-                <button id="emergency-stop" class="btn btn-danger btn-small">
-                    Stop Immediately
-                </button>
-            </div>
-
-            <!-- Consent & Camera Controls -->
-            <section class="control-panel" aria-label="Camera Controls">
-                <div class="consent-info">
-                    <h2>📹 Camera Sharing Controls</h2>
-                    <p>You are in full control. Your camera will only turn on when:</p>
-                    <ol>
-                        <li>You click the "Start Camera" button below</li>
-                        <li>Your browser asks for permission (you must click "Allow")</li>
-                        <li>You approve your parent's viewing request</li>
-                    </ol>
-                    <p><strong>You can stop sharing at any time.</strong></p>
-                </div>
-
-                <div class="camera-controls">
-                    <button id="start-camera-btn" class="btn btn-primary btn-large">
-                        📷 Start Camera
-                    </button>
-                    <button id="stop-camera-btn" class="btn btn-danger btn-large" disabled>
-                        ⏹️ Stop Camera
-                    </button>
-                </div>
-            </section>
-
-            <!-- Local Video Preview -->
-            <section class="video-section" aria-label="Camera Preview">
-                <h3>Your Camera Preview</h3>
-                <div class="video-container">
-                    <video id="local-video" autoplay playsinline muted
-                           aria-label="Your camera preview"></video>
-                    <div id="video-placeholder" class="video-placeholder">
-                        <p>Camera is off</p>
-                        <p class="small">Click "Start Camera" to begin</p>
-                    </div>
-                    <div id="recording-indicator" class="recording-indicator" hidden>
-                        <span class="rec-dot"></span> LIVE
-                    </div>
-                </div>
-            </section>
-
-            <!-- Parent Requests -->
-            <section id="parent-requests" class="requests-panel" hidden aria-label="Parent Requests">
-                <h3>Parent Viewing Requests</h3>
-                <div id="requests-list" class="requests-list"></div>
-            </section>
-
-            <!-- Connected Family Members -->
-            <section class="family-panel" aria-label="Connected Family Members">
-                <h3>Connected Family Members</h3>
-                <div id="family-members" class="family-members-list">
-                    <p class="muted">No family members connected</p>
-                </div>
-            </section>
-
-            <!-- Activity Log -->
-            <section class="log-panel" aria-label="Activity Log">
-                <h3>Activity Log</h3>
-                <div id="activity-log" class="activity-log" role="log" aria-live="polite">
-                    <div class="log-entry">
-                        <span class="log-time">--:--</span>
-                        <span class="log-message">Waiting for connection...</span>
-                    </div>
-                </div>
-            </section>
-        </main>
+<div class="app">
+  <div class="header">
+    <div class="header-row">
+      <div class="logo"><span>🛡️</span><h1>Child Dashboard</h1></div>
+      <div>
+        <span class="badge" id="uname"></span>
+        <span class="badge blue" id="fcode"></span>
+        <button class="btn danger sm" onclick="logout()">Logout</button>
+      </div>
     </div>
+  </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/encryption.js"></script>
-    <script src="/js/webrtc.js"></script>
-    <script src="/js/child.js"></script>
+  <div class="statusbar">
+    <span id="conn-stat">🔴 Connecting...</span>
+    <span id="cam-stat">📷 Camera Off</span>
+  </div>
+
+  <div class="cam-banner hidden" id="cam-banner">
+    🔴 LIVE — Your parent can see you
+    <button class="btn danger sm" onclick="stopCam()">Stop Now</button>
+  </div>
+
+  <div class="card">
+    <h3>📹 Camera Control</h3>
+    <p style="color:#8899a6;font-size:0.9em">Camera only turns on when you click Start AND allow browser permission.</p>
+    <div style="display:flex;gap:1em;flex-wrap:wrap">
+      <button class="btn success" id="btn-start" onclick="startCam()">📷 Start Camera</button>
+      <button class="btn danger" id="btn-stop" onclick="stopCam()" disabled>⏹ Stop Camera</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📺 Preview</h3>
+    <div class="video-wrap">
+      <video id="local-vid" autoplay playsinline muted></video>
+      <div class="placeholder" id="ph">
+        <span>📷</span>
+        <small style="font-size:0.5em;margin-top:10px">Camera is off<br>Click "Start Camera" to begin</small>
+      </div>
+      <div class="live-badge" id="live-badge">🔴 LIVE</div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="req-card" style="border-color:#f39c12">
+    <h3>⚠️ Parent Request</h3>
+    <div id="req-list"></div>
+  </div>
+
+  <div class="card">
+    <h3>👨‍👩‍👦 Family Online</h3>
+    <div id="fam-list"><p style="color:#888">Loading...</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Activity</h3>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const token = sessionStorage.getItem('token');
+const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+if (!token || !user || user.role !== 'child') window.location.href = '/';
+
+document.getElementById('uname').textContent = '👤 ' + user.username;
+document.getElementById('fcode').textContent = '👨‍👩‍👦 ' + user.familyCode;
+
+let localStream = null;
+let camOn = false;
+const peerConnections = new Map();
+const rtcConfig = { 
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' }
+  ] 
+};
+
+let socket = null;
+let reconnectAttempts = 0;
+
+function connectSocket() {
+  socket = io({ 
+    auth: { token },
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 10
+  });
+
+  socket.on('connect', () => {
+    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
+    addLog('✅ Connected to server');
+    reconnectAttempts = 0;
+    
+    // If camera was on, re-announce
+    if (camOn) {
+      socket.emit('camera-permission-granted');
+    }
+  });
+
+  socket.on('disconnect', (reason) => {
+    document.getElementById('conn-stat').innerHTML = '🔴 Disconnected';
+    addLog('❌ Disconnected: ' + reason);
+  });
+
+  socket.on('reconnect', () => {
+    addLog('🔄 Reconnected!');
+    document.getElementById('conn-stat').innerHTML = '🟢 Connected';
+  });
+
+  socket.on('reconnect_attempt', (attempt) => {
+    document.getElementById('conn-stat').innerHTML = '🟡 Reconnecting... (' + attempt + ')';
+  });
+
+  socket.on('family-status', (data) => {
+    updateFam(data);
+  });
+
+  socket.on('family-member-connected', (d) => {
+    addLog(`✅ ${d.username} (${d.role}) joined`);
+    // Re-announce camera if on
+    if (camOn) {
+      setTimeout(() => socket.emit('camera-permission-granted'), 500);
+    }
+  });
+
+  socket.on('family-member-disconnected', (d) => addLog(`👋 ${d.username} left`));
+
+  socket.on('parent-requests-camera', (data) => {
+    addLog(`📞 ${data.parentUsername} wants to view your camera`);
+    showRequest(data);
+  });
+
+  socket.on('webrtc-answer', async (data) => {
+    const pc = peerConnections.get(data.senderSocketId);
+    if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+  });
+
+  socket.on('webrtc-ice-candidate', async (data) => {
+    const pc = peerConnections.get(data.senderSocketId);
+    if (pc) try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
+  });
+}
+
+connectSocket();
+
+async function startCam() {
+  const btn = document.getElementById('btn-start');
+  const placeholder = document.getElementById('ph');
+  const video = document.getElementById('local-vid');
+  const liveBadge = document.getElementById('live-badge');
+  const banner = document.getElementById('cam-banner');
+  const stopBtn = document.getElementById('btn-stop');
+  const camStat = document.getElementById('cam-stat');
+  
+  btn.disabled = true;
+  btn.textContent = '⏳ Requesting...';
+  addLog('📷 Requesting camera... Browser will ask permission');
+  
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        width: { ideal: 640 },
+        height: { ideal: 480 },
+        facingMode: 'user' 
+      },
+      audio: false
+    });
+    
+    camOn = true;
+    
+    // Attach stream to video element
+    video.srcObject = localStream;
+    
+    // Wait for video to be ready then play
+    video.onloadedmetadata = () => {
+      video.play().then(() => {
+        addLog('✅ Video playback started');
+      }).catch(err => {
+        addLog('⚠️ Video play error: ' + err.message);
+      });
+    };
+    
+    // HIDE the placeholder
+    placeholder.classList.add('hidden');
+    placeholder.style.display = 'none';
+    
+    // SHOW live badge
+    liveBadge.classList.add('show');
+    
+    // SHOW banner
+    banner.classList.remove('hidden');
+    
+    // Update status
+    camStat.innerHTML = '🔴 Camera ON';
+    
+    // Update buttons
+    stopBtn.disabled = false;
+    btn.textContent = '✅ Camera Active';
+    
+    // Tell parent camera available
+    socket.emit('camera-permission-granted');
+    addLog('✅ Camera started - You granted browser permission');
+    
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '📷 Start Camera';
+    addLog('❌ Camera error: ' + err.message);
+    alert('Camera access denied or unavailable: ' + err.message);
+  }
+}
+
+function stopCam() {
+  if (localStream) { 
+    localStream.getTracks().forEach(t => t.stop()); 
+    localStream = null; 
+  }
+  
+  peerConnections.forEach(pc => pc.close());
+  peerConnections.clear();
+  camOn = false;
+  
+  const video = document.getElementById('local-vid');
+  const placeholder = document.getElementById('ph');
+  const liveBadge = document.getElementById('live-badge');
+  const banner = document.getElementById('cam-banner');
+  const startBtn = document.getElementById('btn-start');
+  const stopBtn = document.getElementById('btn-stop');
+  const camStat = document.getElementById('cam-stat');
+  
+  video.srcObject = null;
+  placeholder.classList.remove('hidden');
+  placeholder.style.display = 'flex';
+  liveBadge.classList.remove('show');
+  banner.classList.add('hidden');
+  camStat.innerHTML = '📷 Camera Off';
+  startBtn.disabled = false;
+  startBtn.textContent = '📷 Start Camera';
+  stopBtn.disabled = true;
+  
+  if (socket && socket.connected) {
+    socket.emit('camera-permission-revoked');
+  }
+  addLog('⏹ Camera stopped');
+}
+
+function showRequest(data) {
+  document.getElementById('req-card').classList.remove('hidden');
+  const list = document.getElementById('req-list');
+  const div = document.createElement('div');
+  div.className = 'req-item';
+  div.innerHTML = `
+    <div><strong>${data.parentUsername}</strong> wants to view your camera</div>
+    <div style="display:flex;gap:0.5em;margin-top:0.5em">
+      <button class="btn success sm" onclick="approve('${data.parentSocketId}', true, this)">✅ Allow</button>
+      <button class="btn danger sm" onclick="approve('${data.parentSocketId}', false, this)">❌ Deny</button>
+    </div>`;
+  list.appendChild(div);
+}
+
+async function approve(parentSocketId, ok, btn) {
+  if (ok && !camOn) { 
+    alert('Please start your camera first!'); 
+    return; 
+  }
+  
+  socket.emit('approve-camera-request', { parentSocketId, approved: ok });
+  btn.parentElement.parentElement.remove();
+  
+  if (document.getElementById('req-list').children.length === 0) {
+    document.getElementById('req-card').classList.add('hidden');
+  }
+  
+  if (ok) {
+    addLog('✅ Approved - Starting encrypted stream');
+    await sendOffer(parentSocketId);
+  } else {
+    addLog('❌ Denied parent request');
+  }
+}
+
+async function sendOffer(targetSocketId) {
+  const pc = new RTCPeerConnection(rtcConfig);
+  peerConnections.set(targetSocketId, pc);
+  
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      socket.emit('webrtc-ice-candidate', { targetSocketId, candidate: e.candidate });
+    }
+  };
+  
+  pc.onconnectionstatechange = () => {
+    addLog(`🔗 Connection: ${pc.connectionState}`);
+    if (pc.connectionState === 'connected') {
+      addLog('🔒 Encrypted stream active (WebRTC DTLS/SRTP)');
+    }
+  };
+  
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.emit('webrtc-offer', { targetSocketId, offer });
+}
+
+function updateFam(data) {
+  const list = document.getElementById('fam-list');
+  list.innerHTML = '';
+  const all = [...data.parents, ...data.children.filter(c => c.userId !== user.id)];
+  
+  if (all.length === 0) { 
+    list.innerHTML = '<p style="color:#888">No others online</p>'; 
+    return; 
+  }
+  
+  all.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'member';
+    div.innerHTML = `<span>${m.username}</span><span class="badge ${m.role==='parent'?'blue':'green'}">${m.role}</span>`;
+    list.appendChild(div);
+  });
+}
+
+function addLog(msg) {
+  const log = document.getElementById('log');
+  const t = new Date().toLocaleTimeString();
+  const div = document.createElement('div');
+  div.innerHTML = `<span style="color:#888">${t}</span> ${msg}`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function logout() { 
+  stopCam(); 
+  if (socket) socket.disconnect();
+  sessionStorage.clear(); 
+  window.location.href = '/'; 
+}
+
+// Handle page visibility - keep camera running
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && camOn && localStream) {
+    // Page came back into focus - restart video display
+    const video = document.getElementById('local-vid');
+    if (video.srcObject !== localStream) {
+      video.srcObject = localStream;
+      video.play().catch(e => console.log('Play error:', e));
+    }
+    // Reconnect socket if disconnected
+    if (socket && !socket.connected) {
+      addLog('🔄 Reconnecting after visibility change...');
+      socket.connect();
+    }
+  }
+});
+
+window.addEventListener('beforeunload', () => stopCam());
+
+// Keep-alive ping every 20 seconds to prevent disconnection
+setInterval(() => {
+  if (socket && socket.connected) {
+    socket.emit('ping');
+  }
+}, 20000);
+</script>
 </body>
 </html>
