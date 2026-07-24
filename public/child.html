@@ -19,7 +19,7 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -100px; left: -100px; }
 .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #8b5cf6, transparent); bottom: -100px; right: -100px; animation-delay: -10s; }
 @keyframes float { 0%,100% { transform: translate(0,0); } 50% { transform: translate(100px,-50px); } }
-.dashboard { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 24px; min-height: 100vh; }
+.dashboard { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 24px; min-height: 100vh; }
 .premium-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
 .logo-container { display: flex; align-items: center; gap: 14px; }
 .logo-icon { font-size: 32px; background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
@@ -34,57 +34,71 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 .logout-btn { width: 44px; height: 44px; border-radius: 12px; background: var(--glass); border: 1px solid var(--border); color: var(--light); cursor: pointer; font-size: 20px; }
 .logout-btn:hover { background: var(--danger); }
-.status-container { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.status-pill { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: 50px; font-size: 13px; font-weight: 500; }
+.status-container { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+.status-pill { display: flex; align-items: center; gap: 10px; padding: 12px 22px; background: var(--glass); border: 1px solid var(--border); border-radius: 50px; font-size: 14px; font-weight: 600; }
 .status-pill.connected { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
 .status-pill.active { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
 .security-pill { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); }
-.pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+.pill-dot { width: 10px; height: 10px; border-radius: 50%; }
 .pulse-green { background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
 .pulse-gray { background: var(--gray); }
 .pulse-red { background: var(--danger); }
-.live-banner { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; margin-bottom: 20px; flex-wrap: wrap; }
-.live-banner.hidden { display: none; }
-.live-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 20px var(--danger); animation: pulse 1s infinite; }
-.live-text { flex: 1; }
-.live-title { font-weight: 700; color: #fca5a5; }
-.live-subtitle { font-size: 12px; color: var(--gray); }
-.stop-btn { padding: 10px 20px; background: var(--danger); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; font-family: inherit; }
-.main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
-@media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+
+/* MAIN STATUS CARD (Replaces video preview) */
+.main-status-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 60px 40px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+.status-icon-large { font-size: 100px; margin-bottom: 24px; display: inline-block; }
+.status-icon-large.streaming { animation: pulse 2s infinite; }
+.status-title { font-size: 32px; font-weight: 800; margin-bottom: 12px; color: white; }
+.status-subtitle { font-size: 16px; color: var(--gray); margin-bottom: 32px; }
+.status-icon-live { color: var(--danger); }
+.status-icon-off { color: var(--gray); opacity: 0.5; }
+.streaming-badge { display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 50px; font-weight: 700; color: #fca5a5; margin-bottom: 24px; }
+.streaming-badge.hidden { display: none; }
+.live-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--danger); animation: pulse 1s infinite; }
+
+.info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 32px; }
+.info-card { padding: 16px; background: var(--glass); border: 1px solid var(--border); border-radius: 14px; text-align: center; }
+.info-card-icon { font-size: 28px; margin-bottom: 8px; }
+.info-card-title { font-size: 12px; color: var(--gray); text-transform: uppercase; margin-bottom: 4px; }
+.info-card-value { font-size: 16px; font-weight: 700; color: white; }
+.info-card-value.on { color: var(--success); }
+.info-card-value.off { color: var(--gray); }
+.info-card-value.encrypted { color: var(--primary); }
+
+.control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+.control-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 24px; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; font-family: inherit; }
+.control-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.primary-btn { background: linear-gradient(135deg, var(--success), #059669); color: white; }
+.primary-btn.active { background: linear-gradient(135deg, var(--danger), #dc2626); }
+.primary-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.4); }
+.danger-btn { background: var(--glass); border: 1px solid var(--border); color: var(--light); }
+.danger-btn:hover:not(:disabled) { background: var(--danger); }
+
+.auto-toggle { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; margin-bottom: 20px; }
+.toggle-switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; border-radius: 28px; transition: 0.3s; }
+.toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+.toggle-switch input:checked + .toggle-slider { background: var(--success); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+.toggle-info { flex: 1; }
+.toggle-title { font-weight: 700; font-size: 14px; color: white; }
+.toggle-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
 .premium-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .card-title { display: flex; align-items: center; gap: 12px; }
 .card-icon { font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; }
 .card-title h2 { font-size: 16px; font-weight: 700; }
-.card-badge { padding: 4px 12px; background: rgba(100,116,139,0.2); border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--gray); }
-.card-badge.live { background: var(--danger); color: white; animation: pulse 1.5s infinite; }
-.video-container { position: relative; background: #000; border-radius: 16px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--border); margin-bottom: 20px; }
-.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
-.video-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0a0e1a, #050810); }
-.video-overlay.hidden { display: none; }
-.overlay-content { text-align: center; color: var(--gray); }
-.camera-icon-large { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-.overlay-content h3 { font-size: 20px; color: white; margin-bottom: 8px; }
-.overlay-content p { font-size: 14px; }
-.live-indicator { position: absolute; top: 16px; right: 16px; display: none; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(239,68,68,0.9); border-radius: 8px; color: white; font-weight: 700; font-size: 13px; }
-.live-indicator.show { display: flex; }
-.rec-dot { width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1s infinite; }
-.control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.control-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 24px; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; }
-.control-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.primary-btn { background: linear-gradient(135deg, var(--success), #059669); color: white; }
-.primary-btn.active { background: linear-gradient(135deg, var(--danger), #dc2626); }
-.danger-btn { background: var(--glass); border: 1px solid var(--border); color: var(--light); }
 .family-list { display: flex; flex-direction: column; gap: 10px; }
 .family-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; }
 .member-avatar { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
 .member-info { flex: 1; }
 .member-name { font-weight: 600; font-size: 14px; }
 .member-role { font-size: 12px; color: var(--gray); }
-.empty-state { padding: 40px 20px; text-align: center; color: var(--gray); }
-.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-.activity-log { max-height: 220px; overflow-y: auto; }
+.empty-state { padding: 30px 20px; text-align: center; color: var(--gray); }
+.empty-icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; }
+.activity-log { max-height: 180px; overflow-y: auto; }
 .log-item { display: flex; gap: 12px; padding: 10px 12px; margin-bottom: 6px; background: var(--glass); border-radius: 8px; font-size: 13px; border-left: 3px solid transparent; }
 .log-item.success { border-left-color: var(--success); }
 .log-item.error { border-left-color: var(--danger); }
@@ -94,17 +108,8 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .mini-btn { padding: 6px 12px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--gray); font-size: 12px; cursor: pointer; font-family: inherit; }
 .hidden { display: none !important; }
 
-/* AUTO-APPROVE TOGGLE */
-.auto-toggle { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; margin-bottom: 20px; }
-.toggle-switch { position: relative; width: 50px; height: 28px; }
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; border-radius: 28px; transition: 0.3s; }
-.toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
-.toggle-switch input:checked + .toggle-slider { background: var(--success); }
-.toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
-.toggle-info { flex: 1; }
-.toggle-title { font-weight: 700; font-size: 14px; color: white; }
-.toggle-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+/* Hidden video for actual streaming */
+video#local-vid { display: none; }
 </style>
 </head>
 <body>
@@ -143,10 +148,6 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
       <span class="pill-dot pulse-gray"></span>
       <span id="conn-stat">Connecting...</span>
     </div>
-    <div class="status-pill" id="cam-pill">
-      <span>📷</span>
-      <span id="cam-stat">Camera Off</span>
-    </div>
     <div class="status-pill security-pill">
       <span>🔒</span>
       <span>E2E Encrypted</span>
@@ -165,83 +166,78 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
     </div>
   </div>
 
-  <div class="live-banner hidden" id="cam-banner">
-    <div class="live-dot"></div>
-    <div class="live-text">
-      <div class="live-title">Camera is LIVE</div>
-      <div class="live-subtitle">Your parent can see this stream</div>
+  <!-- MAIN STATUS CARD (No Preview!) -->
+  <div class="main-status-card">
+    <div class="status-icon-large" id="status-icon">
+      <span class="status-icon-off">📷</span>
     </div>
-    <button class="stop-btn" id="btn-emergency-stop">Stop</button>
+    <h2 class="status-title" id="status-title">Camera Off</h2>
+    <p class="status-subtitle" id="status-subtitle">Click "Start Camera" to allow parent viewing</p>
+    
+    <div class="streaming-badge hidden" id="streaming-badge">
+      <div class="live-dot"></div>
+      <span>STREAMING TO PARENT</span>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-card-icon">📷</div>
+        <div class="info-card-title">Camera</div>
+        <div class="info-card-value off" id="cam-info">Off</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">👁️</div>
+        <div class="info-card-title">Parent View</div>
+        <div class="info-card-value off" id="view-info">Not Viewing</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🔒</div>
+        <div class="info-card-title">Security</div>
+        <div class="info-card-value encrypted">AES-256</div>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <button class="control-btn primary-btn" id="btn-start">
+        <span>📷</span>
+        <span id="start-text">Start Camera</span>
+      </button>
+      <button class="control-btn danger-btn" id="btn-stop" disabled>
+        <span>⏹</span>
+        <span>Stop Camera</span>
+      </button>
+    </div>
   </div>
 
-  <div class="main-grid">
-    <div>
-      <div class="premium-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-icon">📺</span>
-            <h2>Live Camera</h2>
-          </div>
-          <div class="card-badge" id="video-badge">Standby</div>
-        </div>
-        
-        <div class="video-container">
-          <video id="local-vid" autoplay playsinline muted></video>
-          <div class="video-overlay" id="ph">
-            <div class="overlay-content">
-              <div class="camera-icon-large">📷</div>
-              <h3>Camera Ready</h3>
-              <p>Click "Start Camera" to begin</p>
-            </div>
-          </div>
-          <div class="live-indicator" id="live-badge">
-            <div class="rec-dot"></div>
-            <span>LIVE</span>
-          </div>
-        </div>
-
-        <div class="control-panel">
-          <button class="control-btn primary-btn" id="btn-start">
-            <span>📷</span>
-            <span id="start-text">Start Camera</span>
-          </button>
-          <button class="control-btn danger-btn" id="btn-stop" disabled>
-            <span>⏹</span>
-            <span>Stop Camera</span>
-          </button>
-        </div>
+  <div class="premium-card">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="card-icon">👨‍👩‍👦</span>
+        <h2>Family Online</h2>
       </div>
     </div>
-
-    <div>
-      <div class="premium-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-icon">👨‍👩‍👦</span>
-            <h2>Family Online</h2>
-          </div>
-        </div>
-        <div id="fam-list" class="family-list">
-          <div class="empty-state">
-            <div class="empty-icon">👥</div>
-            <p>No family members online</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="premium-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-icon">📋</span>
-            <h2>Activity</h2>
-          </div>
-          <button class="mini-btn" id="btn-clear-log">Clear</button>
-        </div>
-        <div class="activity-log" id="log"></div>
+    <div id="fam-list" class="family-list">
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <p>No family members online</p>
       </div>
     </div>
+  </div>
+
+  <div class="premium-card">
+    <div class="card-header">
+      <div class="card-title">
+        <span class="card-icon">📋</span>
+        <h2>Activity</h2>
+      </div>
+      <button class="mini-btn" id="btn-clear-log">Clear</button>
+    </div>
+    <div class="activity-log" id="log"></div>
   </div>
 </div>
+
+<!-- Hidden video element for streaming only -->
+<video id="local-vid" autoplay playsinline muted></video>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -257,14 +253,13 @@ document.getElementById('user-avatar').textContent = user.username.charAt(0).toU
 
 let localStream = null;
 let camOn = false;
+let currentFacingMode = 'user'; // 'user' = front, 'environment' = back
 const peerConnections = new Map();
 const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
 
-// AUTO-APPROVE SETTINGS (saved in browser)
 let autoApprove = localStorage.getItem('auto_approve') === 'true';
 const permissionGranted = localStorage.getItem('camera_permission_granted') === 'true';
 
-// Set toggle state
 document.getElementById('auto-approve-toggle').checked = autoApprove;
 
 document.getElementById('auto-approve-toggle').addEventListener('change', function(e) {
@@ -274,6 +269,7 @@ document.getElementById('auto-approve-toggle').addEventListener('change', functi
 });
 
 let socket = null;
+let isStreaming = false;
 
 function connectSocket() {
   socket = io({ auth: { token }, reconnection: true });
@@ -281,10 +277,7 @@ function connectSocket() {
   socket.on('connect', () => {
     updateConn(true);
     addLog('✅ Connected', 'success');
-    
     if (camOn) socket.emit('camera-permission-granted');
-    
-    // AUTO-START CAMERA if permission granted before
     if (permissionGranted && !camOn) {
       setTimeout(() => {
         addLog('🔄 Auto-starting camera', 'info');
@@ -296,6 +289,7 @@ function connectSocket() {
   socket.on('disconnect', () => {
     updateConn(false);
     addLog('❌ Disconnected', 'error');
+    setStreaming(false);
   });
 
   socket.on('reconnect', () => {
@@ -313,38 +307,40 @@ function connectSocket() {
   
   socket.on('family-member-disconnected', (d) => {
     addLog('👋 ' + d.username + ' left', 'info');
+    // If parent left, stop streaming state
+    if (peerConnections.size === 0) setStreaming(false);
   });
 
-  // AUTO-APPROVE PARENT REQUEST
   socket.on('parent-requests-camera', async (data) => {
-    addLog('📞 ' + data.parentUsername + ' wants to view camera', 'info');
+    addLog('📞 ' + data.parentUsername + ' wants to view', 'info');
     
     if (autoApprove) {
-      // Auto-approve if enabled
-      addLog('✨ Auto-approving request', 'success');
-      
-      // Start camera if not on
+      addLog('✨ Auto-approving', 'success');
       if (!camOn) {
         await startCam(true);
-        // Wait for camera to be ready
         await new Promise(r => setTimeout(r, 1000));
       }
-      
       if (camOn && localStream) {
         socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
-        addLog('✅ Auto-approved - Starting stream', 'success');
         await sendOffer(data.parentSocketId);
+        setStreaming(true);
       }
     } else {
-      // Show manual approval (fallback)
-      const approve = confirm(data.parentUsername + ' wants to view your camera. Allow?');
+      const approve = confirm(data.parentUsername + ' wants to view. Allow?');
       if (approve && camOn) {
         socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
         await sendOffer(data.parentSocketId);
+        setStreaming(true);
       } else {
         socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: false });
       }
     }
+  });
+
+  // PARENT REQUESTS CAMERA SWITCH
+  socket.on('switch-camera-request', async (data) => {
+    addLog('🔄 Parent switching camera to ' + (data.facingMode === 'environment' ? 'Back' : 'Front'), 'info');
+    await switchCamera(data.facingMode);
   });
 
   socket.on('webrtc-answer', async (data) => {
@@ -374,6 +370,39 @@ function updateConn(connected) {
   }
 }
 
+function setStreaming(streaming) {
+  isStreaming = streaming;
+  const badge = document.getElementById('streaming-badge');
+  const viewInfo = document.getElementById('view-info');
+  const statusTitle = document.getElementById('status-title');
+  const statusSubtitle = document.getElementById('status-subtitle');
+  const statusIcon = document.getElementById('status-icon');
+  
+  if (streaming) {
+    badge.classList.remove('hidden');
+    viewInfo.textContent = 'Live';
+    viewInfo.className = 'info-card-value on';
+    statusTitle.textContent = 'Streaming Live';
+    statusSubtitle.textContent = 'Your parent is viewing your camera';
+    statusIcon.innerHTML = '<span class="status-icon-live">📹</span>';
+    statusIcon.classList.add('streaming');
+  } else {
+    badge.classList.add('hidden');
+    viewInfo.textContent = 'Not Viewing';
+    viewInfo.className = 'info-card-value off';
+    statusIcon.classList.remove('streaming');
+    if (camOn) {
+      statusTitle.textContent = 'Camera Ready';
+      statusSubtitle.textContent = 'Waiting for parent to view';
+      statusIcon.innerHTML = '<span style="color: var(--success)">📷</span>';
+    } else {
+      statusTitle.textContent = 'Camera Off';
+      statusSubtitle.textContent = 'Click "Start Camera" to allow parent viewing';
+      statusIcon.innerHTML = '<span class="status-icon-off">📷</span>';
+    }
+  }
+}
+
 connectSocket();
 
 async function startCam(silent) {
@@ -381,7 +410,6 @@ async function startCam(silent) {
   
   const btn = document.getElementById('btn-start');
   const video = document.getElementById('local-vid');
-  const placeholder = document.getElementById('ph');
   
   if (!silent) {
     btn.disabled = true;
@@ -391,32 +419,31 @@ async function startCam(silent) {
   
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+      video: { 
+        width: { ideal: 1280 }, 
+        height: { ideal: 720 }, 
+        facingMode: currentFacingMode 
+      },
       audio: false
     });
     
     camOn = true;
     localStorage.setItem('camera_permission_granted', 'true');
     
-    // Auto-enable auto-approve on first camera start
     if (!localStorage.getItem('auto_approve_set')) {
       autoApprove = true;
       localStorage.setItem('auto_approve', 'true');
       localStorage.setItem('auto_approve_set', 'true');
       document.getElementById('auto-approve-toggle').checked = true;
-      addLog('✨ Auto-Approve enabled by default', 'success');
     }
     
     video.srcObject = localStream;
-    video.onloadedmetadata = () => video.play().catch(() => {});
     
-    placeholder.classList.add('hidden');
-    document.getElementById('live-badge').classList.add('show');
-    document.getElementById('cam-banner').classList.remove('hidden');
-    document.getElementById('cam-stat').textContent = 'Camera ON';
-    document.getElementById('cam-pill').classList.add('active');
-    document.getElementById('video-badge').textContent = 'LIVE';
-    document.getElementById('video-badge').classList.add('live');
+    document.getElementById('cam-info').textContent = 'On';
+    document.getElementById('cam-info').className = 'info-card-value on';
+    document.getElementById('status-title').textContent = 'Camera Ready';
+    document.getElementById('status-subtitle').textContent = 'Waiting for parent to view';
+    document.getElementById('status-icon').innerHTML = '<span style="color: var(--success)">📷</span>';
     document.getElementById('btn-stop').disabled = false;
     btn.disabled = false;
     btn.classList.add('active');
@@ -435,6 +462,45 @@ async function startCam(silent) {
   }
 }
 
+// SWITCH CAMERA (Front/Back)
+async function switchCamera(newFacingMode) {
+  if (!camOn) return;
+  
+  addLog('🔄 Switching camera...', 'info');
+  currentFacingMode = newFacingMode;
+  
+  try {
+    // Stop old tracks
+    if (localStream) {
+      localStream.getTracks().forEach(t => t.stop());
+    }
+    
+    // Get new stream with different camera
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        width: { ideal: 1280 }, 
+        height: { ideal: 720 }, 
+        facingMode: currentFacingMode 
+      },
+      audio: false
+    });
+    
+    document.getElementById('local-vid').srcObject = localStream;
+    
+    // Replace tracks in all peer connections
+    const newTrack = localStream.getVideoTracks()[0];
+    peerConnections.forEach(pc => {
+      const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender) sender.replaceTrack(newTrack);
+    });
+    
+    addLog('✅ Camera switched to ' + (currentFacingMode === 'environment' ? 'Back' : 'Front'), 'success');
+    
+  } catch (err) {
+    addLog('❌ Camera switch failed: ' + err.message, 'error');
+  }
+}
+
 function stopCam() {
   if (localStream) { 
     localStream.getTracks().forEach(t => t.stop()); 
@@ -443,15 +509,18 @@ function stopCam() {
   peerConnections.forEach(pc => pc.close());
   peerConnections.clear();
   camOn = false;
+  isStreaming = false;
   
   document.getElementById('local-vid').srcObject = null;
-  document.getElementById('ph').classList.remove('hidden');
-  document.getElementById('live-badge').classList.remove('show');
-  document.getElementById('cam-banner').classList.add('hidden');
-  document.getElementById('cam-stat').textContent = 'Camera Off';
-  document.getElementById('cam-pill').classList.remove('active');
-  document.getElementById('video-badge').textContent = 'Standby';
-  document.getElementById('video-badge').classList.remove('live');
+  document.getElementById('cam-info').textContent = 'Off';
+  document.getElementById('cam-info').className = 'info-card-value off';
+  document.getElementById('view-info').textContent = 'Not Viewing';
+  document.getElementById('view-info').className = 'info-card-value off';
+  document.getElementById('streaming-badge').classList.add('hidden');
+  document.getElementById('status-title').textContent = 'Camera Off';
+  document.getElementById('status-subtitle').textContent = 'Click "Start Camera" to allow parent viewing';
+  document.getElementById('status-icon').innerHTML = '<span class="status-icon-off">📷</span>';
+  document.getElementById('status-icon').classList.remove('streaming');
   document.getElementById('btn-start').disabled = false;
   document.getElementById('btn-start').classList.remove('active');
   document.getElementById('start-text').textContent = 'Start Camera';
@@ -469,6 +538,14 @@ async function sendOffer(targetSocketId) {
   
   pc.onicecandidate = (e) => {
     if (e.candidate) socket.emit('webrtc-ice-candidate', { targetSocketId, candidate: e.candidate });
+  };
+  
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') setStreaming(true);
+    if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+      peerConnections.delete(targetSocketId);
+      if (peerConnections.size === 0) setStreaming(false);
+    }
   };
   
   const offer = await pc.createOffer();
@@ -501,7 +578,6 @@ function updateFam(data) {
 
 document.getElementById('btn-start').addEventListener('click', () => startCam(false));
 document.getElementById('btn-stop').addEventListener('click', stopCam);
-document.getElementById('btn-emergency-stop').addEventListener('click', stopCam);
 document.getElementById('btn-clear-log').addEventListener('click', () => {
   document.getElementById('log').innerHTML = '';
 });
@@ -524,12 +600,7 @@ function addLog(msg, type) {
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && camOn && localStream) {
-    const video = document.getElementById('local-vid');
-    if (video.srcObject !== localStream) {
-      video.srcObject = localStream;
-      video.play().catch(() => {});
-    }
+  if (!document.hidden) {
     if (socket && !socket.connected) socket.connect();
   }
 });
