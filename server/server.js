@@ -210,7 +210,8 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('request-view-camera', (data) => {
+  socket.on('request-view-camera', (data) => { console.log(`⏹ ${username} stopped stream from ${data.childSocketId}`);
+  io.to(data.childSocketId).emit('parent-stop-stream');
     console.log(`👁️ ${username} requesting view from ${data.childSocketId}`);
     io.to(data.childSocketId).emit('parent-requests-camera', {
       parentUsername: username, 
