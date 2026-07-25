@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <title>Child Dashboard | SecureFamily</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -40,7 +38,6 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .status-pill { display: flex; align-items: center; gap: 10px; padding: 12px 22px; background: var(--glass); border: 1px solid var(--border); border-radius: 50px; font-size: 14px; font-weight: 600; }
 .status-pill.connected { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
 .security-pill { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); }
-.background-pill { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1); color: #fbbf24; }
 .pill-dot { width: 10px; height: 10px; border-radius: 50%; }
 .pulse-green { background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
 .pulse-gray { background: var(--gray); }
@@ -55,7 +52,7 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .streaming-badge { display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 50px; font-weight: 700; color: #fca5a5; margin-bottom: 24px; }
 .streaming-badge.hidden { display: none; }
 .live-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--danger); animation: pulse 1s infinite; }
-.info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 32px; }
+.info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 32px; }
 .info-card { padding: 16px; background: var(--glass); border: 1px solid var(--border); border-radius: 14px; text-align: center; }
 .info-card-icon { font-size: 28px; margin-bottom: 8px; }
 .info-card-title { font-size: 12px; color: var(--gray); text-transform: uppercase; margin-bottom: 4px; }
@@ -71,7 +68,7 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .primary-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.4); }
 .danger-btn { background: var(--glass); border: 1px solid var(--border); color: var(--light); }
 .danger-btn:hover:not(:disabled) { background: var(--danger); }
-.auto-toggle { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; margin-bottom: 12px; }
+.auto-toggle { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; margin-bottom: 20px; }
 .toggle-switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; border-radius: 28px; transition: 0.3s; }
@@ -81,10 +78,6 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .toggle-info { flex: 1; }
 .toggle-title { font-weight: 700; font-size: 14px; color: white; }
 .toggle-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
-.background-toggle { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border-color: rgba(245,158,11,0.3); }
-.background-toggle .toggle-switch input:checked + .toggle-slider { background: var(--warning); }
-.background-warning { padding: 12px 16px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; margin-bottom: 20px; display: none; font-size: 13px; color: #fbbf24; }
-.background-warning.show { display: flex; align-items: flex-start; gap: 10px; }
 .premium-card { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .card-title { display: flex; align-items: center; gap: 12px; }
@@ -98,17 +91,18 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .member-role { font-size: 12px; color: var(--gray); }
 .empty-state { padding: 30px 20px; text-align: center; color: var(--gray); }
 .empty-icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; }
-.activity-log { max-height: 220px; overflow-y: auto; }
+.activity-log { max-height: 180px; overflow-y: auto; }
 .log-item { display: flex; gap: 12px; padding: 10px 12px; margin-bottom: 6px; background: var(--glass); border-radius: 8px; font-size: 13px; border-left: 3px solid transparent; }
 .log-item.success { border-left-color: var(--success); }
 .log-item.error { border-left-color: var(--danger); }
 .log-item.info { border-left-color: var(--primary); }
-.log-item.warning { border-left-color: var(--warning); }
 .log-time { color: var(--gray); font-size: 11px; font-family: monospace; }
 .log-msg { color: var(--light); flex: 1; }
 .mini-btn { padding: 6px 12px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--gray); font-size: 12px; cursor: pointer; font-family: inherit; }
 .hidden { display: none !important; }
-video#local-vid { display: none; }
+video#local-vid, video#local-vid-back { display: none; }
+
+/* PERMISSION MODAL */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
 .modal-overlay.show { display: flex; }
 .modal-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid var(--border); border-radius: 24px; padding: 40px; max-width: 500px; width: 100%; text-align: center; }
@@ -128,16 +122,19 @@ video#local-vid { display: none; }
   <div class="bg-orb orb2"></div>
 </div>
 
+<!-- PERMISSION MODAL -->
 <div class="modal-overlay" id="permission-modal">
   <div class="modal-card">
     <div class="modal-icon">🎥</div>
-    <h2>Camera Access Required</h2>
-    <p>SecureFamily needs camera access. Click below to grant permission ONCE. Browser will remember it.</p>
+    <h2>Camera Permissions Required</h2>
+    <p>SecureFamily needs access to BOTH cameras (Front & Back) so your parent can switch between them.</p>
     <ul class="permission-list">
-      <li>🤳 <strong>Camera</strong> - Front & Back access</li>
+      <li>🤳 <strong>Front Camera</strong> - Selfie view</li>
+      <li>📷 <strong>Back Camera</strong> - Main camera</li>
       <li>🔒 <strong>Encrypted</strong> - Only parent can view</li>
-      <li>⏹️ <strong>Parent Controls</strong> - Stop remotely</li>
+      <li>⏹️ <strong>You Control</strong> - Stop anytime</li>
     </ul>
+    <p style="font-size: 13px; color: var(--warning);">⚠️ Browser will ask for camera permission - Click "Allow"</p>
     <button class="modal-btn" id="btn-grant-permission">
       Grant Camera Access
     </button>
@@ -177,38 +174,16 @@ video#local-vid { display: none; }
       <span>🔒</span>
       <span>E2E Encrypted</span>
     </div>
-    <div class="status-pill background-pill" id="bg-pill" style="display:none">
-      <span>🌙</span>
-      <span>Background Mode</span>
-    </div>
   </div>
 
   <div class="auto-toggle">
     <label class="toggle-switch">
-      <input type="checkbox" id="auto-approve-toggle" checked>
+      <input type="checkbox" id="auto-approve-toggle">
       <span class="toggle-slider"></span>
     </label>
     <div class="toggle-info">
       <div class="toggle-title">✨ Auto-Approve Mode</div>
-      <div class="toggle-desc">Automatically approve parent viewing requests</div>
-    </div>
-  </div>
-
-  <div class="auto-toggle background-toggle">
-    <label class="toggle-switch">
-      <input type="checkbox" id="background-toggle">
-      <span class="toggle-slider"></span>
-    </label>
-    <div class="toggle-info">
-      <div class="toggle-title">🌙 Background Mode</div>
-      <div class="toggle-desc">Keep camera running when screen off</div>
-    </div>
-  </div>
-
-  <div class="background-warning" id="bg-warning">
-    <span>⚠️</span>
-    <div>
-      <strong>Background Tips:</strong> Keep phone plugged in. Install app to home screen for reliability.
+      <div class="toggle-desc">Automatically start camera & approve parent requests</div>
     </div>
   </div>
 
@@ -217,7 +192,7 @@ video#local-vid { display: none; }
       <span class="status-icon-off">📷</span>
     </div>
     <h2 class="status-title" id="status-title">Camera Off</h2>
-    <p class="status-subtitle" id="status-subtitle">Click "Start Camera" to begin</p>
+    <p class="status-subtitle" id="status-subtitle">Click "Start Camera" to allow parent viewing</p>
     
     <div class="streaming-badge hidden" id="streaming-badge">
       <div class="live-dot"></div>
@@ -231,14 +206,14 @@ video#local-vid { display: none; }
         <div class="info-card-value off" id="cam-info">Off</div>
       </div>
       <div class="info-card">
+        <div class="info-card-icon">🎬</div>
+        <div class="info-card-title">Active</div>
+        <div class="info-card-value off" id="active-info">-</div>
+      </div>
+      <div class="info-card">
         <div class="info-card-icon">👁️</div>
         <div class="info-card-title">Viewing</div>
         <div class="info-card-value off" id="view-info">No</div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">🌙</div>
-        <div class="info-card-title">Background</div>
-        <div class="info-card-value off" id="bg-info">Off</div>
       </div>
       <div class="info-card">
         <div class="info-card-icon">🔒</div>
@@ -290,7 +265,7 @@ video#local-vid { display: none; }
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-console.log('✅ Child Dashboard v6 - Fixed');
+console.log('✅ Child Dashboard v3');
 
 const token = sessionStorage.getItem('token');
 const user = JSON.parse(sessionStorage.getItem('user') || 'null');
@@ -302,12 +277,11 @@ document.getElementById('user-avatar').textContent = user.username.charAt(0).toU
 
 let localStream = null;
 let camOn = false;
-let camStarting = false; // Prevent duplicate starts
 let currentFacingMode = 'user';
-let wakeLock = null;
+let hasBackCamera = false;
 const peerConnections = new Map();
-const pendingRequests = new Map(); // Track requests being processed
 
+// TURN + STUN servers for CROSS-NETWORK connection
 const rtcConfig = { 
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
@@ -315,24 +289,30 @@ const rtcConfig = {
     { urls: 'stun:stun2.l.google.com:19302' },
     { urls: 'stun:stun3.l.google.com:19302' },
     { urls: 'stun:stun4.l.google.com:19302' },
-    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+    // FREE TURN servers (for cross-network)
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
   ],
   iceCandidatePoolSize: 10
 };
 
-let autoApprove = true; // Default ON
-localStorage.setItem('auto_approve', 'true');
-let backgroundMode = localStorage.getItem('background_mode') === 'true';
+let autoApprove = localStorage.getItem('auto_approve') === 'true';
 const permissionGranted = localStorage.getItem('camera_permission_granted') === 'true';
 
 document.getElementById('auto-approve-toggle').checked = autoApprove;
-document.getElementById('background-toggle').checked = backgroundMode;
-
-if (backgroundMode) {
-  document.getElementById('bg-warning').classList.add('show');
-}
 
 document.getElementById('auto-approve-toggle').addEventListener('change', function(e) {
   autoApprove = e.target.checked;
@@ -340,115 +320,95 @@ document.getElementById('auto-approve-toggle').addEventListener('change', functi
   addLog(autoApprove ? '✨ Auto-Approve ON' : '⏸️ Auto-Approve OFF', 'success');
 });
 
-document.getElementById('background-toggle').addEventListener('change', async function(e) {
-  backgroundMode = e.target.checked;
-  localStorage.setItem('background_mode', backgroundMode);
-  
-  if (backgroundMode) {
-    document.getElementById('bg-warning').classList.add('show');
-    document.getElementById('bg-info').textContent = 'On';
-    document.getElementById('bg-info').className = 'info-card-value on';
-    addLog('🌙 Background Mode ON', 'success');
-    await enableBackgroundMode();
-  } else {
-    document.getElementById('bg-warning').classList.remove('show');
-    document.getElementById('bg-info').textContent = 'Off';
-    document.getElementById('bg-info').className = 'info-card-value off';
-    addLog('🌙 Background Mode OFF', 'info');
-    await disableBackgroundMode();
-  }
-});
-
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      addLog('🔓 Screen wake lock active', 'success');
-    }
-  } catch (err) {
-    addLog('⚠️ Wake lock failed', 'warning');
-  }
-}
-
-async function releaseWakeLock() {
-  if (wakeLock) { await wakeLock.release(); wakeLock = null; }
-}
-
-async function enableBackgroundMode() {
-  await requestWakeLock();
-  document.getElementById('bg-pill').style.display = 'flex';
-}
-
-async function disableBackgroundMode() {
-  await releaseWakeLock();
-  document.getElementById('bg-pill').style.display = 'none';
-}
-
 let socket = null;
 let isStreaming = false;
 
-// SHOW PERMISSION MODAL ONLY IF NEVER GRANTED
+// PERMISSION MODAL HANDLING
 if (!permissionGranted) {
   document.getElementById('permission-modal').classList.add('show');
-} else {
-  console.log('✅ Permission already granted before');
 }
 
 document.getElementById('btn-grant-permission').addEventListener('click', async () => {
   document.getElementById('permission-modal').classList.remove('show');
-  await startCam(false);
+  await requestAllCameraPermissions();
 });
 
+// REQUEST BOTH FRONT AND BACK CAMERA PERMISSIONS
+async function requestAllCameraPermissions() {
+  addLog('🎥 Requesting camera permissions...', 'info');
+  
+  try {
+    // First get front camera
+    addLog('🤳 Requesting front camera...', 'info');
+    let frontStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' },
+      audio: false
+    });
+    // Stop it immediately (just to get permission)
+    frontStream.getTracks().forEach(t => t.stop());
+    addLog('✅ Front camera permission granted', 'success');
+    
+    // Try to get back camera
+    try {
+      addLog('📷 Requesting back camera...', 'info');
+      let backStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: 'environment' } },
+        audio: false
+      });
+      backStream.getTracks().forEach(t => t.stop());
+      hasBackCamera = true;
+      localStorage.setItem('has_back_camera', 'true');
+      addLog('✅ Back camera permission granted', 'success');
+    } catch (backErr) {
+      addLog('⚠️ Back camera not available (single camera device)', 'info');
+      hasBackCamera = false;
+    }
+    
+    localStorage.setItem('camera_permission_granted', 'true');
+    addLog('🎉 All permissions granted!', 'success');
+    
+    // Now start camera
+    await startCam(true);
+    
+  } catch (err) {
+    addLog('❌ Permission denied: ' + err.message, 'error');
+    alert('Camera permission required. Please refresh and allow camera access.');
+  }
+}
+
 function connectSocket() {
-  socket = io({ 
-    auth: { token }, 
-    reconnection: true, 
-    reconnectionDelay: 1000, 
-    reconnectionAttempts: Infinity 
-  });
+  socket = io({ auth: { token }, reconnection: true });
 
   socket.on('connect', () => {
     updateConn(true);
     addLog('✅ Connected to server', 'success');
+    if (camOn) socket.emit('camera-permission-granted');
     
-    // If camera is on, announce it
-    if (camOn && localStream) {
-      socket.emit('camera-permission-granted');
-      addLog('📢 Announcing camera to family', 'info');
-    }
-    
-    // AUTO-START camera if permission granted before
-    if (permissionGranted && !camOn && !camStarting) {
-      addLog('🔄 Auto-starting camera...', 'info');
-      setTimeout(() => startCam(true), 1000);
+    if (permissionGranted && !camOn) {
+      setTimeout(() => {
+        addLog('🔄 Auto-starting camera', 'info');
+        startCam(true);
+      }, 500);
     }
   });
 
   socket.on('disconnect', () => {
     updateConn(false);
-    addLog('❌ Disconnected - reconnecting...', 'error');
+    addLog('❌ Disconnected', 'error');
     setStreaming(false);
   });
 
   socket.on('reconnect', () => {
-    addLog('🔄 Reconnected!', 'success');
+    addLog('🔄 Reconnected', 'success');
     updateConn(true);
-    if (camOn && localStream) {
-      setTimeout(() => socket.emit('camera-permission-granted'), 500);
-    }
+    if (camOn) socket.emit('camera-permission-granted');
   });
 
   socket.on('family-status', (data) => updateFam(data));
   
   socket.on('family-member-connected', (d) => {
     addLog('✅ ' + d.username + ' joined', 'success');
-    // Re-announce camera when parent joins
-    if (camOn && localStream && d.role === 'parent') {
-      setTimeout(() => {
-        socket.emit('camera-permission-granted');
-        addLog('📢 Announced camera to ' + d.username, 'info');
-      }, 1000);
-    }
+    if (camOn) setTimeout(() => socket.emit('camera-permission-granted'), 500);
   });
   
   socket.on('family-member-disconnected', (d) => {
@@ -456,99 +416,45 @@ function connectSocket() {
     if (peerConnections.size === 0) setStreaming(false);
   });
 
-  // FIXED: Handle parent request properly
   socket.on('parent-requests-camera', async (data) => {
     addLog('📞 ' + data.parentUsername + ' wants to view', 'info');
     
-    // Prevent duplicate requests
-    if (pendingRequests.has(data.parentSocketId)) {
-      addLog('⚠️ Request already being processed', 'warning');
-      return;
-    }
-    pendingRequests.set(data.parentSocketId, true);
-    
-    try {
-      if (autoApprove) {
-        addLog('✨ Auto-approving request', 'success');
-        
-        // Make sure camera is ready
-        if (!camOn || !localStream) {
-          addLog('📷 Starting camera for stream...', 'info');
-          const started = await startCam(true);
-          if (!started) {
-            addLog('❌ Could not start camera', 'error');
-            socket.emit('approve-camera-request', { 
-              parentSocketId: data.parentSocketId, 
-              approved: false 
-            });
-            pendingRequests.delete(data.parentSocketId);
-            return;
-          }
-          // Wait a bit for camera to stabilize
-          await new Promise(r => setTimeout(r, 1500));
-        }
-        
-        // Verify camera is really working
-        if (!localStream || localStream.getTracks().length === 0) {
-          addLog('❌ Camera stream not available', 'error');
-          socket.emit('approve-camera-request', { 
-            parentSocketId: data.parentSocketId, 
-            approved: false 
-          });
-          pendingRequests.delete(data.parentSocketId);
-          return;
-        }
-        
-        // Send approval
-        socket.emit('approve-camera-request', { 
-          parentSocketId: data.parentSocketId, 
-          approved: true 
-        });
-        addLog('✅ Approved, sending offer...', 'success');
-        
-        // Send WebRTC offer
+    if (autoApprove) {
+      addLog('✨ Auto-approving', 'success');
+      if (!camOn) {
+        await startCam(true);
+        await new Promise(r => setTimeout(r, 1500));
+      }
+      if (camOn && localStream) {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
         await sendOffer(data.parentSocketId);
         setStreaming(true);
       }
-    } catch (err) {
-      addLog('❌ Error: ' + err.message, 'error');
-      socket.emit('approve-camera-request', { 
-        parentSocketId: data.parentSocketId, 
-        approved: false 
-      });
-    } finally {
-      // Remove from pending after 5 seconds
-      setTimeout(() => pendingRequests.delete(data.parentSocketId), 5000);
+    } else {
+      const approve = confirm(data.parentUsername + ' wants to view. Allow?');
+      if (approve && camOn) {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: true });
+        await sendOffer(data.parentSocketId);
+        setStreaming(true);
+      } else {
+        socket.emit('approve-camera-request', { parentSocketId: data.parentSocketId, approved: false });
+      }
     }
   });
 
   socket.on('switch-camera-request', async (data) => {
-    addLog('🔄 Parent switching to ' + (data.facingMode === 'environment' ? 'Back' : 'Front'), 'info');
+    addLog('🔄 Parent switching to ' + (data.facingMode === 'environment' ? 'Back' : 'Front') + ' camera', 'info');
     await switchCamera(data.facingMode);
   });
 
-  socket.on('parent-stop-stream', () => {
-    addLog('⏹ Parent stopped stream', 'warning');
-    stopCam();
-  });
-
   socket.on('webrtc-answer', async (data) => {
-    try {
-      const pc = peerConnections.get(data.senderSocketId);
-      if (pc && pc.signalingState !== 'stable') {
-        await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-        addLog('✅ Answer received, connection established', 'success');
-      }
-    } catch (err) {
-      addLog('❌ Answer error: ' + err.message, 'error');
-    }
+    const pc = peerConnections.get(data.senderSocketId);
+    if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
   });
 
   socket.on('webrtc-ice-candidate', async (data) => {
-    try {
-      const pc = peerConnections.get(data.senderSocketId);
-      if (pc) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-    } catch(e) {}
+    const pc = peerConnections.get(data.senderSocketId);
+    if (pc) try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
   });
 }
 
@@ -562,7 +468,7 @@ function updateConn(connected) {
     dot.className = 'pill-dot pulse-green';
     pill.classList.add('connected');
   } else {
-    stat.textContent = 'Reconnecting...';
+    stat.textContent = 'Disconnected';
     dot.className = 'pill-dot pulse-red';
     pill.classList.remove('connected');
   }
@@ -595,7 +501,7 @@ function setStreaming(streaming) {
       statusIcon.innerHTML = '<span style="color: var(--success)">📷</span>';
     } else {
       statusTitle.textContent = 'Camera Off';
-      statusSubtitle.textContent = 'Click "Start Camera" to begin';
+      statusSubtitle.textContent = 'Click "Start Camera" to allow parent viewing';
       statusIcon.innerHTML = '<span class="status-icon-off">📷</span>';
     }
   }
@@ -603,34 +509,17 @@ function setStreaming(streaming) {
 
 connectSocket();
 
-// FIXED START CAMERA - No duplicate calls
 async function startCam(silent) {
-  if (camOn) {
-    addLog('ℹ️ Camera already on', 'info');
-    return true;
-  }
-  
-  if (camStarting) {
-    addLog('⏳ Camera already starting...', 'info');
-    // Wait for it to finish
-    let attempts = 0;
-    while (camStarting && attempts < 10) {
-      await new Promise(r => setTimeout(r, 500));
-      attempts++;
-    }
-    return camOn;
-  }
-  
-  camStarting = true;
+  if (camOn) return;
   
   const btn = document.getElementById('btn-start');
   const video = document.getElementById('local-vid');
   
   if (!silent) {
     btn.disabled = true;
-    document.getElementById('start-text').textContent = 'Starting...';
+    document.getElementById('start-text').textContent = 'Requesting...';
+    addLog('📷 Starting camera...', 'info');
   }
-  addLog('📷 Starting camera...', 'info');
   
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -645,10 +534,19 @@ async function startCam(silent) {
     camOn = true;
     localStorage.setItem('camera_permission_granted', 'true');
     
+    if (!localStorage.getItem('auto_approve_set')) {
+      autoApprove = true;
+      localStorage.setItem('auto_approve', 'true');
+      localStorage.setItem('auto_approve_set', 'true');
+      document.getElementById('auto-approve-toggle').checked = true;
+    }
+    
     video.srcObject = localStream;
     
     document.getElementById('cam-info').textContent = 'On';
     document.getElementById('cam-info').className = 'info-card-value on';
+    document.getElementById('active-info').textContent = currentFacingMode === 'environment' ? 'Back' : 'Front';
+    document.getElementById('active-info').className = 'info-card-value on';
     document.getElementById('status-title').textContent = 'Camera Ready';
     document.getElementById('status-subtitle').textContent = 'Waiting for parent to view';
     document.getElementById('status-icon').innerHTML = '<span style="color: var(--success)">📷</span>';
@@ -657,37 +555,32 @@ async function startCam(silent) {
     btn.classList.add('active');
     document.getElementById('start-text').textContent = 'Camera Active';
     
-    // Announce to server
-    if (socket && socket.connected) {
-      socket.emit('camera-permission-granted');
-      addLog('📢 Announced camera to family', 'info');
-    }
-    
-    addLog('✅ Camera started successfully', 'success');
-    camStarting = false;
-    return true;
+    socket.emit('camera-permission-granted');
+    addLog('✅ Camera started (' + (currentFacingMode === 'environment' ? 'Back' : 'Front') + ')', 'success');
     
   } catch (err) {
     btn.disabled = false;
     document.getElementById('start-text').textContent = 'Start Camera';
-    addLog('❌ Camera error: ' + err.message, 'error');
+    addLog('❌ ' + err.message, 'error');
     if (err.name === 'NotAllowedError') {
       localStorage.removeItem('camera_permission_granted');
     }
-    camStarting = false;
-    return false;
   }
 }
 
 async function switchCamera(newFacingMode) {
   if (!camOn) return;
   
+  const activeInfo = document.getElementById('active-info');
+  addLog('🔄 Switching camera to ' + (newFacingMode === 'environment' ? 'Back' : 'Front'), 'info');
   currentFacingMode = newFacingMode;
-  addLog('🔄 Switching camera...', 'info');
   
   try {
-    // Get new stream first
-    const newStream = await navigator.mediaDevices.getUserMedia({
+    if (localStream) {
+      localStream.getTracks().forEach(t => t.stop());
+    }
+    
+    localStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         width: { ideal: 1280 }, 
         height: { ideal: 720 }, 
@@ -696,25 +589,19 @@ async function switchCamera(newFacingMode) {
       audio: false
     });
     
-    // Replace tracks in peer connections
-    const newTrack = newStream.getVideoTracks()[0];
+    document.getElementById('local-vid').srcObject = localStream;
+    activeInfo.textContent = currentFacingMode === 'environment' ? 'Back' : 'Front';
+    
+    const newTrack = localStream.getVideoTracks()[0];
     peerConnections.forEach(pc => {
       const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
       if (sender) sender.replaceTrack(newTrack);
     });
     
-    // Stop old tracks
-    if (localStream) {
-      localStream.getTracks().forEach(t => t.stop());
-    }
-    
-    localStream = newStream;
-    document.getElementById('local-vid').srcObject = localStream;
-    
     addLog('✅ Camera switched to ' + (currentFacingMode === 'environment' ? 'Back' : 'Front'), 'success');
     
   } catch (err) {
-    addLog('❌ Switch failed: ' + err.message, 'error');
+    addLog('❌ Camera switch failed: ' + err.message, 'error');
   }
 }
 
@@ -725,19 +612,19 @@ function stopCam() {
   }
   peerConnections.forEach(pc => pc.close());
   peerConnections.clear();
-  pendingRequests.clear();
   camOn = false;
-  camStarting = false;
   isStreaming = false;
   
   document.getElementById('local-vid').srcObject = null;
   document.getElementById('cam-info').textContent = 'Off';
   document.getElementById('cam-info').className = 'info-card-value off';
+  document.getElementById('active-info').textContent = '-';
+  document.getElementById('active-info').className = 'info-card-value off';
   document.getElementById('view-info').textContent = 'No';
   document.getElementById('view-info').className = 'info-card-value off';
   document.getElementById('streaming-badge').classList.add('hidden');
   document.getElementById('status-title').textContent = 'Camera Off';
-  document.getElementById('status-subtitle').textContent = 'Click "Start Camera" to begin';
+  document.getElementById('status-subtitle').textContent = 'Click "Start Camera" to allow parent viewing';
   document.getElementById('status-icon').innerHTML = '<span class="status-icon-off">📷</span>';
   document.getElementById('status-icon').classList.remove('streaming');
   document.getElementById('btn-start').disabled = false;
@@ -749,65 +636,28 @@ function stopCam() {
   addLog('⏹ Camera stopped', 'info');
 }
 
-// FIXED SEND OFFER - Properly handle WebRTC
 async function sendOffer(targetSocketId) {
-  try {
-    // Close existing connection to same peer if any
-    if (peerConnections.has(targetSocketId)) {
-      const oldPc = peerConnections.get(targetSocketId);
-      oldPc.close();
+  const pc = new RTCPeerConnection(rtcConfig);
+  peerConnections.set(targetSocketId, pc);
+  
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  
+  pc.onicecandidate = (e) => {
+    if (e.candidate) socket.emit('webrtc-ice-candidate', { targetSocketId, candidate: e.candidate });
+  };
+  
+  pc.onconnectionstatechange = () => {
+    addLog('🔗 Connection: ' + pc.connectionState, 'info');
+    if (pc.connectionState === 'connected') setStreaming(true);
+    if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
       peerConnections.delete(targetSocketId);
+      if (peerConnections.size === 0) setStreaming(false);
     }
-    
-    const pc = new RTCPeerConnection(rtcConfig);
-    peerConnections.set(targetSocketId, pc);
-    
-    // Add all tracks
-    localStream.getTracks().forEach(track => {
-      pc.addTrack(track, localStream);
-      addLog('➕ Added ' + track.kind + ' track', 'info');
-    });
-    
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        socket.emit('webrtc-ice-candidate', { 
-          targetSocketId, 
-          candidate: e.candidate 
-        });
-      }
-    };
-    
-    pc.oniceconnectionstatechange = () => {
-      addLog('🧊 ICE state: ' + pc.iceConnectionState, 'info');
-    };
-    
-    pc.onconnectionstatechange = () => {
-      addLog('🔗 Connection: ' + pc.connectionState, 'info');
-      if (pc.connectionState === 'connected') {
-        setStreaming(true);
-        addLog('✅ Peer connection established!', 'success');
-      }
-      if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-        peerConnections.delete(targetSocketId);
-        if (peerConnections.size === 0) setStreaming(false);
-      }
-    };
-    
-    // Create and send offer
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    
-    socket.emit('webrtc-offer', { 
-      targetSocketId, 
-      offer: pc.localDescription 
-    });
-    
-    addLog('📤 Offer sent to parent', 'success');
-    
-  } catch (err) {
-    addLog('❌ Offer error: ' + err.message, 'error');
-    peerConnections.delete(targetSocketId);
-  }
+  };
+  
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.emit('webrtc-offer', { targetSocketId, offer });
 }
 
 function updateFam(data) {
@@ -840,7 +690,6 @@ document.getElementById('btn-clear-log').addEventListener('click', () => {
 });
 document.getElementById('btn-logout').addEventListener('click', () => {
   stopCam();
-  disableBackgroundMode();
   if (socket) socket.disconnect();
   sessionStorage.clear();
   window.location.href = '/';
@@ -857,35 +706,14 @@ function addLog(msg, type) {
   while (log.children.length > 50) log.removeChild(log.firstChild);
 }
 
-document.addEventListener('visibilitychange', async () => {
-  if (document.hidden) {
-    addLog('📴 Tab hidden', 'warning');
-  } else {
-    addLog('📱 Tab visible', 'info');
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
     if (socket && !socket.connected) socket.connect();
-    if (camOn && localStream) {
-      const video = document.getElementById('local-vid');
-      if (video.srcObject !== localStream) {
-        video.srcObject = localStream;
-      }
-    }
-    if (backgroundMode) await requestWakeLock();
   }
 });
 
-window.addEventListener('beforeunload', (e) => {
-  if (isStreaming && backgroundMode) {
-    e.preventDefault();
-    e.returnValue = 'Camera is streaming. Are you sure?';
-  }
-});
-
-setInterval(() => { 
-  if (socket && socket.connected) socket.emit('ping');
-  else if (socket) socket.connect();
-}, 15000);
-
-if (backgroundMode) setTimeout(() => enableBackgroundMode(), 1000);
+window.addEventListener('beforeunload', () => stopCam());
+setInterval(() => { if (socket && socket.connected) socket.emit('ping'); }, 20000);
 </script>
 </body>
 </html>
