@@ -89,25 +89,8 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .info-label { color: var(--gray); font-size: 10px; text-transform: uppercase; }
 .info-value { color: var(--light); font-weight: 600; }
 
-/* CONTROL BUTTONS BELOW VIDEO */
-.control-buttons-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
-
-/* Stop Stream Button */
-.stop-stream-btn { display: none; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, var(--danger), #dc2626); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px; transition: all 0.3s; }
-.stop-stream-btn.show { display: inline-flex; }
-.stop-stream-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239,68,68,0.4); }
-
-/* Camera Control Toggle Button */
-.camera-control-toggle { display: none; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.3s; }
-.camera-control-toggle.show { display: inline-flex; }
-.camera-control-toggle:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99,102,241,0.4); }
-
-/* Current camera indicator */
-.current-camera-badge { display: none; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 12px; font-size: 13px; font-weight: 600; color: #a5b4fc; margin-left: auto; }
-.current-camera-badge.show { display: inline-flex; }
-
-/* Camera switch panel */
-.camera-switch-panel { display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; animation: slideDown 0.3s ease; }
+/* CAMERA CONTROL - Only shows temporarily */
+.camera-switch-panel { display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; animation: slideDown 0.3s ease; }
 .camera-switch-panel.show { display: grid; }
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 .cam-switch-card { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--glass); border: 2px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.3s; }
@@ -117,6 +100,15 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .cam-switch-info { flex: 1; }
 .cam-switch-title { font-weight: 700; font-size: 14px; color: white; }
 .cam-switch-desc { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+/* CAMERA CONTROL TOGGLE BUTTON */
+.camera-control-toggle { display: none; align-items: center; gap: 8px; padding: 10px 16px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 16px; transition: all 0.3s; }
+.camera-control-toggle.show { display: inline-flex; }
+.camera-control-toggle:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99,102,241,0.4); }
+
+/* Current camera indicator */
+.current-camera-badge { display: none; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 12px; margin-top: 16px; font-size: 13px; font-weight: 600; color: #a5b4fc; }
+.current-camera-badge.show { display: inline-flex; }
 
 .children-list { display: flex; flex-direction: column; gap: 10px; }
 .child-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; }
@@ -138,7 +130,6 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 .log-item.success { border-left-color: var(--success); }
 .log-item.error { border-left-color: var(--danger); }
 .log-item.info { border-left-color: var(--primary); }
-.log-item.warning { border-left-color: var(--warning); }
 .log-time { color: var(--gray); font-size: 11px; font-family: monospace; }
 .log-msg { color: var(--light); flex: 1; }
 .hidden { display: none !important; }
@@ -251,28 +242,19 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
           </div>
         </div>
 
-        <!-- CONTROL BUTTONS ROW -->
-        <div class="control-buttons-row">
-          <!-- Stop Child's Camera Button -->
-          <button class="stop-stream-btn" id="btn-stop-stream">
-            <span>⏹</span>
-            <span>Stop Camera</span>
-          </button>
-
-          <!-- Switch Camera Toggle Button -->
-          <button class="camera-control-toggle" id="camera-control-toggle">
-            <span>🔄</span>
-            <span>Switch Camera</span>
-          </button>
-
-          <!-- Current Camera Badge -->
-          <div class="current-camera-badge" id="current-camera-badge">
-            <span id="current-cam-icon">🤳</span>
-            <span>Watching: <strong id="current-cam-name">Front Camera</strong></span>
-          </div>
+        <!-- Current Camera Badge -->
+        <div class="current-camera-badge" id="current-camera-badge">
+          <span id="current-cam-icon">🤳</span>
+          <span>Watching: <strong id="current-cam-name">Front Camera</strong></span>
         </div>
 
-        <!-- Camera Switch Panel (hidden by default) -->
+        <!-- Toggle Button to Show/Hide Camera Controls -->
+        <button class="camera-control-toggle" id="camera-control-toggle">
+          <span>🔄</span>
+          <span>Switch Camera</span>
+        </button>
+
+        <!-- Camera Switch Panel (hidden by default, shows when toggle clicked) -->
         <div class="camera-switch-panel" id="camera-switch-panel">
           <div class="cam-switch-card active" id="cam-front-card" data-facing="user">
             <div class="cam-switch-icon">🤳</div>
@@ -326,7 +308,7 @@ body { font-family: 'Inter', sans-serif; background: #050810; color: var(--light
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-console.log('✅ Parent Dashboard v5');
+console.log('✅ Parent Dashboard v4');
 
 const token = sessionStorage.getItem('token');
 const user = JSON.parse(sessionStorage.getItem('user') || 'null');
@@ -390,12 +372,7 @@ let currentStreamName = '';
 let connectedChildren = [];
 
 function connectSocket() {
-  socket = io({ 
-    auth: { token }, 
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionAttempts: Infinity
-  });
+  socket = io({ auth: { token }, reconnection: true });
 
   socket.on('connect', () => {
     updateConn(true);
@@ -413,10 +390,6 @@ function connectSocket() {
     requestedChildren.clear();
   });
 
-  socket.on('reconnect_attempt', (attempt) => {
-    addLog('🔄 Reconnecting... (attempt ' + attempt + ')', 'warning');
-  });
-
   socket.on('family-status', (data) => updateChildren(data.children));
 
   socket.on('family-member-connected', (d) => {
@@ -428,13 +401,6 @@ function connectSocket() {
     for (const [sid, c] of availableCams) if (c.childId === d.userId) availableCams.delete(sid);
     requestedChildren.delete(d.userId);
     refreshUI();
-    // If disconnected child was streaming, stop viewing
-    if (currentStreamingChild) {
-      for (const [sid, c] of availableCams) {
-        if (sid === currentStreamingChild) return;
-      }
-      stopViewing();
-    }
   });
 
   socket.on('child-camera-available', (data) => {
@@ -489,10 +455,9 @@ function connectSocket() {
       document.getElementById('stream-pill').classList.add('active');
       document.getElementById('watching-name').textContent = currentStreamName;
       
-      // SHOW all control buttons
+      // SHOW camera control toggle button
       document.getElementById('camera-control-toggle').classList.add('show');
       document.getElementById('current-camera-badge').classList.add('show');
-      document.getElementById('btn-stop-stream').classList.add('show');
       updateCurrentCameraBadge();
       
       addLog('✅ Video active', 'success');
@@ -520,6 +485,7 @@ function connectSocket() {
 
 // ==================== CAMERA CONTROL LOGIC ====================
 
+// Update current camera badge display
 function updateCurrentCameraBadge() {
   const icon = document.getElementById('current-cam-icon');
   const name = document.getElementById('current-cam-name');
@@ -532,18 +498,7 @@ function updateCurrentCameraBadge() {
   }
 }
 
-// STOP STREAM BUTTON - Parent stops child's camera
-document.getElementById('btn-stop-stream').addEventListener('click', function() {
-  if (currentStreamingChild) {
-    if (confirm('Stop child\'s camera stream? This will turn off their camera.')) {
-      socket.emit('parent-stop-stream', { childSocketId: currentStreamingChild });
-      addLog('⏹ Sent stop command to child', 'warning');
-      stopViewing();
-    }
-  }
-});
-
-// TOGGLE CAMERA SWITCH PANEL
+// Toggle button - Show/Hide camera switch panel
 document.getElementById('camera-control-toggle').addEventListener('click', function() {
   const panel = document.getElementById('camera-switch-panel');
   const btn = this;
@@ -559,7 +514,7 @@ document.getElementById('camera-control-toggle').addEventListener('click', funct
   }
 });
 
-// SWITCH CAMERA FUNCTION
+// Switch camera function
 function switchCamera(facingMode) {
   if (!currentStreamingChild) {
     addLog('⚠️ No active stream', 'error');
@@ -583,7 +538,7 @@ function switchCamera(facingMode) {
   // Update badge
   updateCurrentCameraBadge();
   
-  // AUTO-HIDE panel after selection
+  // AUTO-HIDE panel after selection (1 second delay to show feedback)
   setTimeout(() => {
     const panel = document.getElementById('camera-switch-panel');
     const btn = document.getElementById('camera-control-toggle');
@@ -605,7 +560,7 @@ function updateConn(connected) {
     dot.className = 'pill-dot pulse-green';
     pill.classList.add('connected');
   } else {
-    stat.textContent = 'Reconnecting...';
+    stat.textContent = 'Disconnected';
     dot.className = 'pill-dot pulse-red';
     pill.classList.remove('connected');
   }
@@ -621,16 +576,11 @@ function stopViewing() {
   document.getElementById('stream-stat').textContent = 'No Stream';
   document.getElementById('stream-pill').classList.remove('active');
   
-  // Hide all camera controls
+  // Hide camera controls
   document.getElementById('camera-control-toggle').classList.remove('show');
   document.getElementById('current-camera-badge').classList.remove('show');
-  document.getElementById('btn-stop-stream').classList.remove('show');
   document.getElementById('camera-switch-panel').classList.remove('show');
   document.getElementById('camera-control-toggle').innerHTML = '<span>🔄</span><span>Switch Camera</span>';
-  
-  // Close peer connections
-  peerConnections.forEach(pc => pc.close());
-  peerConnections.clear();
   
   currentStreamingChild = null;
   currentCameraFacing = 'user';
@@ -723,22 +673,11 @@ function addLog(msg, type) {
   while (log.children.length > 50) log.removeChild(log.firstChild);
 }
 
-// AUTO RECONNECT on visibility change
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && socket && !socket.connected) {
-    addLog('🔄 Reconnecting...', 'warning');
-    socket.connect();
-  }
+  if (!document.hidden && socket && !socket.connected) socket.connect();
 });
 
-// Keep connection alive
-setInterval(() => { 
-  if (socket && socket.connected) {
-    socket.emit('ping');
-  } else if (socket) {
-    socket.connect();
-  }
-}, 15000);
+setInterval(() => { if (socket && socket.connected) socket.emit('ping'); }, 20000);
 </script>
 </body>
 </html>
