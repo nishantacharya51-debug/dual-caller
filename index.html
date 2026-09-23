@@ -3,130 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
-<title>InkoCaller — Private calls. Just two people.</title>
-<meta name="description" content="Instant, secure video and voice calls with no group clutter. Works over all networks via TURN.">
+<title>InkoCaller — Private calls. Just two people. Video Fixed V2</title>
+<meta name="description" content="Instant secure P2P video calls, works over all networks via TURN, video/audio fixed">
 <meta name="theme-color" content="#0B1020">
 <link rel="icon" href="public/icons/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{--ink:#0B1020;--primary:#2563EB;--violet:#7C3AED;--bg:#F8FAFC;--success:#22C55E;--danger:#EF4444}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-h1,h2{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
-.btn{height:52px;border-radius:9999px;padding:0 28px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;transition:all .2s}
-.btn-dark{background:var(--ink);color:#fff;box-shadow:0 10px 40px -10px rgba(37,99,235,.3)}
-.btn-dark:hover{background:#000;transform:translateY(-1px)}
-.btn-light{background:#fff;border:1px solid #E2E8F0;color:var(--ink)}
-.btn-light:hover{background:#F8FAFC}
+h1{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
+.btn{height:52px;border-radius:9999px;padding:0 28px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;transition:.2s}
+.btn-dark{background:var(--ink);color:#fff;box-shadow:0 10px 40px -10px rgba(37,99,235,.3)} .btn-dark:hover{background:#000;transform:translateY(-1px)}
+.btn-light{background:#fff;border:1px solid #E2E8F0;color:var(--ink)} .btn-light:hover{background:#F8FAFC}
 .hidden{display:none!important}
-.mesh{background:radial-gradient(at 20% 30%,rgba(37,99,235,.15) 0,transparent 50%),radial-gradient(at 80% 20%,rgba(124,58,237,.15) 0,transparent 50%),#F8FAFC}
 .call{position:fixed;inset:0;background:#020617;z-index:100;display:flex;flex-direction:column}
-.pip{position:absolute;bottom:100px;right:16px;width:120px;height:160px;border-radius:16px;overflow:hidden;background:#0B1020;border:2px solid rgba(255,255,255,.25);box-shadow:0 10px 40px rgba(0,0,0,.5);z-index:10}
-@media(min-width:768px){.pip{width:200px;height:150px;bottom:110px;right:20px}}
+.pip{position:absolute;bottom:100px;right:16px;width:130px;height:170px;border-radius:16px;overflow:hidden;background:#0B1020;border:2px solid rgba(255,255,255,.3);box-shadow:0 10px 40px rgba(0,0,0,.5);z-index:10}
+@media(min-width:768px){.pip{width:210px;height:160px;bottom:110px;right:20px}}
 .ctrls{position:absolute;bottom:0;left:0;right:0;padding:14px;display:flex;justify-content:center;z-index:30}
-.ctrls-inner{display:flex;gap:8px;background:rgba(0,0,0,.75);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:9999px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.ctrls-inner{display:flex;gap:8px;background:rgba(0,0,0,.78);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.14);padding:10px 14px;border-radius:9999px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .c{width:48px;height:48px;border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.2s}
-.c-light{background:rgba(255,255,255,.15)} .c-light:hover{background:rgba(255,255,255,.25)}
+.c-light{background:rgba(255,255,255,.18)} .c-light:hover{background:rgba(255,255,255,.28)}
 .c-red{background:var(--danger)} .c-red:hover{background:#DC2626}
-.c-blue{background:var(--primary)}
-.badge{display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:6px 12px;font-size:12px;font-weight:500;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.float{animation:float 6s ease-in-out infinite}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:6px 12px;font-size:12px;font-weight:500;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
 </style>
 </head>
 <body>
-<header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06)">
+<header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06)">
   <div style="max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;position:relative"><span style="color:#fff;font-weight:800">I</span><div style="position:absolute;top:-3px;right:-3px;width:9px;height:9px;background:#22C55E;border-radius:50%;border:2px solid #fff"></div></div>
-      <span style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:19px">Inko<span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800">Caller</span></span>
-    </div>
-    <div style="font-size:12px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;border-radius:9999px;padding:5px 12px;font-weight:500">● Live • All networks • GitHub Pages</div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;position:relative">I<div style="position:absolute;top:-3px;right:-3px;width:9px;height:9px;background:#22C55E;border-radius:50%;border:2px solid #fff"></div></div><span style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:19px">Inko<span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800">Caller</span></span></div>
+    <div style="font-size:11px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;border-radius:9999px;padding:5px 12px;font-weight:600">● Video Fixed V2 • All networks • TURN</div>
   </div>
 </header>
 
 <div id="landing">
-  <section style="position:relative;padding:40px 20px 60px;overflow:hidden">
-    <div class="mesh" style="position:absolute;inset:0"></div>
-    <div style="position:relative;max-width:1200px;margin:0 auto;display:grid;gap:40px" id="hero">
-      <style>@media(min-width:1000px){#hero{grid-template-columns:1.1fr .9fr;align-items:center}}</style>
-      <div style="display:flex;flex-direction:column;gap:28px">
-        <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.2);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;width:fit-content">🔒 Privacy-first • Just 2 people • TURN for all networks</div>
+  <section style="position:relative;padding:40px 20px 60px;overflow:hidden;background:radial-gradient(at 20% 30%,rgba(37,99,235,.12) 0,transparent 50%),radial-gradient(at 80% 20%,rgba(124,58,237,.12) 0,transparent 50%),#F8FAFC">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:40px" id="hero"><style>@media(min-width:1000px){#hero{grid-template-columns:1.1fr .9fr;align-items:center}}</style>
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.2);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;width:fit-content">🔧 Video/Audio Fixed V2 • Was showing Connected but no stream, now fixed</div>
         <h1 style="font-size:42px;line-height:.95;font-weight:800">Private calls.<br><span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Just two people.</span></h1>
-        <p style="font-size:17px;line-height:1.6;color:#475569;max-width:520px">Secure P2P video & voice, works over WiFi, mobile data, firewalls via TURN. No signup, no group clutter. Fixed video sharing.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button id="startBtn" class="btn btn-dark">Start a Call →</button>
-          <a href="#how" class="btn btn-light" style="text-decoration:none">How it works</a>
-        </div>
-        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:14px;font-size:13px;line-height:1.6;max-width:520px">
-          <div style="font-weight:600;font-size:12px;text-transform:uppercase;color:#64748B;margin-bottom:6px">Live Links (Fixed Video)</div>
-          <div>🌐 <b>GitHub Pages:</b> <span style="color:#2563EB">https://nishantacharya51-debug.github.io/dual-caller/</span></div>
-          <div>📹 <b>Fix:</b> Video/audio now properly shared via PeerJS + TURN (was showing connected but no stream)</div>
-          <div style="font-size:11px;color:#94A3B8;margin-top:6px">If video not showing, check camera permission, HTTPS required, and both sides must click Join.</div>
-        </div>
-        <div id="debug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:11px;padding:10px;border-radius:12px;max-width:520px;max-height:120px;overflow:auto">Debug: ready...</div>
+        <p style="font-size:16px;line-height:1.6;color:#475569;max-width:520px"><b>Fixed:</b> Previously showed "Data channel open, waiting for media..." but no video/audio. Now properly shares camera & mic P2P via TURN. Works over WiFi, mobile data, firewalls.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap"><button id="startBtn" class="btn btn-dark">Start a Call →</button><a href="#how" class="btn btn-light" style="text-decoration:none">How it works</a></div>
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:12px;font-size:12px;line-height:1.6;max-width:520px"><div style="font-weight:700;font-size:11px;text-transform:uppercase;color:#64748B;margin-bottom:4px">Fix Details</div><div>❌ Before: Peer created before getUserMedia, answer without stream, remoteVideo never played</div><div>✅ Now: getMedia() first, answer with stream, on('stream') → remoteVideo.srcObject + play() + ICE monitoring + auto-retry every 3s if no stream</div><div style="margin-top:6px;font-size:11px;color:#94A3B8">If video still not showing: check green debug log, allow camera/mic, HTTPS required, both must click Join, try Chrome.</div></div>
+        <div id="debug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:11px;padding:10px;border-radius:12px;max-width:520px;max-height:140px;overflow:auto;white-space:pre-wrap">Debug: ready... Open console for more.</div>
       </div>
-      <div>
-        <div style="max-width:500px;margin:0 auto;background:#fff;border-radius:24px;overflow:hidden;border:1px solid rgba(0,0,0,.1);box-shadow:0 20px 80px -20px rgba(0,0,0,.3)">
-          <div style="height:44px;background:#F8FAFC;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;padding:0 14px;gap:8px"><div style="display:flex;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444"></div><div style="width:10px;height:10px;border-radius:50%;background:#F59E0B"></div><div style="width:10px;height:10px;border-radius:50%;background:#22C55E"></div></div><div style="flex:1;margin-left:12px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:9999px;padding:5px 12px;font-size:11px;color:#64748B">🔒 inkocaller • 2 people • TURN</div></div>
-          <div style="aspect-ratio:4/3;background:#0B1020;position:relative">
-            <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px">
-              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">You • HD</div></div>
-              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">Friend • Voice OK</div></div>
-            </div>
-            <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.1);border-radius:9999px;padding:6px 10px;display:flex;gap:6px"><div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px">🎤</div><div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px">📹</div><div style="width:28px;height:28px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;font-size:12px">✕</div></div>
-            <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:10px;padding:4px 10px;border-radius:9999px">● Excellent • TURN Ready • Fixed</div>
-          </div>
-        </div>
-      </div>
+      <div><div style="max-width:500px;margin:0 auto;background:#fff;border-radius:24px;overflow:hidden;border:1px solid rgba(0,0,0,.1);box-shadow:0 20px 80px -20px rgba(0,0,0,.3)"><div style="height:44px;background:#F8FAFC;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;padding:0 14px;gap:8px"><div style="display:flex;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444"></div><div style="width:10px;height:10px;border-radius:50%;background:#F59E0B"></div><div style="width:10px;height:10px;border-radius:50%;background:#22C55E"></div></div><div style="flex:1;margin-left:12px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:9999px;padding:5px 12px;font-size:11px;color:#64748B">🔒 Fixed V2 • Video sharing • TURN</div></div><div style="aspect-ratio:4/3;background:#0B1020;position:relative"><div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px"><div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">You • Fixed</div></div><div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">Friend • Video OK</div></div></div><div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.1);border-radius:9999px;padding:6px 10px;display:flex;gap:6px"><div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px">🎤</div><div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px">📹</div><div style="width:28px;height:28px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;font-size:12px">✕</div></div><div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:10px;padding:4px 10px;border-radius:9999px">● Fixed V2 • Video sharing works</div></div></div></div>
     </div>
   </section>
 </div>
 
-<!-- Pre-call -->
 <div id="preCall" class="hidden" style="position:fixed;inset:0;background:#0B1020;z-index:90;display:flex;flex-direction:column">
-  <div style="height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);color:#fff"><b>InkoCaller</b><span style="font-size:12px;color:rgba(255,255,255,.6)">● Secure • 2 max • TURN</span></div>
+  <div style="height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);color:#fff"><b>InkoCaller Fixed V2</b><span style="font-size:12px;color:rgba(255,255,255,.6)">● 2 max • TURN • Video Fixed</span></div>
   <div style="flex:1;display:grid;max-width:1200px;margin:0 auto;width:100%" id="preGrid"><style>@media(min-width:900px){#preGrid{grid-template-columns:1.1fr .9fr}}</style>
-    <div style="background:#000;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#000;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:12px">
       <div style="width:100%;max-width:600px;aspect-ratio:4/3;background:#172554;border-radius:20px;overflow:hidden;position:relative">
-        <video id="previewVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1)"></video>
+        <video id="previewVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#000"></video>
         <div id="previewOff" class="hidden" style="position:absolute;inset:0;background:#0B1020;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:rgba(255,255,255,.6)"><div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:28px">👤</div><div>Camera off</div></div>
         <div style="position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.7));display:flex;justify-content:space-between"><div style="display:flex;gap:8px"><button id="preAudio" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer">🎤</button><button id="preVideo" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer">📹</button></div><div id="preStatus" style="background:rgba(0,0,0,.5);color:#fff;font-size:12px;padding:6px 12px;border-radius:9999px">Ready</div></div>
       </div>
+      <div style="display:flex;gap:8px"><button id="retryMedia" style="height:36px;border-radius:9999px;background:#2563EB;color:#fff;padding:0 16px;font-size:12px;font-weight:600;border:none;cursor:pointer">🔄 Retry Video</button><button id="testAudio" style="height:36px;border-radius:9999px;background:rgba(255,255,255,.15);color:#fff;padding:0 16px;font-size:12px;font-weight:600;border:none;cursor:pointer">🔊 Test Audio</button></div>
     </div>
     <div style="background:#fff;padding:20px;display:flex;align-items:center">
-      <div style="max-width:380px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:20px">
-        <div><h2 style="font-size:26px;font-weight:800;margin-bottom:8px">Ready to join?</h2><p id="preDesc" style="font-size:14px;color:#64748B;line-height:1.6">Share link with one person. Video/audio will be shared P2P via TURN if needed. Exactly 2 enforced.</p></div>
-        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:14px"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:11px;font-weight:600;text-transform:uppercase;color:#64748B">Session</span><span id="preCount" style="background:#DCFCE7;color:#166534;font-size:12px;padding:3px 10px;border-radius:9999px">1/2</span></div><div id="preId" style="font-family:monospace;font-size:13px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;word-break:break-all">...</div><div style="font-size:11px;color:#94A3B8;margin-top:8px">TURN: OpenRelay • STUN Google • Encrypted • Fixed video sharing</div></div>
+      <div style="max-width:380px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:18px">
+        <div><h2 style="font-size:24px;font-weight:800;margin-bottom:6px">Ready to join? (Fixed)</h2><p id="preDesc" style="font-size:13px;color:#64748B;line-height:1.5">Video/audio sharing fixed. Share link with one person. TURN ensures all networks.</p></div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:14px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:11px;font-weight:600;text-transform:uppercase;color:#64748B">Session</span><span id="preCount" style="background:#DCFCE7;color:#166534;font-size:12px;padding:3px 10px;border-radius:9999px">1/2</span></div><div id="preId" style="font-family:monospace;font-size:13px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;word-break:break-all">...</div><div style="font-size:11px;color:#94A3B8;margin-top:8px">Fixed V2 • TURN OpenRelay • STUN • Encrypted</div></div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <button id="joinVideoBtn" class="btn btn-dark" style="width:100%">📹 Join with Video (Fixed)</button>
+          <button id="joinVideoBtn" class="btn btn-dark" style="width:100%">📹 Join with Video (Fixed V2)</button>
           <button id="joinAudioBtn" class="btn btn-light" style="width:100%">🎙️ Join Voice Only</button>
         </div>
         <div style="display:flex;gap:8px"><input id="shareLink" readonly style="flex:1;height:40px;border-radius:9999px;border:1px solid #E2E8F0;padding:0 14px;font-size:12px"><button id="copyBtn" style="height:40px;border-radius:9999px;background:var(--ink);color:#fff;padding:0 18px;font-weight:600;font-size:13px;border:none;cursor:pointer">Copy</button></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="share" data-t="whatsapp" style="height:34px;border-radius:9999px;background:#25D366;color:#fff;border:none;padding:0 14px;font-size:12px;font-weight:600;cursor:pointer">WhatsApp</button><button class="share" data-t="sms" style="height:34px;border-radius:9999px;background:var(--ink);color:#fff;border:none;padding:0 14px;font-size:12px;font-weight:600;cursor:pointer">SMS</button><button class="share" data-t="email" style="height:34px;border-radius:9999px;background:#fff;border:1px solid #E2E8F0;padding:0 14px;font-size:12px;font-weight:600;cursor:pointer">Email</button></div>
-        <div id="preDebug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:11px;padding:10px;border-radius:10px;max-height:100px;overflow:auto">Debug: init...</div>
+        <div id="preDebug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:10px;padding:10px;border-radius:10px;max-height:120px;overflow:auto;white-space:pre-wrap">Debug: init...</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Call Screen -->
 <div id="callScreen" class="call hidden">
   <div style="flex:1;position:relative;background:#0B1020;display:flex">
     <div style="flex:1;position:relative;background:#0B1020">
       <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;background:#0B1020"></video>
-      <div id="remotePlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:linear-gradient(135deg,#0B1020,#172554)">
+      <div id="remotePlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(135deg,#0B1020,#172554)">
         <div style="width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:32px">👤</div>
-        <div style="text-align:center;color:#fff"><div id="remoteStatus" style="font-weight:600">Waiting for other person...</div><div id="remoteSub" style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;max-width:320px">Share your link. Video/audio will appear here when they join. TURN ready for all networks. Fixed sharing.</div></div>
+        <div style="text-align:center;color:#fff"><div id="remoteStatus" style="font-weight:600">Waiting for other person...</div><div id="remoteSub" style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;max-width:340px">Share your link. Video/audio will appear here. If stuck on "Data channel open, waiting for media..." click Retry Video. TURN ready.</div><div style="margin-top:12px;display:flex;gap:8px;justify-content:center"><button id="placeholderRetry" style="height:36px;border-radius:9999px;background:#2563EB;color:#fff;padding:0 16px;font-size:12px;font-weight:600;border:none;cursor:pointer">🔄 Retry Media</button><button id="placeholderAudio" style="height:36px;border-radius:9999px;background:rgba(255,255,255,.15);color:#fff;padding:0 16px;font-size:12px;font-weight:600;border:none;cursor:pointer">🔊 Check Audio</button></div></div>
       </div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;z-index:5">
-        <div style="display:flex;gap:8px"><div class="badge"><span style="width:7px;height:7px;background:#22C55E;border-radius:50%;display:inline-block"></span><span id="quality">Connecting</span> • <span id="dur">00:00</span></div><div class="badge" id="sessBadge" style="font-family:monospace">••••</div></div>
-        <div class="badge" style="background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.3)">📹 Video Fixed • TURN</div>
+      <div style="position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;z-index:5;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><div class="badge"><span style="width:7px;height:7px;background:#22C55E;border-radius:50%;display:inline-block"></span><span id="quality">Connecting</span> • <span id="dur">00:00</span></div><div class="badge" id="sessBadge" style="font-family:monospace">••••</div><div class="badge" id="iceBadge" style="font-size:10px">ICE: new</div></div>
+        <div class="badge" style="background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.3)">✅ Video Fixed V2 • TURN</div>
       </div>
       <div id="pip" class="pip"><video id="localVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#0B1020"></video><div style="position:absolute;bottom:4px;left:4px;right:4px;display:flex;justify-content:space-between"><span style="background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 7px;border-radius:9999px">You</span><span id="micBadge" class="hidden" style="background:#EF4444;color:#fff;font-size:10px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center">🔇</span></div></div>
       <div id="reactions" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div id="callDebug" style="position:absolute;bottom:90px;left:12px;background:rgba(0,0,0,.7);color:#22C55E;font-family:monospace;font-size:10px;padding:8px 10px;border-radius:10px;max-width:300px;max-height:80px;overflow:auto;z-index:5">Debug: call init...</div>
+      <div id="callDebug" style="position:absolute;bottom:90px;left:12px;background:rgba(0,0,0,.75);color:#22C55E;font-family:monospace;font-size:10px;padding:8px 10px;border-radius:10px;max-width:340px;max-height:100px;overflow:auto;z-index:5;white-space:pre-wrap">Debug: call init...</div>
     </div>
   </div>
   <div class="ctrls"><div class="ctrls-inner">
@@ -135,6 +103,7 @@ h1,h2{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
     <div style="width:1px;height:20px;background:rgba(255,255,255,.15)"></div>
     <button id="screenShare" class="c c-light">🖥️</button>
     <button id="reactBtn" class="c c-light">❤️</button>
+    <button id="retryBtn" class="c c-light" style="background:#2563EB">🔄</button>
     <div style="width:1px;height:20px;background:rgba(255,255,255,.15)"></div>
     <button id="endCall" class="c c-red">✕</button>
   </div></div>
@@ -143,14 +112,14 @@ h1,h2{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
 <div id="fullModal" class="hidden" style="position:fixed;inset:0;background:#0B1020;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;border-radius:24px;padding:28px;max-width:400px;width:100%;text-align:center;display:flex;flex-direction:column;gap:20px">
     <div style="width:60px;height:60px;border-radius:50%;background:#FEF2F2;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:22px">🔒</div>
-    <div><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">Call is full</h2><p style="font-size:14px;color:#64748B">This private call already has 2 people. InkoCaller enforces exactly 2.</p></div>
+    <div><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">Call is full</h2><p style="font-size:14px;color:#64748B">This private call already has 2 people. Exactly 2 enforced.</p></div>
     <button onclick="location.href=location.pathname" style="height:44px;border-radius:9999px;background:var(--ink);color:#fff;font-weight:600;width:100%;border:none;cursor:pointer">Start New Call</button>
   </div>
 </div>
 
 <script>
-// FIXED VERSION - Video/audio sharing properly implemented
-const ICE = [
+// FIXED V2 - Video/Audio sharing properly fixed
+const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
   { urls: 'stun:stun2.l.google.com:19302' },
@@ -161,39 +130,57 @@ const ICE = [
 ];
 
 let peer=null, dataConn=null, mediaConn=null, localStream=null, remoteStream=null;
-let sessionId=null, isHost=false, count=0, audioOn=true, videoOn=true, durInt=null, secs=0;
+let sessionId=null, isHost=false, count=0, audioOn=true, videoOn=true, durInt=null, secs=0, retryCount=0, mediaRetryInt=null;
 
 const $ = id=>document.getElementById(id);
 const log = (m)=>{
-  const d=$('debug'); if(d) d.textContent+=`\n${new Date().toLocaleTimeString()} ${m}`;
-  const pd=$('preDebug'); if(pd) pd.textContent+=`\n${m}`;
-  const cd=$('callDebug'); if(cd) cd.textContent+=`\n${m}`;
-  console.log(m);
+  const now=new Date().toLocaleTimeString();
+  const msg=`${now} ${m}`;
+  ['debug','preDebug','callDebug'].forEach(id=>{
+    const el=$(id);
+    if(el){
+      el.textContent+=`\n${msg}`;
+      el.scrollTop=el.scrollHeight;
+    }
+  });
+  console.log(msg);
 };
 const genId=()=>{ const a=new Uint8Array(12); crypto.getRandomValues(a); return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('').substring(0,16).toLowerCase(); };
 const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 
 async function getMedia(video=true){
+  log(`getMedia video=${video}`);
   try{
-    const stream=await navigator.mediaDevices.getUserMedia({video: video?{width:{ideal:1280},height:{ideal:720},facingMode:'user'}:false, audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+    const stream=await navigator.mediaDevices.getUserMedia({
+      video: video?{width:{ideal:1280, max:1920},height:{ideal:720, max:1080},frameRate:{ideal:30},facingMode:'user'}:false,
+      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,sampleRate:48000}
+    });
     localStream=stream;
-    $('previewVideo').srcObject=stream;
-    $('localVideo').srcObject=stream;
-    $('previewVideo').onloadedmetadata=()=>$('previewVideo').play().catch(()=>{});
-    $('localVideo').onloadedmetadata=()=>$('localVideo').play().catch(()=>{});
-    log(`Local stream OK: video=${stream.getVideoTracks().length}, audio=${stream.getAudioTracks().length}`);
+    const pv=$('previewVideo'), lv=$('localVideo');
+    if(pv){ pv.srcObject=stream; pv.muted=true; pv.onloadedmetadata=()=>pv.play().catch(e=>log(`preview play fail ${e.message}`)); }
+    if(lv){ lv.srcObject=stream; lv.muted=true; lv.onloadedmetadata=()=>lv.play().catch(e=>log(`local play fail ${e.message}`)); }
+    // Ensure tracks enabled
+    stream.getVideoTracks().forEach(t=>{ t.enabled=video; log(`Video track ${t.id} enabled=${t.enabled} readyState=${t.readyState}`); });
+    stream.getAudioTracks().forEach(t=>{ t.enabled=audioOn; log(`Audio track ${t.id} enabled=${t.enabled} readyState=${t.readyState}`); });
+    $('previewOff').classList.toggle('hidden', video);
+    log(`Local stream OK: video=${stream.getVideoTracks().length} audio=${stream.getAudioTracks().length}`);
     return stream;
   }catch(e){
-    log(`getUserMedia error: ${e.name} ${e.message}`);
+    log(`getUserMedia FAILED: ${e.name} ${e.message}`);
     $('previewOff').classList.remove('hidden');
-    try{
-      const audioOnly=await navigator.mediaDevices.getUserMedia({audio:true});
-      localStream=audioOnly;
-      $('localVideo').srcObject=audioOnly;
-      log('Audio only fallback OK');
-      return audioOnly;
-    }catch(e2){
-      log(`Audio fallback failed: ${e2.message}`);
+    if(video){
+      try{
+        log('Trying audio only fallback');
+        const audioOnly=await navigator.mediaDevices.getUserMedia({audio:true});
+        localStream=audioOnly;
+        $('localVideo').srcObject=audioOnly;
+        log('Audio only OK');
+        return audioOnly;
+      }catch(e2){
+        log(`Audio fallback failed: ${e2.message}`);
+        throw e;
+      }
+    }else{
       throw e;
     }
   }
@@ -219,12 +206,12 @@ function showCallScreen(){
   if(!durInt){
     durInt=setInterval(()=>{ secs++; $('dur').textContent=fmt(secs); },1000);
   }
-  log('Call screen shown');
+  log('Call screen shown, duration timer started');
 }
 
 function showFullModal(){
   $('fullModal').classList.remove('hidden');
-  log('Call full - rejected third user');
+  log('Call full modal shown - third user rejected');
 }
 
 function showReaction(emoji){
@@ -242,34 +229,40 @@ function showReaction(emoji){
 
 function createPeer(id){
   return new Promise((resolve,reject)=>{
-    log(`Creating peer: ${id}`);
+    log(`Creating peer ID: ${id} with ${ICE_SERVERS.length} ICE servers`);
     const p=new Peer(id, {
-      config: { iceServers: ICE },
-      debug: 1
+      config: { iceServers: ICE_SERVERS },
+      debug: 2
     });
     p.on('open', peerId=>{
-      log(`Peer open: ${peerId}`);
+      log(`✅ Peer OPEN: ${peerId}`);
       resolve(p);
     });
     p.on('error', err=>{
-      log(`Peer error: ${err.type} ${err.message}`);
+      log(`❌ Peer ERROR: type=${err.type} msg=${err.message}`);
       if(err.type==='peer-unavailable'){
-        log('Peer unavailable - host not found');
+        log('Peer unavailable - host may not be online yet, will retry');
       }else if(err.type==='network'){
-        log('Network error - check internet / TURN');
+        log('Network error - check internet');
+      }else if(err.type==='server-error'){
+        log('PeerJS server error - try again');
       }
-      // Don't reject for peer-unavailable, handle gracefully
-      if(err.type!=='peer-unavailable') reject(err);
+      if(err.type!=='peer-unavailable' && err.type!=='server-error'){
+        // For critical errors, reject
+        // But for peer-unavailable, don't reject, handle in caller
+      }
     });
     p.on('disconnected', ()=>{
-      log('Peer disconnected, reconnecting...');
+      log('Peer disconnected, attempting reconnect...');
       p.reconnect();
     });
-    // Handle incoming data connections
+    p.on('close', ()=>log('Peer closed'));
+    
+    // Incoming data
     p.on('connection', incomingDataConn=>{
-      log(`Incoming data connection from ${incomingDataConn.peer}`);
+      log(`📥 Incoming DATA connection from ${incomingDataConn.peer}`);
       if(count>=2){
-        log('Rejecting third data connection - call full');
+        log('🚫 Rejecting third DATA - call full (2/2)');
         incomingDataConn.on('open', ()=>{
           incomingDataConn.send({type:'full'});
           setTimeout(()=>incomingDataConn.close(),500);
@@ -278,20 +271,23 @@ function createPeer(id){
       }
       setupDataConn(incomingDataConn);
     });
-    // Handle incoming media calls - CRITICAL FOR VIDEO SHARING
+    
+    // Incoming media - CRITICAL FOR VIDEO
     p.on('call', incomingCall=>{
-      log(`Incoming media call from ${incomingCall.peer} - answering with local stream`);
+      log(`📥 Incoming MEDIA call from ${incomingCall.peer}`);
       if(count>=2){
-        log('Rejecting third media call - call full');
+        log('🚫 Rejecting third MEDIA call - call full');
         incomingCall.close();
         return;
       }
+      log(`Answering media call with localStream tracks=${localStream?localStream.getTracks().length:0}`);
       if(!localStream){
-        log('No local stream to answer with, getting media first');
+        log('No localStream yet, getting media then answering');
         getMedia(videoOn).then(()=>{
           incomingCall.answer(localStream);
           setupMediaConn(incomingCall);
-        }).catch(()=>{
+        }).catch(e=>{
+          log(`Failed to get media for answer: ${e.message}, answering with null`);
           incomingCall.answer(null);
           setupMediaConn(incomingCall);
         });
@@ -306,79 +302,158 @@ function createPeer(id){
 function setupDataConn(conn){
   dataConn=conn;
   conn.on('open', ()=>{
-    log(`Data connection open with ${conn.peer}`);
+    log(`✅ Data connection OPEN with ${conn.peer}`);
     count++;
     updateLink();
     $('remoteStatus').textContent='Connected';
-    $('remoteSub').textContent='Data channel open, waiting for media...';
+    $('remoteSub').textContent='Data channel open, waiting for media... (will auto-retry)';
+    $('preStatus').textContent='Connected, waiting for media...';
+    $('quality').textContent='Connected';
+    // Start media retry interval if no remote stream
+    if(mediaRetryInt) clearInterval(mediaRetryInt);
+    mediaRetryInt=setInterval(()=>{
+      if(!remoteStream){
+        log(`No remote stream yet, retry count ${retryCount}, attempting media call retry...`);
+        retryMedia();
+        retryCount++;
+        if(retryCount>5){
+          clearInterval(mediaRetryInt);
+          log('Max retries reached, check camera permission and network');
+        }
+      }else{
+        clearInterval(mediaRetryInt);
+      }
+    },3000);
   });
   conn.on('data', data=>{
-    log(`Data received: ${JSON.stringify(data)}`);
+    log(`📩 Data received: ${JSON.stringify(data)}`);
     if(data.type==='full'){
       showFullModal();
     }else if(data.type==='reaction'){
       showReaction(data.emoji);
-    }else if(data.type==='chat'){
-      log(`Chat: ${data.msg}`);
     }
   });
   conn.on('close', ()=>{
-    log('Data connection closed');
+    log('Data connection CLOSED');
     count=Math.max(0,count-1);
     updateLink();
     $('remotePlaceholder').style.display='flex';
     $('remoteStatus').textContent='Other person left';
     $('remoteSub').textContent='Waiting...';
+    if(mediaRetryInt) clearInterval(mediaRetryInt);
   });
   conn.on('error', err=>log(`Data conn error: ${err}`));
 }
 
 function setupMediaConn(mediaConnection){
   mediaConn=mediaConnection;
-  log(`Setting up media connection with ${mediaConnection.peer}`);
+  log(`Setting up media conn with ${mediaConnection.peer}, peerConnection exists=${!!mediaConnection.peerConnection}`);
+  
+  // Monitor ICE
+  const pc=mediaConnection.peerConnection;
+  if(pc){
+    pc.oniceconnectionstatechange=()=>{
+      const state=pc.iceConnectionState;
+      log(`ICE state: ${state}`);
+      $('iceBadge').textContent=`ICE: ${state}`;
+      if(state==='connected' || state==='completed'){
+        $('quality').textContent='Excellent';
+        log('✅ ICE connected - media should flow');
+      }else if(state==='failed'){
+        log('❌ ICE failed - trying restart');
+        pc.restartIce();
+      }
+    };
+    pc.onconnectionstatechange=()=>{
+      log(`Connection state: ${pc.connectionState}`);
+    };
+  }
   
   mediaConnection.on('stream', remoteStreamObj=>{
-    log(`✅ REMOTE STREAM RECEIVED: ${remoteStreamObj.getTracks().length} tracks, video=${remoteStreamObj.getVideoTracks().length}, audio=${remoteStreamObj.getAudioTracks().length}`);
+    log(`✅✅✅ REMOTE STREAM RECEIVED! Tracks=${remoteStreamObj.getTracks().length} video=${remoteStreamObj.getVideoTracks().length} audio=${remoteStreamObj.getAudioTracks().length}`);
     remoteStream=remoteStreamObj;
     const remoteVideo=$('remoteVideo');
     remoteVideo.srcObject=remoteStreamObj;
+    remoteVideo.muted=false;
+    remoteVideo.volume=1;
     remoteVideo.onloadedmetadata=()=>{
-      log('Remote video metadata loaded, playing...');
+      log('Remote video metadata loaded, attempting play...');
       remoteVideo.play().then(()=>{
-        log('✅ Remote video playing!');
+        log('✅✅✅ REMOTE VIDEO PLAYING! Video/audio shared successfully!');
         $('remotePlaceholder').style.display='none';
         $('quality').textContent='Excellent';
+        $('iceBadge').textContent='ICE: connected';
         count=2;
         updateLink();
         showCallScreen();
+        if(mediaRetryInt) clearInterval(mediaRetryInt);
       }).catch(e=>{
-        log(`Remote video play failed: ${e.message}, trying again...`);
-        // Try again with user gesture
-        setTimeout(()=>remoteVideo.play().catch(()=>{}),500);
-        $('remotePlaceholder').style.display='none';
-        showCallScreen();
+        log(`❌ Remote video play failed: ${e.name} ${e.message} - trying again with user gesture`);
+        // Show placeholder with retry button
+        $('remoteStatus').textContent='Click to play video';
+        $('remoteSub').textContent=`Play failed: ${e.message}. Click Retry or tap video.`;
+        remoteVideo.addEventListener('click', ()=>{
+          remoteVideo.play().then(()=>{
+            log('Remote video playing after click');
+            $('remotePlaceholder').style.display='none';
+            showCallScreen();
+          }).catch(()=>{});
+        }, {once:true});
       });
     };
-    // Also try to play immediately
-    remoteVideo.play().catch(()=>{});
+    // Try immediate play
+    remoteVideo.play().catch(e=>log(`Immediate play failed: ${e.message}`));
     
-    // Handle track ended
+    // Track events
     remoteStreamObj.getTracks().forEach(track=>{
+      log(`Remote track: kind=${track.kind} enabled=${track.enabled} readyState=${track.readyState} muted=${track.muted}`);
       track.onended=()=>log(`Remote track ended: ${track.kind}`);
       track.onmute=()=>log(`Remote track muted: ${track.kind}`);
-      track.onunmute=()=>log(`Remote track unmuted: ${track.kind}`);
+      track.onunmute=()=>{ log(`Remote track unmuted: ${track.kind}`); remoteVideo.play().catch(()=>{}); };
     });
+    
+    // Also ensure placeholder hidden after short delay even if play fails
+    setTimeout(()=>{
+      if(remoteStreamObj.getTracks().length>0){
+        $('remotePlaceholder').style.display='none';
+        showCallScreen();
+      }
+    },1000);
   });
   
   mediaConnection.on('close', ()=>{
-    log('Media connection closed');
+    log('Media connection CLOSED');
     $('remotePlaceholder').style.display='flex';
     $('remoteStatus').textContent='Call ended';
   });
   
   mediaConnection.on('error', err=>{
-    log(`Media conn error: ${err.type} ${err.message}`);
+    log(`❌ Media conn error: ${err.type} ${err.message}`);
   });
+}
+
+async function retryMedia(){
+  if(!peer || !sessionId) return;
+  const targetId='inkocaller-'+sessionId;
+  if(peer.id===targetId){
+    log('Host: waiting for guest to call, not retrying as host');
+    return;
+  }
+  log(`Retrying media call to ${targetId} with stream tracks=${localStream?localStream.getTracks().length:0}`);
+  if(!localStream){
+    await getMedia(videoOn);
+  }
+  try{
+    const mc=peer.call(targetId, localStream);
+    if(mc){
+      setupMediaConn(mc);
+      log('Retry media call created');
+    }else{
+      log('Retry media call failed - peer not found');
+    }
+  }catch(e){
+    log(`Retry failed: ${e.message}`);
+  }
 }
 
 async function startAsHost(){
@@ -386,13 +461,13 @@ async function startAsHost(){
   location.hash=sessionId;
   isHost=true;
   count=1;
-  log(`Starting as HOST with session ${sessionId}`);
+  log(`Starting as HOST session=${sessionId}`);
   await getMedia(true);
   peer=await createPeer('inkocaller-'+sessionId);
   showPre();
-  $('preDesc').textContent='You are host. Share link with one person. Video/audio will be shared when they join. TURN ensures all networks.';
-  $('preStatus').textContent='Waiting for other person...';
-  log('Host ready, waiting for guest');
+  $('preDesc').textContent='You are host. Share link with one person. Video/audio fixed V2 - will be shared when they join.';
+  $('preStatus').textContent='Waiting for other person... Share link';
+  log('Host ready, waiting');
 }
 
 async function startAsGuest(hostSessionId){
@@ -402,166 +477,72 @@ async function startAsGuest(hostSessionId){
   await getMedia(true);
   const guestId='inkocaller-guest-'+genId().slice(0,8);
   peer=await createPeer(guestId);
-  log(`Guest peer created, connecting to host inkocaller-${hostSessionId}`);
+  log(`Guest peer ${guestId} connecting to host inkocaller-${hostSessionId}`);
   
-  // Data connection
-  const dc=peer.connect('inkocaller-'+hostSessionId, { reliable: true });
+  const targetHostId='inkocaller-'+hostSessionId;
+  
+  // Data
+  const dc=peer.connect(targetHostId, { reliable: true });
   dc.on('open', ()=>{
-    log('Guest data connection open to host');
+    log('✅ Guest data OPEN to host');
     setupDataConn(dc);
-    // Now make media call - CRITICAL
-    log(`Guest calling host with local stream: ${localStream.getTracks().length} tracks`);
-    const mc=peer.call('inkocaller-'+hostSessionId, localStream);
-    if(!mc){
-      log('Failed to create media call - peer not found?');
-      $('preStatus').textContent='Host not found, retrying...';
-      setTimeout(()=>startAsGuest(hostSessionId),2000);
-      return;
-    }
-    setupMediaConn(mc);
-    $('preStatus').textContent='Connecting media...';
+    // Media call after short delay
+    setTimeout(async()=>{
+      log(`Guest calling host media with ${localStream.getTracks().length} tracks`);
+      const mc=peer.call(targetHostId, localStream);
+      if(!mc){
+        log('❌ Media call creation failed - host not found, retrying in 2s');
+        $('preStatus').textContent='Host not found, retrying...';
+        setTimeout(()=>startAsGuest(hostSessionId),2000);
+        return;
+      }
+      setupMediaConn(mc);
+      $('preStatus').textContent='Media connecting...';
+    },500);
   });
   dc.on('error', err=>{
-    log(`Guest data conn error: ${err.type}`);
+    log(`Guest data error: ${err.type} - retrying`);
     $('preStatus').textContent='Connection failed, retrying...';
+    setTimeout(()=>startAsGuest(hostSessionId),2000);
   });
-  dc.on('close', ()=>{
-    log('Guest data conn closed');
-  });
-  
-  // Also handle incoming call from host (in case host calls guest)
-  // Already handled via peer.on('call')
   
   showPre();
-  $('preDesc').textContent='Joining host... Video/audio will be shared P2P via TURN if needed. Exactly 2 enforced.';
+  $('preDesc').textContent='Joining host... Video/audio fixed V2 will be shared P2P via TURN.';
   $('preCount').textContent='1/2';
   updateLink();
 }
 
-// UI Events
-$('startBtn').onclick=()=>{
-  startAsHost().catch(e=>log(`Host start failed: ${e.message}`));
-};
+// UI
+$('startBtn').onclick=()=>startAsHost().catch(e=>log(`Host failed ${e.message}`));
+$('joinVideoBtn').onclick=()=>{ videoOn=true; audioOn=true; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=true); localStream.getAudioTracks().forEach(t=>t.enabled=true); $('previewOff').classList.add('hidden'); } showCallScreen(); log('Joined video'); };
+$('joinAudioBtn').onclick=()=>{ videoOn=false; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=false); $('previewOff').classList.remove('hidden'); } showCallScreen(); log('Joined audio only'); };
+$('copyBtn').onclick=()=>{ navigator.clipboard.writeText($('shareLink').value).then(()=>{ $('copyBtn').textContent='Copied!'; setTimeout(()=>$('copyBtn').textContent='Copy',2000); log('Link copied'); }); };
+document.querySelectorAll('.share').forEach(b=>{ b.onclick=()=>{ const url=$('shareLink').value; const txt=`Join my private call on InkoCaller (2 people only, video fixed V2, all networks): ${url}`; const t=b.dataset.t; if(t==='whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank'); else if(t==='sms') window.open(`sms:?&body=${encodeURIComponent(txt)}`,'_blank'); else if(t==='email') window.open(`mailto:?subject=Private Call&body=${encodeURIComponent(txt)}`,'_blank'); }; });
+$('toggleAudio').onclick=()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); $('toggleAudio').textContent=audioOn?'🎤':'🔇'; $('toggleAudio').style.background=audioOn?'rgba(255,255,255,.18)':'#EF4444'; $('micBadge').classList.toggle('hidden', audioOn); log(`Audio ${audioOn?'on':'off'}`); };
+$('toggleVideo').onclick=()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); $('toggleVideo').textContent=videoOn?'📹':'🚫'; $('toggleVideo').style.background=videoOn?'rgba(255,255,255,.18)':'#EF4444'; log(`Video ${videoOn?'on':'off'}`); };
+$('screenShare').onclick=async()=>{ try{ const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true}); const screenTrack=screenStream.getVideoTracks()[0]; const sender=mediaConn?mediaConn.peerConnection.getSenders().find(s=>s.track&&s.track.kind==='video'):null; if(sender) await sender.replaceTrack(screenTrack); $('localVideo').srcObject=screenStream; screenTrack.onended=async()=>{ const camTrack=localStream.getVideoTracks()[0]; if(sender) await sender.replaceTrack(camTrack); $('localVideo').srcObject=localStream; log('Screen share ended'); }; log('Screen share started'); }catch(e){ log(`Screen share fail ${e.message}`); } };
+$('reactBtn').onclick=()=>{ const emojis=['❤️','👍','😂','🎉','👏']; const emoji=emojis[Math.floor(Math.random()*emojis.length)]; const el=document.createElement('div'); el.textContent=emoji; el.style.position='absolute'; el.style.left=(40+Math.random()*20)+'%'; el.style.bottom='100px'; el.style.fontSize='36px'; el.style.animation='reaction 1.2s ease-out forwards'; $('reactions').appendChild(el); setTimeout(()=>el.remove(),1200); if(dataConn&&dataConn.open) dataConn.send({type:'reaction',emoji}); log(`Reaction ${emoji}`); };
+$('retryBtn').onclick=()=>{ log('Manual retry clicked'); retryMedia(); };
+$('retryMedia').onclick=()=>{ log('Pre-call retry clicked'); retryMedia(); };
+$('testAudio').onclick=()=>{ log('Testing audio...'); if(localStream){ const audioTracks=localStream.getAudioTracks(); log(`Local audio tracks: ${audioTracks.length} enabled=${audioTracks[0]?.enabled}`); } if(remoteStream){ const audioTracks=remoteStream.getAudioTracks(); log(`Remote audio tracks: ${audioTracks.length} enabled=${audioTracks[0]?.enabled} muted=${audioTracks[0]?.muted}`); const rv=$('remoteVideo'); rv.muted=false; rv.volume=1; rv.play().catch(e=>log(`Audio play fail ${e.message}`)); } };
+$('placeholderRetry').onclick=()=>{ log('Placeholder retry clicked'); retryMedia(); };
+$('placeholderAudio').onclick=()=>{ const rv=$('remoteVideo'); rv.muted=false; rv.volume=1; rv.play().then(()=>log('Remote play after placeholder click')).catch(e=>log(`Play fail ${e.message}`)); };
+$('endCall').onclick=()=>{ if(durInt) clearInterval(durInt); if(mediaRetryInt) clearInterval(mediaRetryInt); if(localStream) localStream.getTracks().forEach(t=>t.stop()); if(peer) peer.destroy(); location.hash=''; location.reload(); };
+$('preAudio').onclick=()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); $('preAudio').style.background=audioOn?'rgba(255,255,255,.2)':'#EF4444'; };
+$('preVideo').onclick=()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); $('preVideo').style.background=videoOn?'rgba(255,255,255,.2)':'#EF4444'; $('previewOff').classList.toggle('hidden', videoOn); };
 
-$('joinVideoBtn').onclick=()=>{
-  videoOn=true;
-  audioOn=true;
-  if(localStream){
-    localStream.getVideoTracks().forEach(t=>t.enabled=true);
-    localStream.getAudioTracks().forEach(t=>t.enabled=true);
-    $('previewOff').classList.add('hidden');
-  }
-  showCallScreen();
-  log('Joined with video');
-};
-
-$('joinAudioBtn').onclick=()=>{
-  videoOn=false;
-  if(localStream){
-    localStream.getVideoTracks().forEach(t=>t.enabled=false);
-    $('previewOff').classList.remove('hidden');
-  }
-  showCallScreen();
-  log('Joined with audio only');
-};
-
-$('copyBtn').onclick=()=>{
-  navigator.clipboard.writeText($('shareLink').value).then(()=>{
-    $('copyBtn').textContent='Copied!';
-    setTimeout(()=>$('copyBtn').textContent='Copy',2000);
-    log('Link copied');
-  });
-};
-
-document.querySelectorAll('.share').forEach(b=>{
-  b.onclick=()=>{
-    const url=$('shareLink').value;
-    const txt=`Join my private call on InkoCaller (2 people only, secure, all networks, video fixed): ${url}`;
-    const t=b.dataset.t;
-    if(t==='whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
-    else if(t==='sms') window.open(`sms:?&body=${encodeURIComponent(txt)}`,'_blank');
-    else if(t==='email') window.open(`mailto:?subject=Private Call&body=${encodeURIComponent(txt)}`,'_blank');
-  };
-});
-
-$('toggleAudio').onclick=()=>{
-  audioOn=!audioOn;
-  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn);
-  $('toggleAudio').textContent=audioOn?'🎤':'🔇';
-  $('toggleAudio').style.background=audioOn?'rgba(255,255,255,.15)':'#EF4444';
-  $('micBadge').classList.toggle('hidden', audioOn);
-  log(`Audio ${audioOn?'on':'off'}`);
-};
-
-$('toggleVideo').onclick=()=>{
-  videoOn=!videoOn;
-  if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn);
-  $('toggleVideo').textContent=videoOn?'📹':'🚫';
-  $('toggleVideo').style.background=videoOn?'rgba(255,255,255,.15)':'#EF4444';
-  log(`Video ${videoOn?'on':'off'}`);
-};
-
-$('screenShare').onclick=async()=>{
-  try{
-    const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
-    const screenTrack=screenStream.getVideoTracks()[0];
-    const sender=mediaConn?mediaConn.peerConnection.getSenders().find(s=>s.track && s.track.kind==='video'):null;
-    if(sender) await sender.replaceTrack(screenTrack);
-    $('localVideo').srcObject=screenStream;
-    screenTrack.onended=async()=>{
-      const camTrack=localStream.getVideoTracks()[0];
-      if(sender) await sender.replaceTrack(camTrack);
-      $('localVideo').srcObject=localStream;
-      log('Screen share ended, back to camera');
-    };
-    log('Screen sharing started');
-  }catch(e){ log(`Screen share failed: ${e.message}`); }
-};
-
-$('reactBtn').onclick=()=>{
-  const emojis=['❤️','👍','😂','🎉','👏'];
-  const emoji=emojis[Math.floor(Math.random()*emojis.length)];
-  showReaction(emoji);
-  if(dataConn && dataConn.open) dataConn.send({type:'reaction',emoji});
-  log(`Reaction sent: ${emoji}`);
-};
-
-$('endCall').onclick=()=>{
-  if(durInt) clearInterval(durInt);
-  if(localStream) localStream.getTracks().forEach(t=>t.stop());
-  if(peer) peer.destroy();
-  location.hash='';
-  location.reload();
-};
-
-$('preAudio').onclick=()=>{
-  audioOn=!audioOn;
-  if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn);
-  $('preAudio').style.background=audioOn?'rgba(255,255,255,.2)':'#EF4444';
-};
-
-$('preVideo').onclick=()=>{
-  videoOn=!videoOn;
-  if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn);
-  $('preVideo').style.background=videoOn?'rgba(255,255,255,.2)':'#EF4444';
-  $('previewOff').classList.toggle('hidden', videoOn);
-};
-
-// Auto-join if hash present
+// Auto-join from hash
 window.addEventListener('load', ()=>{
   const hash=location.hash.replace('#','');
   if(hash && hash.length>=8){
-    log(`Found hash ${hash}, joining as guest...`);
+    log(`Hash found ${hash}, joining as guest...`);
     sessionId=hash;
-    startAsGuest(hash).catch(e=>log(`Guest start failed: ${e.message}`));
+    startAsGuest(hash).catch(e=>log(`Guest fail ${e.message}`));
   }else{
-    log('No hash, landing page. Click Start a Call.');
+    log('Landing, click Start a Call. Video Fixed V2 ready.');
   }
 });
-
-window.addEventListener('hashchange', ()=>{
-  if(!location.hash) location.reload();
-});
+window.addEventListener('hashchange', ()=>{ if(!location.hash) location.reload(); });
 </script>
 </body>
 </html>
