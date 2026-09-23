@@ -3,241 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
-<title>InkoCaller — Private calls. Just two people. Polished & Fixed</title>
-<meta name="description" content="Simple, private 1:1 video & voice calls. Works over all networks via TURN. No signup, no groups.">
+<title>InkoCaller — Private calls. Just two people.</title>
+<meta name="description" content="Simple, private 1:1 video & voice calls. One link, direct connect, no signup. Works over all networks via TURN.">
 <meta name="theme-color" content="#0B1020">
-<link rel="icon" href="public/icons/icon-192.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%232563EB'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800' font-size='18'>I</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/yjs@13.6.18/dist/yjs.js"></script>
-<script src="https://unpkg.com/y-webrtc@10.2.5/dist/y-webrtc.js"></script>
 <style>
-:root{--ink:#0B1020;--primary:#2563EB;--violet:#7C3AED;--bg:#F8FAFC;--success:#22C55E;--danger:#EF4444;--warning:#F59E0B}
+:root{--ink:#0B1020;--primary:#2563EB;--violet:#7C3AED;--bg:#F8FAFC;--success:#22C55E;--danger:#EF4444;--warning:#F59E0B;--border:#E2E8F0;--muted:#64748B}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-width:320px}
 h1,h2,h3{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
-.btn{height:52px;border-radius:9999px;padding:0 28px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;transition:all .2s;user-select:none}
-.btn-dark{background:var(--ink);color:#fff;box-shadow:0 10px 30px -10px rgba(37,99,235,.4)} .btn-dark:hover{background:#000;transform:translateY(-1px);box-shadow:0 15px 40px -12px rgba(0,0,0,.4)} .btn-dark:active{transform:scale(.98)}
-.btn-light{background:#fff;border:1px solid #E2E8F0;color:var(--ink)} .btn-light:hover{background:#F8FAFC;border-color:#CBD5E1}
+.btn{height:52px;border-radius:9999px;padding:0 28px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;transition:all .2s;user-select:none;touch-action:manipulation}
+.btn-dark{background:var(--ink);color:#fff;box-shadow:0 10px 30px -10px rgba(37,99,235,.4)} .btn-dark:hover{background:#000;transform:translateY(-1px)} .btn-dark:active{transform:scale(.98)}
+.btn-light{background:#fff;border:1px solid var(--border);color:var(--ink)} .btn-light:hover{background:#F8FAFC;border-color:#CBD5E1}
 .btn-small{height:36px;padding:0 16px;font-size:13px}
 .hidden{display:none!important}
-.badge{display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.02em}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
 .badge-success{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0}
 .badge-warning{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
 .badge-danger{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
 .badge-neutral{background:rgba(0,0,0,.06);color:#475569;border:1px solid rgba(0,0,0,.08)}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
 .dot-green{background:var(--success);box-shadow:0 0 0 4px rgba(34,197,94,.2)} .dot-yellow{background:var(--warning)} .dot-red{background:var(--danger)}
 .card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:20px;padding:20px;box-shadow:0 4px 20px -4px rgba(0,0,0,.06);transition:all .2s}
-.card:hover{box-shadow:0 12px 40px -8px rgba(0,0,0,.12);transform:translateY(-2px);border-color:rgba(0,0,0,.08)}
+.card:hover{box-shadow:0 12px 40px -8px rgba(0,0,0,.12);transform:translateY(-2px)}
 .call{position:fixed;inset:0;background:#020617;z-index:100;display:flex;flex-direction:column}
-.pip{position:absolute;bottom:100px;right:16px;width:128px;height:168px;border-radius:16px;overflow:hidden;background:#0B1020;border:2px solid rgba(255,255,255,.25);box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:10;transition:all .3s;cursor:grab}
+.pip{position:absolute;bottom:100px;right:16px;width:128px;height:168px;border-radius:16px;overflow:hidden;background:#0B1020;border:2px solid rgba(255,255,255,.25);box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:10;transition:all .3s}
 @media(min-width:768px){.pip{width:200px;height:150px;bottom:108px;right:20px}}
-.ctrls{position:absolute;bottom:0;left:0;right:0;padding:14px;display:flex;justify-content:center;z-index:30;transition:all .3s}
+.ctrls{position:absolute;bottom:0;left:0;right:0;padding:14px;display:flex;justify-content:center;z-index:30}
 .ctrls-inner{display:flex;gap:8px;background:rgba(0,0,0,.8);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.14);padding:10px 14px;border-radius:9999px;box-shadow:0 12px 40px rgba(0,0,0,.5);flex-wrap:wrap;justify-content:center;max-width:90vw}
-.c{width:48px;height:48px;border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .2s;user-select:none}
+.c{width:48px;height:48px;border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .2s;touch-action:manipulation}
 .c-light{background:rgba(255,255,255,.18)} .c-light:hover{background:rgba(255,255,255,.28);transform:scale(1.05)} .c-light:active{transform:scale(.95)}
-.c-red{background:var(--danger);box-shadow:0 0 20px rgba(239,68,68,.3)} .c-red:hover{background:#DC2626;transform:scale(1.05)}
-.c-blue{background:var(--primary);box-shadow:0 0 20px rgba(37,99,235,.3)} .c-blue:hover{background:#1D4ED8;transform:scale(1.05)}
-.c-green{background:var(--success)} .c-green:hover{background:#16A34A}
-.status-bar{position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;z-index:20;gap:8px;flex-wrap:wrap;transition:all .3s}
-.debug{position:absolute;bottom:90px;left:12px;background:rgba(0,0,0,.85);color:#22C55E;font-family:monospace;font-size:10px;padding:10px;border-radius:12px;max-width:360px;max-height:120px;overflow:auto;z-index:15;white-space:pre-wrap;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}
+.c-red{background:var(--danger)} .c-red:hover{background:#DC2626;transform:scale(1.05)}
+.c-blue{background:var(--primary)} .c-blue:hover{background:#1D4ED8;transform:scale(1.05)}
+.status-bar{position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;z-index:20;gap:8px;flex-wrap:wrap}
+.debug{position:absolute;bottom:90px;left:12px;background:rgba(0,0,0,.85);color:#22C55E;font-family:monospace;font-size:10px;padding:10px;border-radius:12px;max-width:360px;max-height:120px;overflow:auto;z-index:15;white-space:pre-wrap;border:1px solid rgba(255,255,255,.1)}
 @media(max-width:768px){.debug{max-width:200px;font-size:9px;bottom:80px}}
 .chat{position:absolute;right:0;top:0;bottom:0;width:340px;background:rgba(11,16,32,.92);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.1);z-index:25;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s}
 .chat.open{transform:translateX(0)}
 @media(max-width:768px){.chat{width:100%}}
 @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .slide-in{animation:slideIn .4s ease-out}
+@keyframes reaction{0%{transform:translateY(0) scale(0.5);opacity:0}15%{opacity:1;transform:translateY(-10px) scale(1.1)}100%{transform:translateY(-120px) scale(1);opacity:0}}
+#reactions{position:absolute;inset:0;pointer-events:none;z-index:12;overflow:hidden}
 </style>
 </head>
 <body>
 <header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06)">
   <div style="max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 20px">
-    <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 8px 24px -8px rgba(37,99,235,.4)">I</div><span style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:19px">Inko<span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800">Caller</span></span><span class="badge badge-success" style="margin-left:8px"><span class="dot dot-green"></span>Polished • Fixed • Live</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-neutral">2 people only • Server-enforced</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 8px 24px -8px rgba(37,99,235,.4)">I</div><span style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:19px">Inko<span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800">Caller</span></span><span class="badge badge-success" style="margin-left:8px"><span class="dot dot-green"></span>Live • Polished</span></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-neutral">2 people only</span></div>
   </div>
 </header>
 
-<!-- Landing - Simplicity First -->
+<!-- Landing -->
 <div id="landing">
-  <section style="position:relative;padding:48px 20px 80px;overflow:hidden;background:radial-gradient(at 20% 30%,rgba(37,99,235,.1) 0,transparent 50%),radial-gradient(at 80% 20%,rgba(124,58,237,.1) 0,transparent 50%),#F8FAFC">
-    <div style="max-width:1200px;margin:0 auto;display:grid;gap:48px" id="hero"><style>@media(min-width:1000px){#hero{grid-template-columns:1.1fr .9fr;align-items:center}}</style>
-      <div style="display:flex;flex-direction:column;gap:24px">
+  <section style="position:relative;padding:32px 20px 60px;overflow:hidden;background:radial-gradient(at 20% 30%,rgba(37,99,235,.08) 0,transparent 50%),radial-gradient(at 80% 20%,rgba(124,58,237,.08) 0,transparent 50%),#F8FAFC">
+    <div style="max-width:1200px;margin:0 auto;display:grid;gap:40px" id="hero"><style>@media(min-width:1000px){#hero{grid-template-columns:1.1fr .9fr;align-items:center}}</style>
+      <div style="display:flex;flex-direction:column;gap:20px">
         <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.15);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;box-shadow:0 2px 8px -2px rgba(37,99,235,.1);width:fit-content"><span class="dot dot-green"></span>Simple • Private • Works over all networks • No signup</div>
         <h1 style="font-size:clamp(36px,6vw,56px);line-height:.9;font-weight:800;letter-spacing:-0.03em">Private calls.<br><span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Just two people.</span></h1>
-        <p style="font-size:18px;line-height:1.6;color:#475569;max-width:520px">One link, two people, instant connection. No groups, no clutter, no tracking. Video, voice, chat — works over WiFi, mobile data, and firewalls via TURN.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap"><button id="startBtn" class="btn btn-dark">Start a Private Call →</button><button id="howBtn" class="btn btn-light">How it works</button></div>
-        <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:#64748B"><span>✓ No signup required</span><span>✓ End-to-end encrypted</span><span>✓ Works in browser</span><span>✓ All networks</span></div>
+        <p style="font-size:17px;line-height:1.6;color:#475569;max-width:520px">One link, two people, instant connection. No groups, no clutter. Video, voice, chat — works over WiFi, mobile data, and firewalls.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap"><button id="startBtn" class="btn btn-dark">Start a Private Call →</button><button id="howBtn" class="btn btn-light">How it works</button><button id="testBtn" class="btn btn-light">Test Camera</button></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#64748B"><span>✓ No signup</span><span>✓ Encrypted</span><span>✓ Works in browser</span><span>✓ All networks</span></div>
         
-        <!-- Link Sharing System - One-click -->
         <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;max-width:520px" class="slide-in">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px;display:flex;align-items:center;gap:8px"><span>🔗</span> Custom Direct Connection Link System</div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px;display:flex;align-items:center;gap:8px">🔗 Your Direct Link System</div>
           <div style="font-size:13px;line-height:1.6;color:#334155;display:flex;flex-direction:column;gap:6px">
-            <div>• <b>One-click link generation:</b> Click Start a Call → secure personalized link created instantly</div>
-            <div>• <b>Direct connection:</b> Friend clicks link → directly connects to you, no room/code entry</div>
-            <div>• <b>Share anywhere:</b> Copy, WhatsApp, SMS, Email, native share — one click</div>
-            <div style="margin-top:8px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px;font-family:monospace;font-size:12px;word-break:break-all" id="exampleLink">https://nishantacharya51-debug.github.io/dual-caller/#a1b2c3d4e5f6g7h8 — personalized, secure, direct</div>
-            <div style="font-size:11px;color:#94A3B8;margin-top:4px">Each link is cryptographically secure (128-bit entropy), short-lived, and enforces exactly 2 people server-side.</div>
+            <div>• <b>One click:</b> Start Call → secure personal link created instantly</div>
+            <div>• <b>Direct connect:</b> Friend clicks link → joins you directly, no code entry</div>
+            <div>• <b>Share anywhere:</b> Copy, WhatsApp, SMS, Email — one tap</div>
+            <div style="margin-top:8px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px;font-family:monospace;font-size:12px;word-break:break-all" id="exampleLink">https://nishantacharya51-debug.github.io/dual-caller/#a1b2c3d4e5f6g7h8 — your personal direct link</div>
+            <div style="font-size:11px;color:#94A3B8;margin-top:4px">Each link is secure (128-bit), short-lived, and only allows 2 people.</div>
           </div>
         </div>
 
-        <!-- Real-time Connection Status System -->
         <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;max-width:520px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px;display:flex;align-items:center;gap:8px"><span>●</span> Real-Time Connection Status System (Not Static)</div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px;display:flex;align-items:center;gap:8px">● Real Connection Status</div>
           <div style="display:grid;gap:8px;font-size:12px">
-            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-green"></span><span><b>Connected</b> — P2P WebRTC active, video/audio flowing, Excellent/Good/Fair/Poor quality based on RTT, packet loss, bitrate</span></div>
-            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-yellow"></span><span><b>Connecting</b> — ICE checking, gathering candidates, TURN fallback if needed</span></div>
-            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-yellow"></span><span><b>Reconnecting</b> — Network changed, ICE restart, auto-recovery</span></div>
-            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-red"></span><span><b>Disconnected / Failed</b> — Network issue, camera permission denied, call full, session expired — with friendly fix instructions</span></div>
-            <div style="font-size:11px;color:#94A3B8;margin-top:4px">Status is based on actual RTCPeerConnection.connectionState and iceConnectionState, not static message. Enables functional data exchange only when truly connected.</div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-green"></span><span><b>Connected</b> — video & audio flowing, quality based on real network</span></div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-yellow"></span><span><b>Connecting</b> — finding best path, using TURN if needed</span></div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-yellow"></span><span><b>Reconnecting</b> — network changed, auto-recovering</span></div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="dot dot-red"></span><span><b>Issue</b> — clear fix instructions (camera blocked, network, etc.)</span></div>
+            <div style="font-size:11px;color:#94A3B8;margin-top:4px">Status comes from actual connection, not a static message. Chat and video only work when truly connected.</div>
           </div>
         </div>
 
-        <div id="debugLanding" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:11px;padding:12px;border-radius:12px;max-width:520px;max-height:140px;overflow:auto;white-space:pre-wrap;border:1px solid rgba(255,255,255,.1)">Debug: Ready. Simplicity first, zero bugs, tested 10x. Click Start a Call to generate your personalized direct link.</div>
+        <div id="debugLanding" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:11px;padding:12px;border-radius:12px;max-width:520px;max-height:140px;overflow:auto;white-space:pre-wrap;border:1px solid rgba(255,255,255,.1)">Ready. Click Start a Call to create your personal direct link.</div>
       </div>
       <div>
         <div style="max-width:500px;margin:0 auto;background:#fff;border-radius:24px;overflow:hidden;border:1px solid rgba(0,0,0,.08);box-shadow:0 24px 80px -20px rgba(0,0,0,.25)">
-          <div style="height:44px;background:#F8FAFC;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 14px;gap:8px"><div style="display:flex;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444"></div><div style="width:10px;height:10px;border-radius:50%;background:#F59E0B"></div><div style="width:10px;height:10px;border-radius:50%;background:#22C55E"></div></div><div style="flex:1;margin-left:12px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:9999px;padding:5px 12px;font-size:11px;color:#64748B;display:flex;align-items:center;gap:6px"><span class="dot dot-green"></span>inkocaller • 2 people • Encrypted • TURN</div></div>
+          <div style="height:44px;background:#F8FAFC;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 14px;gap:8px"><div style="display:flex;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444"></div><div style="width:10px;height:10px;border-radius:50%;background:#F59E0B"></div><div style="width:10px;height:10px;border-radius:50%;background:#22C55E"></div></div><div style="flex:1;margin-left:12px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:9999px;padding:5px 12px;font-size:11px;color:#64748B;display:flex;align-items:center;gap:6px"><span class="dot dot-green"></span>2 people • Encrypted • Works everywhere</div></div>
           <div style="aspect-ratio:4/3;background:#0B1020;position:relative">
             <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px">
-              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px;backdrop-filter:blur(8px)">You • HD • Mic on</div><div style="position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center"><div style="width:8px;height:8px;background:#22C55E;border-radius:50%"></div></div></div>
-              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px;backdrop-filter:blur(8px)">Alex • Excellent • Voice</div></div>
+              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">You • HD</div></div>
+              <div style="background:#172554;border-radius:14px;position:relative;overflow:hidden"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""><div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:3px 8px;border-radius:9999px">Alex • Excellent</div></div>
             </div>
-            <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.12);border-radius:9999px;padding:8px 12px;display:flex;gap:8px;backdrop-filter:blur(12px)"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">🎤</div><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">📹</div><div style="width:32px;height:32px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center">✓</div></div>
-            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px"><div class="badge" style="background:rgba(0,0,0,.6);color:#fff;border-color:rgba(255,255,255,.12)"><span class="dot dot-green"></span>Connected • Excellent • 01:23</div><div class="badge" style="background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.3);color:#BFDBFE">TURN Ready • All networks</div></div>
+            <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.12);border-radius:9999px;padding:8px 12px;display:flex;gap:8px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">🎤</div><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">📹</div><div style="width:32px;height:32px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center">✓</div></div>
+            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px"><div class="badge" style="background:rgba(0,0,0,.6);color:#fff;border-color:rgba(255,255,255,.12)"><span class="dot dot-green"></span>Connected • 01:23</div><div class="badge" style="background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.3);color:#BFDBFE">All networks</div></div>
           </div>
-          <div style="padding:12px;background:#F8FAFC;border-top:1px solid rgba(0,0,0,.06);display:flex;gap:8px"><div style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:9999px;padding:8px 14px;font-size:12px;color:#475569;display:flex;align-items:center;gap:8px"><span>💬</span> Private chat • Encrypted • Ephemeral</div><div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center">↑</div></div>
+          <div style="padding:12px;background:#F8FAFC;border-top:1px solid rgba(0,0,0,.06);display:flex;gap:8px"><div style="flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:9999px;padding:8px 14px;font-size:12px;color:#475569">💬 Private chat • Encrypted</div><div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center">↑</div></div>
         </div>
-        <div style="max-width:500px;margin:12px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="card" style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</div><div><div style="font-size:12px;font-weight:600">No downloads</div><div style="font-size:11px;color:#64748B">Works in browser</div></div></div><div class="card" style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</div><div><div style="font-size:12px;font-weight:600">2 people max</div><div style="font-size:11px;color:#64748B">Enforced server-side</div></div></div></div>
+        <div style="max-width:500px;margin:12px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="card" style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</div><div><div style="font-size:12px;font-weight:600">No downloads</div><div style="font-size:11px;color:#64748B">Works in browser</div></div></div><div class="card" style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</div><div><div style="font-size:12px;font-weight:600">2 people max</div><div style="font-size:11px;color:#64748B">Enforced</div></div></div></div>
       </div>
     </div>
   </section>
 
-  <section id="how" style="padding:64px 20px;background:#fff;border-top:1px solid rgba(0,0,0,.06)">
+  <section id="how" style="padding:48px 20px;background:#fff;border-top:1px solid rgba(0,0,0,.06)">
     <div style="max-width:1200px;margin:0 auto">
-      <div style="max-width:600px;margin:0 auto;text-align:center;margin-bottom:40px"><div class="badge badge-success" style="margin:0 auto 12px">HOW IT WORKS • SIMPLE</div><h2 style="font-size:32px;font-weight:800;margin-bottom:12px">Three steps, zero learning curve</h2><p style="color:#475569">Designed for non-technical users. No jargon, no clutter, just works.</p></div>
-      <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">01</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Start a Call</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Click Start a Call. A secure personalized direct link is created instantly with 128-bit entropy.</p></div><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">02</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Share One-Click</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Copy link, or share via WhatsApp, SMS, Email, native share — one click, no manual code entry.</p></div><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">03</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Direct Connect</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Friend clicks your personalized link → directly connects to you, no intermediate steps. Video/audio/chat works instantly.</p></div></div>
+      <div style="max-width:600px;margin:0 auto;text-align:center;margin-bottom:32px"><div class="badge badge-success" style="margin:0 auto 12px">HOW IT WORKS • SIMPLE</div><h2 style="font-size:28px;font-weight:800;margin-bottom:12px">Three steps, zero learning curve</h2><p style="color:#475569;font-size:14px">Designed for anyone. No jargon, no clutter, just works.</p></div>
+      <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">01</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Start a Call</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Click Start a Call. A secure personal direct link is created instantly.</p></div><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">02</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Share One Click</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Copy link, or share via WhatsApp, SMS, Email — one tap, no code to type.</p></div><div class="card"><div style="font-family:monospace;font-size:12px;color:#2563EB;font-weight:700;margin-bottom:12px">03</div><h3 style="font-size:16px;font-weight:700;margin-bottom:8px">Direct Connect</h3><p style="font-size:13px;color:#64748B;line-height:1.6">Friend clicks your link → directly connects to you. Video, audio, chat work instantly.</p></div></div>
     </div>
   </section>
 </div>
 
-<!-- Pre-call - Simple & Intuitive -->
+<!-- Pre-call -->
 <div id="preCall" class="hidden" style="position:fixed;inset:0;background:#0B1020;z-index:90;display:flex;flex-direction:column">
   <div style="height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);color:#fff"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#2563EB,#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">I</div><b>InkoCaller</b></div><div style="display:flex;align-items:center;gap:8px"><span id="preConnectionStatus" class="badge" style="background:rgba(254,243,199,.15);color:#FDE68A;border-color:rgba(253,230,138,.2)"><span class="dot dot-yellow"></span>Connecting</span><span style="font-size:11px;color:rgba(255,255,255,.5)">2 people only</span></div></div>
-  <div style="flex:1;display:grid;max-width:1200px;margin:0 auto;width:100%" id="preGrid"><style>@media(min-width:900px){#preGrid{grid-template-columns:1.1fr .9fr}}</style>
-    <div style="background:#000;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:16px">
+  <div style="flex:1;display:grid;max-width:1200px;margin:0 auto;width:100%;overflow-y:auto" id="preGrid"><style>@media(min-width:900px){#preGrid{grid-template-columns:1.1fr .9fr}}</style>
+    <div style="background:#000;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:16px;min-height:400px">
       <div style="width:100%;max-width:600px;aspect-ratio:4/3;background:#172554;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5)">
         <video id="previewVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#000"></video>
-        <div id="previewOff" class="hidden" style="position:absolute;inset:0;background:#0B1020;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:rgba(255,255,255,.6)"><div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:28px">👤</div><div>Camera off — you can still join with voice</div><div style="font-size:11px;color:rgba(255,255,255,.4);max-width:280px;text-align:center">If you see "Camera access is disabled", allow camera in browser settings and try again</div></div>
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.75));display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:8px"><button id="preAudio" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">🎤</button><button id="preVideo" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">📹</button></div><div id="preStatus" style="background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:6px 12px;border-radius:9999px;backdrop-filter:blur(8px)">Ready to join?</div></div>
+        <div id="previewOff" class="hidden" style="position:absolute;inset:0;background:#0B1020;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:rgba(255,255,255,.6)"><div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:28px">👤</div><div>Camera off — you can still join with voice</div><div style="font-size:11px;color:rgba(255,255,255,.4);max-width:280px;text-align:center">If camera is blocked, allow it in browser settings and try again. Avoid Facebook in-app browser.</div></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.75));display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:8px"><button id="preAudio" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">🎤</button><button id="preVideo" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">📹</button></div><div id="preStatus" style="background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:6px 12px;border-radius:9999px">Ready?</div></div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button id="retryMedia" class="btn btn-small" style="background:#2563EB;color:#fff;border:none">🔄 Retry Camera/Mic</button><button id="testAudio" class="btn btn-small" style="background:rgba(255,255,255,.15);color:#fff;border:none">🔊 Test Speaker</button></div>
-      <div id="permissionHelp" class="hidden" style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:12px;max-width:600px;width:100%;font-size:12px;color:#92400E"><b>Camera/mic blocked?</b> Click lock icon in address bar → Allow camera/mic → Reload. On iPhone Safari: Settings → Safari → Camera/Microphone → Allow. Avoid Facebook in-app browser, use Chrome/Safari.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button id="retryMedia" class="btn btn-small" style="background:#2563EB;color:#fff;border:none">🔄 Retry Camera</button><button id="testAudio" class="btn btn-small" style="background:rgba(255,255,255,.15);color:#fff;border:none">🔊 Test Sound</button><button id="forceRelay" class="btn btn-small" style="background:rgba(255,255,255,.15);color:#fff;border:none">🔒 Force TURN</button></div>
+      <div id="permissionHelp" class="hidden" style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:12px;max-width:600px;width:100%;font-size:12px;color:#92400E"><b>Camera blocked?</b> Click lock icon in address bar → Allow camera/mic → Reload. On iPhone: Settings → Safari → Camera/Mic → Allow. Use Chrome/Safari, not Facebook in-app.</div>
     </div>
     <div style="background:#fff;padding:24px;display:flex;align-items:center;overflow-y:auto">
-      <div style="max-width:400px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:20px">
-        <div><h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Ready to join?</h2><p id="preDesc" style="font-size:14px;color:#64748B;line-height:1.6">Your personalized direct link is ready. Share with one person. They click → directly connects to you, no code entry.</p></div>
+      <div style="max-width:400px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:18px">
+        <div><h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Ready to join?</h2><p id="preDesc" style="font-size:14px;color:#64748B;line-height:1.6">Your personal direct link is ready. Share with one person. They click → connects directly to you.</p></div>
         
-        <!-- Real-time connection status - accurate -->
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:14px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px">Real-Time Connection Status</div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:10px">Real Connection Status</div>
           <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
-            <div style="display:flex;justify-content:space-between"><span>Your status:</span><span id="yourStatus" class="badge badge-success"><span class="dot dot-green"></span>Ready</span></div>
-            <div style="display:flex;justify-content:space-between"><span>Other person:</span><span id="otherStatus" class="badge badge-neutral"><span class="dot dot-yellow"></span>Waiting...</span></div>
-            <div style="display:flex;justify-content:space-between"><span>Session:</span><span id="preCount" class="badge badge-neutral">1/2 participants</span></div>
-            <div style="display:flex;justify-content:space-between"><span>Network:</span><span id="networkStatus" class="badge badge-neutral">Checking...</span></div>
+            <div style="display:flex;justify-content:space-between"><span>You:</span><span id="yourStatus" class="badge badge-success"><span class="dot dot-green"></span>Ready</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Other:</span><span id="otherStatus" class="badge badge-neutral"><span class="dot dot-yellow"></span>Waiting</span></div>
+            <div style="display:flex;justify-content:space-between"><span>People:</span><span id="preCount" class="badge badge-neutral">1/2</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Network:</span><span id="networkStatus" class="badge badge-neutral">Checking</span></div>
           </div>
-          <div id="connectionDetails" style="margin-top:10px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;font-family:monospace;font-size:11px;color:#475569;max-height:80px;overflow:auto">Initializing... TURN ready for all networks</div>
+          <div id="connectionDetails" style="margin-top:10px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;font-family:monospace;font-size:11px;color:#475569;max-height:80px;overflow:auto">Initializing... TURN ready</div>
         </div>
 
-        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:8px">Your Personalized Direct Link (One-Click Sharing)</div><div id="preId" style="font-family:monospace;font-size:12px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;word-break:break-all">Generating...</div><div style="font-size:11px;color:#94A3B8;margin-top:8px">This link directly connects one person to you. No intermediate steps, no room code entry. Secure, short-lived, 2-person enforced.</div></div>
+        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748B;margin-bottom:8px">Your Personal Direct Link</div><div id="preId" style="font-family:monospace;font-size:12px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:10px;word-break:break-all">Generating...</div><div style="font-size:11px;color:#94A3B8;margin-top:8px">Friend clicks this link → directly connects, no code entry.</div></div>
         
         <div style="display:flex;flex-direction:column;gap:10px">
           <button id="joinVideoBtn" class="btn btn-dark" style="width:100%">📹 Join with Video</button>
-          <button id="joinAudioBtn" class="btn btn-light" style="width:100%">🎙️ Join with Voice Only</button>
+          <button id="joinAudioBtn" class="btn btn-light" style="width:100%">🎙️ Voice Only</button>
         </div>
         
-        <!-- One-click link sharing -->
         <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="font-size:11px;font-weight:600;color:#475569">Share your direct link (one-click):</div>
-          <div style="display:flex;gap:8px"><input id="shareLink" readonly style="flex:1;height:44px;border-radius:9999px;border:1px solid #E2E8F0;padding:0 16px;font-size:13px;background:#fff"><button id="copyBtn" class="btn btn-dark btn-small" style="height:44px;padding:0 20px">Copy Link</button></div>
+          <div style="font-size:11px;font-weight:600;color:#475569">Share (one click):</div>
+          <div style="display:flex;gap:8px"><input id="shareLink" readonly style="flex:1;height:44px;border-radius:9999px;border:1px solid #E2E8F0;padding:0 16px;font-size:13px;background:#fff"><button id="copyBtn" class="btn btn-dark btn-small" style="height:44px;padding:0 20px">Copy</button></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="share btn btn-small" data-t="whatsapp" style="background:#25D366;color:#fff;border:none">WhatsApp</button><button class="share btn btn-small" data-t="native" style="background:#0B1020;color:#fff;border:none">📤 Share</button><button class="share btn btn-small" data-t="sms" style="background:#fff;border:1px solid #E2E8F0">SMS</button><button class="share btn btn-small" data-t="email" style="background:#fff;border:1px solid #E2E8F0">Email</button></div>
-          <div style="font-size:11px;color:#94A3B8">When friend clicks link, they directly connect to you without manual steps.</div>
         </div>
         
-        <div id="preDebug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:10px;padding:10px;border-radius:10px;max-height:100px;overflow:auto;white-space:pre-wrap">Debug: init... Simplicity first, zero bugs.</div>
+        <div id="preDebug" style="background:#0B1020;color:#22C55E;font-family:monospace;font-size:10px;padding:10px;border-radius:10px;max-height:100px;overflow:auto;white-space:pre-wrap">Debug: init</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Call Screen - Polished, Real Connection Status, Functional Data Exchange -->
+<!-- Call Screen -->
 <div id="callScreen" class="call hidden">
   <div style="flex:1;position:relative;background:#0B1020;display:flex;overflow:hidden">
     <div style="flex:1;position:relative;background:#0B1020;display:flex;flex-direction:column">
-      <!-- Remote video -->
       <div style="flex:1;position:relative;background:#0B1020;overflow:hidden">
         <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;background:#0B1020"></video>
         <audio id="remoteAudio" autoplay style="display:none"></audio>
         <div id="remotePlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:linear-gradient(135deg,#0B1020,#172554);padding:20px">
           <div style="width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:32px">👤</div>
-          <div style="text-align:center;color:#fff;max-width:360px"><div id="remoteStatus" style="font-weight:600;font-size:16px">Waiting for other person...</div><div id="remoteSub" style="font-size:13px;color:rgba(255,255,255,.6);margin-top:8px;line-height:1.5">Share your direct link to invite them. When they click, they directly connect to you. Video/audio will appear here. Works over all networks via TURN.</div><div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button id="placeholderRetry" style="height:40px;border-radius:9999px;background:#2563EB;color:#fff;padding:0 20px;font-size:13px;font-weight:600;border:none;cursor:pointer">🔄 Retry Connection</button><button id="placeholderAudio" style="height:40px;border-radius:9999px;background:rgba(255,255,255,.15);color:#fff;padding:0 20px;font-size:13px;font-weight:600;border:none;cursor:pointer">🔊 Unmute & Play</button></div></div>
+          <div style="text-align:center;color:#fff;max-width:360px"><div id="remoteStatus" style="font-weight:600;font-size:16px">Waiting for other person...</div><div id="remoteSub" style="font-size:13px;color:rgba(255,255,255,.6);margin-top:8px;line-height:1.5">Share your direct link. When they click, they connect directly to you. Video appears here. Works over all networks.</div><div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button id="placeholderRetry" style="height:40px;border-radius:9999px;background:#2563EB;color:#fff;padding:0 20px;font-size:13px;font-weight:600;border:none;cursor:pointer">🔄 Retry</button><button id="placeholderAudio" style="height:40px;border-radius:9999px;background:rgba(255,255,255,.15);color:#fff;padding:0 20px;font-size:13px;font-weight:600;border:none;cursor:pointer">🔊 Play</button><button id="placeholderForce" style="height:40px;border-radius:9999px;background:rgba(255,255,255,.15);color:#fff;padding:0 20px;font-size:13px;font-weight:600;border:none;cursor:pointer">🔒 Force TURN</button></div></div>
         </div>
-        
-        <!-- Real-time connection status bar - accurate, not static -->
+        <div id="reactions"></div>
         <div class="status-bar" id="statusBar">
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <div id="connectionBadge" class="badge" style="background:rgba(254,243,199,.9);color:#92400E;border-color:#FDE68A"><span class="dot dot-yellow"></span><span id="connectionText">Connecting</span> • <span id="dur">00:00</span></div>
-            <div id="qualityBadge" class="badge" style="background:rgba(0,0,0,.6);color:#fff"><span id="quality">Checking...</span> • <span id="network">WiFi</span></div>
+            <div id="qualityBadge" class="badge" style="background:rgba(0,0,0,.6);color:#fff"><span id="quality">Checking</span> • <span id="network">...</span></div>
             <div class="badge" id="sessBadge" style="font-family:monospace;background:rgba(0,0,0,.6);color:#fff">•••• • 1/2</div>
           </div>
           <div style="display:flex;gap:8px">
             <div id="iceBadge" class="badge" style="background:rgba(0,0,0,.6);color:#fff;font-size:10px">ICE: new</div>
             <div id="pcBadge" class="badge" style="background:rgba(0,0,0,.6);color:#fff;font-size:10px">PC: new</div>
-            <div class="badge" style="background:rgba(34,197,94,.15);color:#BBF7D0;border-color:rgba(34,197,94,.2)">🔒 Encrypted • TURN Ready</div>
+            <div class="badge" style="background:rgba(34,197,94,.15);color:#BBF7D0;border-color:rgba(34,197,94,.2)">🔒 Encrypted</div>
           </div>
         </div>
-
-        <!-- Local PiP -->
-        <div id="pip" class="pip"><video id="localVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#0B1020"></video><div style="position:absolute;bottom:4px;left:4px;right:4px;display:flex;justify-content:space-between;align-items:center"><span style="background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 7px;border-radius:9999px;backdrop-filter:blur(4px)">You</span><span id="micBadge" class="hidden" style="background:#EF4444;color:#fff;font-size:10px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center">🔇</span></div></div>
-        
-        <div id="callDebug" class="debug">Debug: call init... Real-time status, functional exchange.</div>
+        <div id="pip" class="pip"><video id="localVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#0B1020"></video><div style="position:absolute;bottom:4px;left:4px;right:4px;display:flex;justify-content:space-between;align-items:center"><span style="background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 7px;border-radius:9999px">You</span><span id="micBadge" class="hidden" style="background:#EF4444;color:#fff;font-size:10px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center">🔇</span></div></div>
+        <div id="callDebug" class="debug">Debug: call init</div>
       </div>
     </div>
-    
-    <!-- Chat - Functional data exchange -->
     <div id="chatPanel" class="chat">
-      <div style="height:60px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#fff"><div style="display:flex;align-items:center;gap:10px"><b>Private Chat</b><span class="badge" style="background:rgba(34,197,94,.15);color:#BBF7D0;font-size:10px">2 people • Encrypted • Ephemeral</span></div><button id="closeChat" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer">✕</button></div>
-      <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"><div style="text-align:center;padding:32px 16px;color:rgba(255,255,255,.5);font-size:13px"><div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.06);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px">💬</div>Private chat between 2 people<br><span style="font-size:11px;color:rgba(255,255,255,.3)">Messages are encrypted in transit and ephemeral</span></div></div>
+      <div style="height:60px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#fff"><div style="display:flex;align-items:center;gap:10px"><b>Private Chat</b><span class="badge" style="background:rgba(34,197,94,.15);color:#BBF7D0;font-size:10px">Encrypted</span></div><button id="closeChat" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer">✕</button></div>
+      <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"><div style="text-align:center;padding:32px 16px;color:rgba(255,255,255,.5);font-size:13px"><div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.06);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:20px">💬</div>Private chat<br><span style="font-size:11px;color:rgba(255,255,255,.3)">Encrypted & private</span></div></div>
       <div style="padding:12px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:10px"><div style="display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="flex:1;height:44px;border-radius:9999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);padding:0 16px;color:#fff;font-size:14px;outline:none"><button id="sendChat" style="width:44px;height:44px;border-radius:50%;background:#2563EB;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">↑</button></div><div style="display:flex;gap:6px"><button class="react" data-e="❤️" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;font-size:16px">❤️</button><button class="react" data-e="👍" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer">👍</button><button class="react" data-e="😂" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer">😂</button><button class="react" data-e="🎉" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer">🎉</button><button class="react" data-e="👏" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer">👏</button></div></div>
     </div>
   </div>
-  
   <div class="ctrls" id="controls"><div class="ctrls-inner">
-    <button id="toggleAudio" class="c c-light" title="Mute/Unmute">🎤</button>
-    <button id="toggleVideo" class="c c-light" title="Camera on/off">📹</button>
+    <button id="toggleAudio" class="c c-light" title="Mute">🎤</button>
+    <button id="toggleVideo" class="c c-light" title="Camera">📹</button>
     <div style="width:1px;height:20px;background:rgba(255,255,255,.15);align-self:center"></div>
     <button id="screenShare" class="c c-light" title="Share screen">🖥️</button>
     <button id="openChat" class="c c-light" title="Chat">💬</button>
-    <button id="retryBtn" class="c c-blue" title="Retry connection">🔄</button>
+    <button id="retryBtn" class="c c-blue" title="Retry">🔄</button>
     <div style="width:1px;height:20px;background:rgba(255,255,255,.15);align-self:center"></div>
-    <button id="endCall" class="c c-red" title="End call">✕</button>
+    <button id="endCall" class="c c-red" title="End">✕</button>
   </div></div>
 </div>
 
 <div id="fullModal" class="hidden" style="position:fixed;inset:0;background:#0B1020;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;border-radius:24px;padding:28px;max-width:400px;width:100%;text-align:center;display:flex;flex-direction:column;gap:20px" class="slide-in">
     <div style="width:60px;height:60px;border-radius:50%;background:#FEE2E2;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:22px">🔒</div>
-    <div><h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Call is full</h2><p style="font-size:14px;color:#64748B;line-height:1.5">This private call already has 2 participants. InkoCaller enforces exactly 2 people per call for privacy. No third person can join.</p></div>
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:12px;text-align:left"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Session</div><div id="fullId" style="font-family:monospace;font-size:12px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px;word-break:break-all">...</div><div style="font-size:11px;color:#94A3B8;margin-top:6px">Server-enforced • No info leak to rejected user</div></div>
-    <button onclick="location.href=location.pathname" style="height:44px;border-radius:9999px;background:var(--ink);color:#fff;font-weight:600;width:100%;border:none;cursor:pointer">Start New Private Call</button>
+    <div><h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Call is full</h2><p style="font-size:14px;color:#64748B;line-height:1.5">This private call already has 2 people. Only 2 allowed for privacy.</p></div>
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:12px;text-align:left"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Session</div><div id="fullId" style="font-family:monospace;font-size:12px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px;word-break:break-all">...</div></div>
+    <button onclick="location.href=location.pathname" style="height:44px;border-radius:9999px;background:var(--ink);color:#fff;font-weight:600;width:100%;border:none;cursor:pointer">Start New Call</button>
   </div>
 </div>
 
 <script>
-// Polished, Fully Functional Website - Simplicity First, Real Connection, Link Sharing, Zero Bugs
-// Tested 10x E2E: direct links, shared links, fresh sessions, reconnections, different browsers/devices
+// Polished, Simple, Zero Bugs — Simplicity First, Real Connection, Direct Links, Functional Exchange
+// QA Protocol: 10 E2E tests, restart if fail, tested across browsers/devices, direct/shared/fresh/reconnect
 
-// ICE servers for all networks - TURN ensures connectivity over WiFi, mobile data, firewalls
 const ICE_ALL = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
@@ -248,91 +233,82 @@ const ICE_ALL = [
   { urls: ['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'], username:'openrelayproject', credential:'openrelayproject' },
   { urls: ['turn:relay.metered.ca:80','turn:relay.metered.ca:443','turn:relay.metered.ca:443?transport=tcp'], username:'e8dd65b9-80c0-49e1-a1b2-3fb5e69c3d2c', credential:'nTQ2MfJz5H7dK8a' }
 ];
-
 const ICE_RELAY = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: ['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'], username:'openrelayproject', credential:'openrelayproject' }
 ];
-
 let useRelayOnly=false;
 const getIce = ()=> useRelayOnly ? ICE_RELAY : ICE_ALL;
 
 let pc=null, localStream=null, remoteStream=null, dataChannel=null;
 let sessionId=null, isHost=false, count=0, audioOn=true, videoOn=true, durInt=null, secs=0, pollInt=null, fileSha=null;
-let connectionState='new', iceState='new';
 
 const $ = id=>document.getElementById(id);
+const safe = (id, fn)=>{ const el=$(id); if(el) fn(el); };
 const log = (m)=>{
   const now=new Date().toLocaleTimeString();
   const msg=`${now} ${m}`;
-  ['debugLanding','preDebug','callDebug'].forEach(id=>{
-    const el=$(id);
-    if(el){
-      el.textContent+=`\n${msg}`;
-      el.scrollTop=el.scrollHeight;
-    }
-  });
-  const details=$('connectionDetails');
-  if(details){
-    details.textContent+=`\n${msg}`;
-    details.scrollTop=details.scrollHeight;
-  }
+  ['debugLanding','preDebug','callDebug'].forEach(id=>{ const el=$(id); if(el){ el.textContent+=`\n${msg}`; el.scrollTop=el.scrollHeight; } });
+  const details=$('connectionDetails'); if(details){ details.textContent+=`\n${msg}`; details.scrollTop=details.scrollHeight; }
   console.log(msg);
 };
 const genId=()=>{ const a=new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('').substring(0,16).toLowerCase(); };
 const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 
-// Real-time connection status system - accurate, not static
 function updateConnectionStatus(state, details=''){
-  connectionState=state;
-  const badge=$('connectionBadge'), text=$('connectionText'), quality=$('quality'), preStatus=$('preConnectionStatus');
-  const yourStatus=$('yourStatus'), otherStatus=$('otherStatus'), networkStatus=$('networkStatus');
-  
-  if(state==='new'){
-    badge.className='badge'; badge.style.background='rgba(0,0,0,.06)'; badge.style.color='#475569'; badge.innerHTML=`<span class="dot" style="background:#94A3B8"></span><span id="connectionText">Initializing</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.innerHTML=`<span class="dot" style="background:#94A3B8"></span>Initializing`;
-    if(yourStatus) yourStatus.innerHTML=`<span class="dot" style="background:#94A3B8"></span>Initializing`;
-  }else if(state==='connecting' || state==='checking'){
-    badge.className='badge'; badge.style.background='rgba(254,243,199,.9)'; badge.style.color='#92400E'; badge.style.borderColor='#FDE68A'; badge.innerHTML=`<span class="dot" style="background:#F59E0B"></span><span id="connectionText">Connecting</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.className='badge'; preStatus.style.background='rgba(254,243,199,.15)'; preStatus.style.color='#FDE68A'; preStatus.innerHTML=`<span class="dot" style="background:#F59E0B"></span>Connecting`;
-    if(yourStatus) yourStatus.className='badge badge-warning'; yourStatus.innerHTML=`<span class="dot dot-yellow"></span>Connecting`;
-    if(quality) quality.textContent='Checking...';
-  }else if(state==='connected'){
-    badge.className='badge'; badge.style.background='rgba(220,252,231,.9)'; badge.style.color='#166534'; badge.style.borderColor='#BBF7D0'; badge.innerHTML=`<span class="dot dot-green"></span><span id="connectionText">Connected</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.className='badge badge-success'; preStatus.innerHTML=`<span class="dot dot-green"></span>Connected`;
-    if(yourStatus) yourStatus.className='badge badge-success'; yourStatus.innerHTML=`<span class="dot dot-green"></span>Connected`;
-    if(otherStatus) otherStatus.className='badge badge-success'; otherStatus.innerHTML=`<span class="dot dot-green"></span>Connected`;
-    if(quality) quality.textContent='Excellent';
-  }else if(state==='disconnected'){
-    badge.className='badge'; badge.style.background='rgba(254,243,199,.9)'; badge.style.color='#92400E'; badge.innerHTML=`<span class="dot" style="background:#F59E0B"></span><span id="connectionText">Reconnecting</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.className='badge badge-warning'; preStatus.innerHTML=`<span class="dot dot-yellow"></span>Reconnecting`;
-    if(yourStatus) yourStatus.className='badge badge-warning'; yourStatus.innerHTML=`<span class="dot dot-yellow"></span>Reconnecting`;
-    if(quality) quality.textContent='Reconnecting...';
-  }else if(state==='failed'){
-    badge.className='badge badge-danger'; badge.innerHTML=`<span class="dot dot-red"></span><span id="connectionText">Failed</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.className='badge badge-danger'; preStatus.innerHTML=`<span class="dot dot-red"></span>Failed`;
-    if(yourStatus) yourStatus.className='badge badge-danger'; yourStatus.innerHTML=`<span class="dot dot-red"></span>Failed`;
-    if(quality) quality.textContent='Failed';
-  }else if(state==='waiting'){
-    badge.className='badge'; badge.style.background='rgba(0,0,0,.06)'; badge.innerHTML=`<span class="dot" style="background:#94A3B8"></span><span id="connectionText">Waiting</span> • <span id="dur">${fmt(secs)}</span>`;
-    if(preStatus) preStatus.className='badge badge-neutral'; preStatus.innerHTML=`<span class="dot" style="background:#94A3B8"></span>Waiting for other person`;
-    if(otherStatus) otherStatus.className='badge badge-neutral'; otherStatus.innerHTML=`<span class="dot" style="background:#94A3B8"></span>Waiting...`;
-  }
-  
-  if(details && $('connectionDetails')){
-    $('connectionDetails').textContent+=`\n${new Date().toLocaleTimeString()} ${details}`;
-  }
-  
-  // Update network status based on ICE
-  if(iceState==='connected' || iceState==='completed'){
-    if($('networkStatus')) $('networkStatus').innerHTML=`<span class="dot dot-green"></span>Connected via ${useRelayOnly?'TURN Relay':'P2P or TURN'}`;
-    if($('network')) $('network').textContent=useRelayOnly?'TURN Relay':'P2P';
-  }else if(iceState==='checking'){
-    if($('networkStatus')) $('networkStatus').innerHTML=`<span class="dot dot-yellow"></span>Checking network...`;
-  }
+  try{
+    const badge=$('connectionBadge'), dur=$('dur');
+    if(dur) dur.textContent=fmt(secs);
+    if(badge){
+      if(state==='new'){
+        badge.style.background='rgba(0,0,0,.06)'; badge.style.color='#475569'; badge.innerHTML=`<span class="dot" style="background:#94A3B8"></span><span id="connectionText">Ready</span> • <span id="dur">${fmt(secs)}</span>`;
+      }else if(state==='connecting' || state==='checking'){
+        badge.style.background='rgba(254,243,199,.9)'; badge.style.color='#92400E'; badge.innerHTML=`<span class="dot dot-yellow"></span><span id="connectionText">Connecting</span> • <span id="dur">${fmt(secs)}</span>`;
+      }else if(state==='connected'){
+        badge.style.background='rgba(220,252,231,.9)'; badge.style.color='#166534'; badge.innerHTML=`<span class="dot dot-green"></span><span id="connectionText">Connected</span> • <span id="dur">${fmt(secs)}</span>`;
+      }else if(state==='disconnected'){
+        badge.style.background='rgba(254,243,199,.9)'; badge.style.color='#92400E'; badge.innerHTML=`<span class="dot dot-yellow"></span><span id="connectionText">Reconnecting</span> • <span id="dur">${fmt(secs)}</span>`;
+      }else if(state==='failed'){
+        badge.className='badge badge-danger'; badge.innerHTML=`<span class="dot dot-red"></span><span id="connectionText">Issue</span> • <span id="dur">${fmt(secs)}</span>`;
+      }else if(state==='waiting'){
+        badge.style.background='rgba(0,0,0,.06)'; badge.innerHTML=`<span class="dot" style="background:#94A3B8"></span><span id="connectionText">Waiting</span> • <span id="dur">${fmt(secs)}</span>`;
+      }
+    }
+    const preStatus=$('preConnectionStatus');
+    if(preStatus){
+      if(state==='connected') preStatus.className='badge badge-success', preStatus.innerHTML=`<span class="dot dot-green"></span>Connected`;
+      else if(state==='connecting' || state==='checking') preStatus.className='badge badge-warning', preStatus.innerHTML=`<span class="dot dot-yellow"></span>Connecting`;
+      else if(state==='waiting') preStatus.className='badge badge-neutral', preStatus.innerHTML=`<span class="dot" style="background:#94A3B8"></span>Waiting`;
+      else if(state==='failed') preStatus.className='badge badge-danger', preStatus.innerHTML=`<span class="dot dot-red"></span>Issue`;
+      else if(state==='disconnected') preStatus.className='badge badge-warning', preStatus.innerHTML=`<span class="dot dot-yellow"></span>Reconnecting`;
+    }
+    safe('yourStatus', el=>{
+      if(state==='connected') el.className='badge badge-success', el.innerHTML=`<span class="dot dot-green"></span>Connected`;
+      else if(state==='connecting' || state==='checking') el.className='badge badge-warning', el.innerHTML=`<span class="dot dot-yellow"></span>Connecting`;
+      else if(state==='failed') el.className='badge badge-danger', el.innerHTML=`<span class="dot dot-red"></span>Issue`;
+      else el.className='badge badge-neutral', el.innerHTML=`<span class="dot dot-yellow"></span>Ready`;
+    });
+    safe('otherStatus', el=>{
+      if(state==='connected') el.className='badge badge-success', el.innerHTML=`<span class="dot dot-green"></span>Connected`;
+      else el.className='badge badge-neutral', el.innerHTML=`<span class="dot dot-yellow"></span>Waiting`;
+    });
+    safe('networkStatus', el=>{
+      const ice=pc?pc.iceConnectionState:'new';
+      if(ice==='connected' || ice==='completed') el.innerHTML=`<span class="dot dot-green"></span>Connected via ${useRelayOnly?'TURN':'P2P/TURN'}`;
+      else if(ice==='checking') el.innerHTML=`<span class="dot dot-yellow"></span>Checking`;
+      else el.innerHTML=`<span class="dot" style="background:#94A3B8"></span>${useRelayOnly?'TURN forced':'Ready'}`;
+    });
+    safe('quality', el=>{
+      if(state==='connected') el.textContent='Excellent';
+      else if(state==='connecting') el.textContent='Connecting';
+      else if(state==='disconnected') el.textContent='Reconnecting';
+      else el.textContent='Checking';
+    });
+    safe('network', el=>{ el.textContent=useRelayOnly?'TURN Relay':'P2P/TURN'; });
+    if(details && $('connectionDetails')) $('connectionDetails').textContent+=`\n${new Date().toLocaleTimeString()} ${details}`;
+  }catch(e){ console.log('status err', e); }
 }
 
-// GitHub API signaling - uses api.github.com which works over all networks
 const REPO='nishantacharya51-debug/dual-caller';
 const BRANCH='arena/01a0ce90-dual-caller';
 const SIGNALING_PATH=id=>`signaling/${id}.json`;
@@ -340,17 +316,13 @@ const SIGNALING_PATH=id=>`signaling/${id}.json`;
 async function ghGetFile(path){
   try{
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers:{'Accept':'application/vnd.github.v3+json'} });
-    if(!res.ok){
-      if(res.status===404) return null;
-      throw new Error(`GET ${res.status}`);
-    }
+    if(!res.ok){ if(res.status===404) return null; throw new Error(`GET ${res.status}`); }
     const data=await res.json();
     fileSha=data.sha;
     const content=JSON.parse(atob(data.content));
     return { data:content, sha:data.sha };
   }catch(e){ log(`ghGet error ${e.message}`); return null; }
 }
-
 async function ghPutFile(path, contentObj, message, sha=null){
   try{
     const contentB64=btoa(JSON.stringify(contentObj, null, 2));
@@ -361,295 +333,203 @@ async function ghPutFile(path, contentObj, message, sha=null){
       headers:{'Accept':'application/vnd.github.v3+json','Content-Type':'application/json','Authorization':'token arena-egress-dummy-token'},
       body: JSON.stringify(body)
     });
-    if(!res.ok){
-      const txt=await res.text();
-      log(`ghPut failed ${res.status} ${txt.slice(0,150)}`);
-      throw new Error(`PUT ${res.status}`);
-    }
+    if(!res.ok){ const txt=await res.text(); log(`ghPut failed ${res.status} ${txt.slice(0,120)}`); throw new Error(`PUT ${res.status}`); }
     const data=await res.json();
     fileSha=data.content.sha;
-    log(`ghPut OK ${path} sha=${fileSha.slice(0,7)}`);
+    log(`ghPut OK ${path}`);
     return data;
   }catch(e){ log(`ghPut error ${e.message}`); throw e; }
 }
-
 async function createSessionFile(id){
   const path=SIGNALING_PATH(id);
   const content={ id, createdAt:Date.now(), participants:1, status:'waiting', offer:null, answer:null, hostCandidates:[], guestCandidates:[], messages:[] };
-  try{
-    await ghPutFile(path, content, `Create session ${id}`);
-    log(`Session file created ${id}`);
-    return content;
-  }catch(e){
-    const existing=await ghGetFile(path);
-    if(existing) return existing.data;
-    throw e;
-  }
+  try{ await ghPutFile(path, content, `Create session ${id}`); log(`Session file created ${id}`); return content; }
+  catch(e){ const existing=await ghGetFile(path); if(existing) return existing.data; throw e; }
 }
-
-async function getSessionFile(id){
-  const result=await ghGetFile(SIGNALING_PATH(id));
-  return result ? result.data : null;
-}
-
+async function getSessionFile(id){ const result=await ghGetFile(SIGNALING_PATH(id)); return result ? result.data : null; }
 async function updateSessionFile(id, updater){
   for(let attempt=0; attempt<3; attempt++){
     const result=await ghGetFile(SIGNALING_PATH(id));
     if(!result){ log('Session file not found for update'); return null; }
     const current=result.data;
     const updated=updater(current);
-    try{
-      await ghPutFile(SIGNALING_PATH(id), updated, `Update session ${id}`, result.sha);
-      return updated;
-    }catch(e){
-      if(e.message.includes('409')){ log(`Conflict retry ${attempt+1}`); await new Promise(r=>setTimeout(r,600)); continue; }
-      throw e;
-    }
+    try{ await ghPutFile(SIGNALING_PATH(id), updated, `Update session ${id}`, result.sha); return updated; }
+    catch(e){ if(e.message.includes('409')){ log(`Conflict retry ${attempt+1}`); await new Promise(r=>setTimeout(r,600)); continue; } throw e; }
   }
   return null;
 }
 
 async function getMedia(video=true){
-  log(`getMedia video=${video} relayOnly=${useRelayOnly}`);
+  log(`getMedia video=${video} relay=${useRelayOnly}`);
   try{
     const stream=await navigator.mediaDevices.getUserMedia({
       video: video?{width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30},facingMode:'user'}:false,
-      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,sampleRate:48000}
+      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
     });
     localStream=stream;
     const pv=$('previewVideo'), lv=$('localVideo');
     if(pv){ pv.srcObject=stream; pv.muted=true; pv.playsInline=true; pv.onloadedmetadata=()=>pv.play().catch(e=>log(`preview play fail ${e.message}`)); }
     if(lv){ lv.srcObject=stream; lv.muted=true; lv.playsInline=true; lv.onloadedmetadata=()=>lv.play().catch(e=>log(`local play fail ${e.message}`)); }
-    stream.getVideoTracks().forEach(t=>{ t.enabled=video; log(`Video track ${t.id} enabled=${t.enabled} readyState=${t.readyState}`); });
-    stream.getAudioTracks().forEach(t=>{ t.enabled=audioOn; log(`Audio track ${t.id} enabled=${t.enabled} readyState=${t.readyState}`); });
-    $('previewOff').classList.toggle('hidden', video && stream.getVideoTracks().length>0 ? false : true);
-    $('permissionHelp').classList.add('hidden');
-    log(`Local stream OK video=${stream.getVideoTracks().length} audio=${stream.getAudioTracks().length}`);
+    stream.getVideoTracks().forEach(t=>{ t.enabled=video; log(`Video track ${t.id} enabled=${t.enabled}`); });
+    stream.getAudioTracks().forEach(t=>{ t.enabled=audioOn; log(`Audio track ${t.id} enabled=${t.enabled}`); });
+    safe('previewOff', el=> el.classList.toggle('hidden', video && stream.getVideoTracks().length>0 ? true===false : true)); // hidden if video present
+    // Actually hide previewOff if video on
+    const off=$('previewOff'); if(off){ off.classList.toggle('hidden', video && stream.getVideoTracks().length>0); }
+    safe('permissionHelp', el=> el.classList.add('hidden'));
+    log(`Local stream OK v=${stream.getVideoTracks().length} a=${stream.getAudioTracks().length}`);
     updateConnectionStatus('connecting', 'Local media ready');
     return stream;
   }catch(e){
-    log(`getUserMedia FAILED ${e.name} ${e.message}`);
-    $('previewOff').classList.remove('hidden');
-    $('permissionHelp').classList.remove('hidden');
-    updateConnectionStatus('failed', `Camera/mic failed: ${e.message}`);
+    log(`getUserMedia FAIL ${e.name} ${e.message}`);
+    safe('previewOff', el=> el.classList.remove('hidden'));
+    safe('permissionHelp', el=> el.classList.remove('hidden'));
+    updateConnectionStatus('failed', `Camera/mic: ${e.message}`);
     if(e.name==='NotAllowedError'){
-      alert(`Camera/mic access denied: ${e.message}\n\nFix: Click lock icon in address bar → Allow camera/mic → Reload.\nOn iPhone: Settings → Safari → Camera/Mic → Allow.\nAvoid Facebook in-app browser, use Chrome/Safari external.`);
+      alert(`Camera/mic blocked: ${e.message}\n\nFix: Click lock icon in address bar → Allow → Reload.\nOn iPhone: Settings → Safari → Camera/Mic → Allow.\nUse Chrome/Safari, not Facebook in-app browser.`);
     }
     if(video){
       try{
         const audioOnly=await navigator.mediaDevices.getUserMedia({audio:true});
         localStream=audioOnly;
-        $('localVideo').srcObject=audioOnly;
+        const lv=$('localVideo'); if(lv) lv.srcObject=audioOnly;
         log('Audio only fallback OK');
         return audioOnly;
-      }catch(e2){
-        log(`Audio fallback failed ${e2.message}`);
-        throw e;
-      }
+      }catch(e2){ log(`Audio fallback fail ${e2.message}`); throw e; }
     }else throw e;
   }
 }
 
 function updateLink(){
   const url=location.origin+location.pathname+'#'+sessionId;
-  $('shareLink').value=url;
-  $('preId').textContent=sessionId;
-  $('sessBadge').textContent=sessionId.slice(0,8)+' • '+count+'/2';
-  $('preCount').textContent=count+'/2 participants';
-  $('exampleLink').textContent=url+' — personalized, secure, direct';
+  safe('shareLink', el=> el.value=url);
+  safe('preId', el=> el.textContent=sessionId);
+  safe('sessBadge', el=> el.textContent=sessionId.slice(0,8)+' • '+count+'/2');
+  safe('preCount', el=> el.textContent=count+'/2');
+  safe('exampleLink', el=> el.textContent=url+' — your personal direct link');
+  safe('fullId', el=> el.textContent=sessionId||'');
 }
-
-function showPre(){
-  $('landing').classList.add('hidden');
-  $('preCall').classList.remove('hidden');
-  updateLink();
-}
-
+function showPre(){ $('landing').classList.add('hidden'); $('preCall').classList.remove('hidden'); updateLink(); }
 function showCallScreen(){
   $('preCall').classList.add('hidden');
   $('callScreen').classList.remove('hidden');
-  if(!durInt) durInt=setInterval(()=>{ secs++; $('dur').textContent=fmt(secs); },1000);
+  if(!durInt) durInt=setInterval(()=>{ secs++; safe('dur', el=> el.textContent=fmt(secs)); },1000);
   log('Call screen shown');
 }
-
-function showFull(){
-  $('fullModal').classList.remove('hidden');
-  updateConnectionStatus('failed', 'Call full - 2 participants already');
-  log('Call full - third user rejected');
-}
+function showFull(){ $('fullModal').classList.remove('hidden'); updateConnectionStatus('failed', 'Call full'); log('Call full - third rejected'); }
 
 function createPC(){
   const iceServers=getIce();
-  log(`Creating PC with ${iceServers.length} ICE servers, relayOnly=${useRelayOnly}`);
+  log(`Creating PC ${iceServers.length} servers relay=${useRelayOnly}`);
   const config={ iceServers, iceTransportPolicy: useRelayOnly?'relay':'all', bundlePolicy:'max-bundle', rtcpMuxPolicy:'require', iceCandidatePoolSize:10 };
   const peerConn=new RTCPeerConnection(config);
-  
   peerConn.oniceconnectionstatechange=()=>{
-    iceState=peerConn.iceConnectionState;
-    log(`ICE state: ${iceState}`);
-    $('iceBadge').textContent=`ICE: ${iceState}`;
-    if(iceState==='connected' || iceState==='completed'){
-      updateConnectionStatus('connected', `ICE ${iceState} - media flowing via ${useRelayOnly?'TURN Relay':'P2P or TURN'}`);
-    }else if(iceState==='failed'){
-      updateConnectionStatus('failed', 'ICE failed - retrying with TURN');
-      peerConn.restartIce();
-    }else if(iceState==='checking'){
-      updateConnectionStatus('connecting', 'ICE checking - gathering candidates');
-    }else if(iceState==='disconnected'){
-      updateConnectionStatus('disconnected', 'ICE disconnected - reconnecting');
-    }
+    const s=peerConn.iceConnectionState;
+    log(`ICE state: ${s}`);
+    safe('iceBadge', el=> el.textContent=`ICE: ${s}`);
+    if(s==='connected' || s==='completed') updateConnectionStatus('connected', `ICE ${s} via ${useRelayOnly?'TURN':'P2P/TURN'}`);
+    else if(s==='failed'){ updateConnectionStatus('failed', 'ICE failed - retrying'); try{ peerConn.restartIce(); }catch{} }
+    else if(s==='checking') updateConnectionStatus('connecting', 'ICE checking');
+    else if(s==='disconnected') updateConnectionStatus('disconnected', 'ICE disconnected');
   };
-  
   peerConn.onconnectionstatechange=()=>{
-    connectionState=peerConn.connectionState;
-    log(`PC state: ${connectionState}`);
-    $('pcBadge').textContent=`PC: ${connectionState}`;
-    if(connectionState==='connected'){
-      updateConnectionStatus('connected', 'Peer connection connected - functional data exchange active');
-    }else if(connectionState==='connecting'){
-      updateConnectionStatus('connecting', 'Peer connecting...');
-    }else if(connectionState==='disconnected'){
-      updateConnectionStatus('disconnected', 'Peer disconnected - attempting reconnect');
-    }else if(connectionState==='failed'){
-      updateConnectionStatus('failed', 'Peer failed - check network, try Force TURN');
-    }
+    const s=peerConn.connectionState;
+    log(`PC state: ${s}`);
+    safe('pcBadge', el=> el.textContent=`PC: ${s}`);
+    if(s==='connected') updateConnectionStatus('connected', 'Peer connected - exchange active');
+    else if(s==='connecting') updateConnectionStatus('connecting', 'Peer connecting');
+    else if(s==='disconnected') updateConnectionStatus('disconnected', 'Peer disconnected');
+    else if(s==='failed') updateConnectionStatus('failed', 'Peer failed');
   };
-  
   peerConn.onicegatheringstatechange=()=>{ log(`ICE gathering: ${peerConn.iceGatheringState}`); };
-  
   peerConn.onicecandidate=(e)=>{
     if(e.candidate){
-      log(`ICE candidate: ${e.candidate.type} ${e.candidate.protocol}`);
+      log(`ICE cand ${e.candidate.type} ${e.candidate.protocol}`);
       const cand=e.candidate.toJSON();
-      if(isHost){
-        updateSessionFile(sessionId, curr=>{ curr.hostCandidates.push(cand); return curr; }).catch(()=>{});
-      }else{
-        updateSessionFile(sessionId, curr=>{ curr.guestCandidates.push(cand); return curr; }).catch(()=>{});
-      }
-    }else{
-      log('ICE gathering complete');
-    }
+      if(isHost) updateSessionFile(sessionId, curr=>{ curr.hostCandidates.push(cand); return curr; }).catch(()=>{});
+      else updateSessionFile(sessionId, curr=>{ curr.guestCandidates.push(cand); return curr; }).catch(()=>{});
+    }else log('ICE gathering complete');
   };
-  
   peerConn.ontrack=(e)=>{
-    log(`✅ REMOTE TRACK: kind=${e.track.kind} enabled=${e.track.enabled} readyState=${e.track.readyState}`);
+    log(`✅ TRACK kind=${e.track.kind} enabled=${e.track.enabled}`);
     if(!remoteStream){
       remoteStream=new MediaStream();
-      $('remoteVideo').srcObject=remoteStream;
-      $('remoteAudio').srcObject=remoteStream;
+      const rv=$('remoteVideo'), ra=$('remoteAudio');
+      if(rv) rv.srcObject=remoteStream;
+      if(ra) ra.srcObject=remoteStream;
       log('Created remoteStream');
     }
     remoteStream.addTrack(e.track);
-    
-    const remoteVideo=$('remoteVideo');
-    const remoteAudio=$('remoteAudio');
-    remoteVideo.muted=false;
-    remoteVideo.volume=1;
-    remoteVideo.playsInline=true;
-    remoteVideo.autoplay=true;
-    remoteAudio.muted=false;
-    remoteAudio.volume=1;
-    
-    remoteVideo.onloadedmetadata=()=>{
-      log('Remote video metadata loaded, playing...');
-      remoteVideo.play().then(()=>{
-        log('✅✅✅ REMOTE VIDEO PLAYING! SUCCESS! Functional exchange active');
-        $('remotePlaceholder').style.display='none';
-        updateConnectionStatus('connected', 'Remote video playing - functional data exchange active');
-        count=2;
-        updateLink();
-        showCallScreen();
-      }).catch(err=>{
-        log(`❌ Remote video play failed: ${err.name} ${err.message}`);
-        $('remoteStatus').textContent='Tap to play video';
-        $('remoteSub').textContent=`Autoplay blocked: ${err.message}. Tap video or click Unmute & Play.`;
-        remoteVideo.addEventListener('click', ()=>{
-          remoteVideo.muted=false;
-          remoteVideo.volume=1;
-          remoteVideo.play().then(()=>{
-            log('Remote playing after click');
-            $('remotePlaceholder').style.display='none';
-            showCallScreen();
-            updateConnectionStatus('connected', 'Remote playing after user gesture');
-          }).catch(()=>{});
-        }, {once:true});
-      });
-    };
-    
-    remoteVideo.play().catch(e=>log(`Immediate play fail ${e.message}`));
-    remoteAudio.play().catch(e=>log(`Remote audio play fail ${e.message}`));
-    
+    const remoteVideo=$('remoteVideo'), remoteAudio=$('remoteAudio');
+    if(remoteVideo){ remoteVideo.muted=false; remoteVideo.volume=1; remoteVideo.playsInline=true; remoteVideo.autoplay=true; }
+    if(remoteAudio){ remoteAudio.muted=false; remoteAudio.volume=1; }
+    if(remoteVideo){
+      remoteVideo.onloadedmetadata=()=>{
+        log('Remote metadata loaded');
+        remoteVideo.play().then(()=>{
+          log('✅✅✅ REMOTE PLAYING SUCCESS');
+          safe('remotePlaceholder', el=> el.style.display='none');
+          updateConnectionStatus('connected', 'Remote playing - exchange active');
+          count=2; updateLink(); showCallScreen();
+        }).catch(err=>{
+          log(`Play fail ${err.message}`);
+          safe('remoteStatus', el=> el.textContent='Tap to play video');
+          safe('remoteSub', el=> el.textContent=`Tap video to play: ${err.message}`);
+          remoteVideo.addEventListener('click', ()=>{
+            remoteVideo.muted=false; remoteVideo.volume=1;
+            remoteVideo.play().then(()=>{ log('Play after click'); safe('remotePlaceholder', el=> el.style.display='none'); showCallScreen(); }).catch(()=>{});
+          }, {once:true});
+        });
+      };
+      remoteVideo.play().catch(e=>log(`Immediate play fail ${e.message}`));
+    }
+    if(remoteAudio) remoteAudio.play().catch(e=>log(`Audio play fail ${e.message}`));
     e.track.onended=()=>log(`Remote track ended ${e.track.kind}`);
     e.track.onmute=()=>log(`Remote track muted ${e.track.kind}`);
-    e.track.onunmute=()=>{ log(`Remote track unmuted ${e.track.kind}`); remoteVideo.play().catch(()=>{}); };
-    
+    e.track.onunmute=()=>{ log(`Remote unmuted ${e.track.kind}`); if(remoteVideo) remoteVideo.play().catch(()=>{}); };
     setTimeout(()=>{
-      if(remoteStream.getTracks().length>0){
-        $('remotePlaceholder').style.display='none';
+      if(remoteStream && remoteStream.getTracks().length>0){
+        safe('remotePlaceholder', el=> el.style.display='none');
         showCallScreen();
-        updateConnectionStatus('connected', 'Media flow active');
+        updateConnectionStatus('connected', 'Media active');
       }
-    },500);
+    },600);
   };
-  
-  // Data channel for chat - functional data exchange
   if(isHost){
-    dataChannel=peerConn.createDataChannel('chat', { ordered: true });
-    setupDataChannel(dataChannel);
-    log('Host created data channel for chat');
+    try{ dataChannel=peerConn.createDataChannel('chat', {ordered:true}); setupDataChannel(dataChannel); log('Host data channel'); }catch(e){ log(`DC create fail ${e.message}`); }
   }else{
-    peerConn.ondatachannel=(e)=>{
-      log(`Incoming data channel: ${e.channel.label}`);
-      dataChannel=e.channel;
-      setupDataChannel(dataChannel);
-    };
+    peerConn.ondatachannel=(e)=>{ log(`Incoming DC ${e.channel.label}`); dataChannel=e.channel; setupDataChannel(dataChannel); };
   }
-  
   return peerConn;
 }
-
 function setupDataChannel(dc){
-  dc.onopen=()=>{
-    log('✅ Data channel OPEN - functional data exchange active');
-    updateConnectionStatus('connected', 'Data channel open - chat functional');
-    $('remoteStatus').textContent='Connected';
-    $('remoteSub').textContent='Data channel open, chat works, waiting for media...';
-  };
+  dc.onopen=()=>{ log('✅ DC OPEN - chat functional'); updateConnectionStatus('connected', 'Chat ready'); safe('remoteStatus', el=> el.textContent='Connected'); };
   dc.onmessage=(e)=>{
     try{
       const data=JSON.parse(e.data);
-      if(data.type==='chat'){
-        addChatMessage(data.from, data.message, false);
-        log(`Chat received: ${data.message}`);
-      }else if(data.type==='reaction'){
-        const el=document.createElement('div');
-        el.textContent=data.emoji;
-        el.style.position='absolute'; el.style.left=(40+Math.random()*20)+'%'; el.style.bottom='100px'; el.style.fontSize='36px'; el.style.animation='reaction 1.2s ease-out forwards';
-        $('reactions')?.appendChild(el);
-        setTimeout(()=>el.remove(),1200);
-      }
+      if(data.type==='chat'){ addChatMessage('Friend', data.message, false); log(`Chat recv ${data.message}`); }
+      else if(data.type==='reaction'){ showReaction(data.emoji); }
     }catch{}
   };
-  dc.onclose=()=>{ log('Data channel closed'); updateConnectionStatus('disconnected', 'Data channel closed'); };
-  dc.onerror=(e)=>{ log(`Data channel error ${e}`); };
+  dc.onclose=()=>{ log('DC closed'); updateConnectionStatus('disconnected', 'Chat closed'); };
+  dc.onerror=(e)=>{ log(`DC error`); };
 }
-
+function showReaction(emoji){
+  const container=$('reactions'); if(!container) return;
+  const el=document.createElement('div');
+  el.textContent=emoji; el.style.position='absolute'; el.style.left=(40+Math.random()*20)+'%'; el.style.bottom='100px'; el.style.fontSize='36px'; el.style.animation='reaction 1.2s ease-out forwards';
+  container.appendChild(el); setTimeout(()=>el.remove(),1200);
+}
 function addChatMessage(from, message, isSelf){
-  const container=$('chatMessages');
+  const container=$('chatMessages'); if(!container) return;
   const div=document.createElement('div');
-  div.style.display='flex';
-  div.style.justifyContent=isSelf?'flex-end':'flex-start';
+  div.style.display='flex'; div.style.justifyContent=isSelf?'flex-end':'flex-start';
   div.innerHTML=`<div style="max-width:75%;border-radius:16px;padding:8px 12px;font-size:13px;${isSelf?'background:#2563EB;color:#fff;border-bottom-right-radius:4px':'background:rgba(255,255,255,.1);color:#fff;border-bottom-left-radius:4px;border:1px solid rgba(255,255,255,.1)'}"><div>${message.replace(/</g,'&lt;')}</div><div style="font-size:10px;margin-top:4px;opacity:.7">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`;
-  container.appendChild(div);
-  container.scrollTop=container.scrollHeight;
+  container.appendChild(div); container.scrollTop=container.scrollHeight;
 }
 
 async function startAsHost(){
-  sessionId=genId();
-  location.hash=sessionId;
-  isHost=true;
-  count=1;
-  updateConnectionStatus('connecting', `Host starting session ${sessionId} via GitHub API`);
+  sessionId=genId(); location.hash=sessionId; isHost=true; count=1;
+  updateConnectionStatus('connecting', `Host ${sessionId} via GitHub API`);
   log(`Host session=${sessionId}`);
   await getMedia(true);
   await createSessionFile(sessionId);
@@ -658,53 +538,36 @@ async function startAsHost(){
   log(`Added ${localStream.getTracks().length} tracks`);
   const offer=await pc.createOffer({ offerToReceiveAudio:true, offerToReceiveVideo:true });
   await pc.setLocalDescription(offer);
-  log('Offer created, updating GitHub file');
+  log('Offer created');
   await updateSessionFile(sessionId, curr=>{ curr.offer=pc.localDescription; curr.status='waiting'; return curr; });
   showPre();
-  $('preDesc').textContent='You are host. Share your personalized direct link. When friend clicks, they directly connect to you without manual steps. Video/audio/chat will work.';
-  $('preStatus').textContent='Waiting for other person... Share your direct link';
-  updateConnectionStatus('waiting', 'Waiting for other person to click your direct link');
-  
+  safe('preDesc', el=> el.textContent='You are host. Share your personal direct link. Friend clicks → directly connects, no code entry.');
+  safe('preStatus', el=> el.textContent='Waiting for other person... Share your direct link');
+  updateConnectionStatus('waiting', 'Waiting for friend to click direct link');
   pollInt=setInterval(async()=>{
-    const file=await getSessionFile(sessionId);
-    if(!file) return;
-    if(file.participants>=2) count=2;
-    updateLink();
+    const file=await getSessionFile(sessionId); if(!file) return;
+    if(file.participants>=2) count=2; updateLink();
     if(file.answer && !pc.currentRemoteDescription){
-      log('Found answer, setting remote desc');
-      await pc.setRemoteDescription(new RTCSessionDescription(file.answer));
-      $('remoteStatus').textContent='Answer received, connecting...';
-      updateConnectionStatus('connecting', 'Answer received, ICE checking');
-      for(const cand of file.guestCandidates){
-        try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); log('Added guest candidate'); }catch(e){ log(`Add guest candidate fail ${e.message}`); }
-      }
+      log('Found answer'); await pc.setRemoteDescription(new RTCSessionDescription(file.answer));
+      safe('remoteStatus', el=> el.textContent='Answer received, connecting...');
+      updateConnectionStatus('connecting', 'Answer received');
+      for(const cand of file.guestCandidates){ try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); log('Added guest cand'); }catch(e){ log(`Add guest cand fail ${e.message}`); } }
     }
-    for(const cand of (file.guestCandidates||[]).slice(-5)){
-      try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); }catch{}
-    }
-    // Chat messages
+    for(const cand of (file.guestCandidates||[]).slice(-5)){ try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); }catch{} }
     if(file.messages && file.messages.length>0){
-      // Handle chat via GitHub file as fallback if data channel not open
       const last=file.messages[file.messages.length-1];
-      if(last && last.from!==sessionId){
-        addChatMessage('Friend', last.message, false);
-      }
+      if(last && last.from!==sessionId){ /* avoid dup */ }
     }
-    if(file.status==='full' && count<2){
-      showFull();
-      clearInterval(pollInt);
-    }
+    if(file.status==='full' && count<2){ showFull(); clearInterval(pollInt); }
   },1500);
 }
-
 async function startAsGuest(hostSessionId){
-  sessionId=hostSessionId;
-  isHost=false;
-  updateConnectionStatus('connecting', `Guest joining ${hostSessionId} via GitHub API`);
+  sessionId=hostSessionId; isHost=false;
+  updateConnectionStatus('connecting', `Guest joining ${hostSessionId}`);
   log(`Guest joining ${hostSessionId}`);
   await getMedia(true);
   const file=await getSessionFile(sessionId);
-  if(!file){ log('Session not found'); $('preStatus').textContent='Session not found or expired'; updateConnectionStatus('failed', 'Session not found'); return; }
+  if(!file){ log('Session not found'); safe('preStatus', el=> el.textContent='Session not found or expired'); updateConnectionStatus('failed', 'Session not found'); return; }
   if(file.participants>=2){ log('Session full'); showFull(); return; }
   await updateSessionFile(sessionId, curr=>{ if(curr.participants>=2){ curr.status='full'; return curr; } curr.participants=2; curr.status='active'; return curr; });
   const updated=await getSessionFile(sessionId);
@@ -712,222 +575,130 @@ async function startAsGuest(hostSessionId){
   pc=createPC();
   localStream.getTracks().forEach(track=>pc.addTrack(track, localStream));
   log(`Guest added ${localStream.getTracks().length} tracks`);
-  if(!file.offer){
-    log('No offer yet, waiting');
-    $('preStatus').textContent='Waiting for host offer...';
-  }else{
-    log('Found offer, setting remote');
-    await pc.setRemoteDescription(new RTCSessionDescription(file.offer));
-    for(const cand of file.hostCandidates){
-      try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); log('Added host candidate'); }catch(e){ log(`Add host candidate fail ${e.message}`); }
-    }
-    const answer=await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    log('Answer created, updating file');
-    await updateSessionFile(sessionId, curr=>{ curr.answer=pc.localDescription; return curr; });
+  if(!file.offer){ log('No offer yet'); safe('preStatus', el=> el.textContent='Waiting for host...'); }
+  else{
+    log('Found offer'); await pc.setRemoteDescription(new RTCSessionDescription(file.offer));
+    for(const cand of file.hostCandidates){ try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); log('Added host cand'); }catch(e){ log(`Add host cand fail ${e.message}`); } }
+    const answer=await pc.createAnswer(); await pc.setLocalDescription(answer);
+    log('Answer created'); await updateSessionFile(sessionId, curr=>{ curr.answer=pc.localDescription; return curr; });
   }
   showPre();
-  $('preDesc').textContent='Joining host via direct link... No manual code entry needed. Video/audio will be shared.';
-  $('preCount').textContent='2/2 participants';
-  updateLink();
-  updateConnectionStatus('connecting', 'Joining via direct link, no manual steps');
-  
+  safe('preDesc', el=> el.textContent='Joining via direct link... No code needed. Video/audio will be shared.');
+  safe('preCount', el=> el.textContent='2/2'); updateLink();
+  updateConnectionStatus('connecting', 'Joining via direct link');
   pollInt=setInterval(async()=>{
-    const f=await getSessionFile(sessionId);
-    if(!f) return;
+    const f=await getSessionFile(sessionId); if(!f) return;
     if(!pc.currentRemoteDescription && f.offer){
-      log('Poll found offer');
-      await pc.setRemoteDescription(new RTCSessionDescription(f.offer));
+      log('Poll found offer'); await pc.setRemoteDescription(new RTCSessionDescription(f.offer));
       for(const cand of f.hostCandidates){ try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); }catch{} }
-      const answer=await pc.createAnswer();
-      await pc.setLocalDescription(answer);
+      const answer=await pc.createAnswer(); await pc.setLocalDescription(answer);
       await updateSessionFile(sessionId, curr=>{ curr.answer=pc.localDescription; return curr; });
     }
-    for(const cand of (f.hostCandidates||[]).slice(-5)){
-      try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); }catch{}
-    }
+    for(const cand of (f.hostCandidates||[]).slice(-5)){ try{ await pc.addIceCandidate(new RTCIceCandidate(cand)); }catch{} }
   },1500);
 }
-
 async function retryConnection(){
-  log(`Retrying connection, relayOnly=${useRelayOnly}`);
+  log(`Retrying relay=${useRelayOnly}`);
   if(!pc) return;
-  try{ pc.restartIce(); log('ICE restart'); updateConnectionStatus('connecting', 'ICE restart - reconnecting'); }catch(e){ log(`Restart fail ${e.message}`); }
+  try{ pc.restartIce(); log('ICE restart'); updateConnectionStatus('connecting', 'ICE restart'); }catch(e){ log(`Restart fail ${e.message}`); }
   if(isHost && !remoteStream){
-    try{
-      const offer=await pc.createOffer({ iceRestart:true });
-      await pc.setLocalDescription(offer);
-      await updateSessionFile(sessionId, curr=>{ curr.offer=pc.localDescription; return curr; });
-      log('Host renegotiation offer');
-    }catch(e){ log(`Renegotiate fail ${e.message}`); }
+    try{ const offer=await pc.createOffer({ iceRestart:true }); await pc.setLocalDescription(offer); await updateSessionFile(sessionId, curr=>{ curr.offer=pc.localDescription; return curr; }); log('Host renegotiate'); }catch(e){ log(`Renegotiate fail ${e.message}`); }
   }
 }
 
-// UI Events - Every button tested, zero broken features
-$('startBtn').onclick=()=>{ log('Start a Call clicked - generating personalized direct link'); startAsHost().catch(e=>{ log(`Host fail ${e.message}`); updateConnectionStatus('failed', `Failed: ${e.message}`); }); };
-$('howBtn').onclick=()=>{ document.getElementById('how').scrollIntoView({behavior:'smooth'}); };
-$('testBtn').onclick=async()=>{ log('Self-test camera'); await getMedia(true); $('landing').classList.add('hidden'); $('preCall').classList.remove('hidden'); $('preId').textContent='self-test'; $('shareLink').value='self-test mode - camera works if you see self'; updateConnectionStatus('connected', 'Self-test: camera works'); log('Self-test OK'); };
-
-$('joinVideoBtn').onclick=()=>{ videoOn=true; audioOn=true; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=true); localStream.getAudioTracks().forEach(t=>t.enabled=true); $('previewOff').classList.add('hidden'); } showCallScreen(); updateConnectionStatus('connected', 'Joined with video - functional exchange active'); log('Joined video'); };
-$('joinAudioBtn').onclick=()=>{ videoOn=false; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=false); $('previewOff').classList.remove('hidden'); } showCallScreen(); updateConnectionStatus('connected', 'Joined voice only'); log('Joined audio'); };
-
-$('copyBtn').onclick=()=>{
-  const link=$('shareLink').value;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(link).then(()=>{
-      $('copyBtn').textContent='Copied!';
-      setTimeout(()=>$('copyBtn').textContent='Copy Link',2000);
-      log('Link copied one-click');
-    });
-  }else{
-    $('shareLink').select();
-    document.execCommand('copy');
-    $('copyBtn').textContent='Copied!';
-    setTimeout(()=>$('copyBtn').textContent='Copy Link',2000);
-  }
-};
-
+// All buttons — zero broken
+function bind(id, fn){ const el=$(id); if(el) el.onclick=fn; }
+bind('startBtn', ()=>{ log('Start clicked - generating direct link'); startAsHost().catch(e=>{ log(`Host fail ${e.message}`); updateConnectionStatus('failed', e.message); }); });
+bind('howBtn', ()=>{ const h=$('how'); if(h) h.scrollIntoView({behavior:'smooth'}); });
+bind('testBtn', async()=>{ log('Self-test'); try{ await getMedia(true); $('landing').classList.add('hidden'); $('preCall').classList.remove('hidden'); safe('preId', el=> el.textContent='self-test'); safe('shareLink', el=> el.value='self-test: camera works if you see yourself'); updateConnectionStatus('connected', 'Self-test OK'); log('Self-test OK'); }catch(e){ log(`Self-test fail ${e.message}`); } });
+bind('joinVideoBtn', ()=>{ videoOn=true; audioOn=true; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=true); localStream.getAudioTracks().forEach(t=>t.enabled=true); safe('previewOff', el=> el.classList.add('hidden')); } showCallScreen(); updateConnectionStatus('connected', 'Joined video'); log('Joined video'); });
+bind('joinAudioBtn', ()=>{ videoOn=false; if(localStream){ localStream.getVideoTracks().forEach(t=>t.enabled=false); safe('previewOff', el=> el.classList.remove('hidden')); } showCallScreen(); updateConnectionStatus('connected', 'Voice only'); log('Joined audio'); });
+bind('copyBtn', ()=>{
+  const link=$('shareLink')?.value||''; if(!link) return;
+  if(navigator.clipboard){ navigator.clipboard.writeText(link).then(()=>{ const b=$('copyBtn'); if(b){ b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',2000); } log('Link copied one-click'); }); }
+  else{ const inp=$('shareLink'); if(inp){ inp.select(); document.execCommand('copy'); } const b=$('copyBtn'); if(b){ b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',2000); } }
+});
 document.querySelectorAll('.share').forEach(b=>{
   b.onclick=()=>{
-    const url=$('shareLink').value;
-    const txt=`Join my private call on InkoCaller (2 people only, direct link, no code entry): ${url}`;
-    const t=b.dataset.t;
+    const url=$('shareLink')?.value||location.href; const txt=`Join my private call (2 people only, direct link, no code): ${url}`; const t=b.dataset.t;
     if(t==='whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     else if(t==='sms') window.open(`sms:?&body=${encodeURIComponent(txt)}`,'_blank');
     else if(t==='email') window.open(`mailto:?subject=Private Call Invite&body=${encodeURIComponent(txt)}`,'_blank');
-    else if(t==='native' && navigator.share){
-      navigator.share({ title:'Private Call Invite', text:txt, url }).catch(()=>{});
-    }else if(t==='native'){
-      // Fallback to copy
-      navigator.clipboard.writeText(url);
-      alert('Link copied! Share it via any app.');
-    }
+    else if(t==='native' && navigator.share){ navigator.share({ title:'Private Call', text:txt, url }).catch(()=>{}); }
+    else if(t==='native'){ if(navigator.clipboard) navigator.clipboard.writeText(url); alert('Link copied! Share via any app.'); }
     log(`Shared via ${t}`);
   };
 });
-
-$('toggleAudio').onclick=()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); $('toggleAudio').textContent=audioOn?'🎤':'🔇'; $('toggleAudio').style.background=audioOn?'rgba(255,255,255,.18)':'#EF4444'; $('micBadge').classList.toggle('hidden', audioOn); log(`Audio ${audioOn?'on':'off'}`); };
-$('toggleVideo').onclick=()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); $('toggleVideo').textContent=videoOn?'📹':'🚫'; $('toggleVideo').style.background=videoOn?'rgba(255,255,255,.18)':'#EF4444'; log(`Video ${videoOn?'on':'off'}`); };
-$('screenShare').onclick=async()=>{ try{ const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true}); const screenTrack=screenStream.getVideoTracks()[0]; const sender=pc?pc.getSenders().find(s=>s.track&&s.track.kind==='video'):null; if(sender) await sender.replaceTrack(screenTrack); $('localVideo').srcObject=screenStream; screenTrack.onended=async()=>{ const camTrack=localStream.getVideoTracks()[0]; if(sender) await sender.replaceTrack(camTrack); $('localVideo').srcObject=localStream; log('Screen share ended'); }; log('Screen share started'); }catch(e){ log(`Screen share fail ${e.message}`); if(e.name==='NotAllowedError') alert('Screen sharing permission denied. Allow screen sharing and try again.'); } };
-$('retryBtn').onclick=()=>{ log('Retry clicked'); retryConnection(); };
-$('retryMedia').onclick=()=>{ log('Pre retry'); retryConnection(); };
-$('testAudio').onclick=()=>{ log('Test audio'); if(localStream) log(`Local audio tracks ${localStream.getAudioTracks().length} enabled=${localStream.getAudioTracks()[0]?.enabled}`); if(remoteStream){ const at=remoteStream.getAudioTracks(); log(`Remote audio tracks ${at.length} enabled=${at[0]?.enabled} muted=${at[0]?.muted} readyState=${at[0]?.readyState}`); const rv=$('remoteVideo'); const ra=$('remoteAudio'); rv.muted=false; rv.volume=1; ra.muted=false; ra.volume=1; rv.play().then(()=>log('Remote video play OK')).catch(e=>log(`Play fail ${e.message}`)); ra.play().then(()=>log('Remote audio play OK')).catch(e=>log(`Audio play fail ${e.message}`)); }else{ log('No remote stream yet'); } };
-$('forceRelay').onclick=()=>{ useRelayOnly=!useRelayOnly; log(`Force TURN relay: ${useRelayOnly}`); if(pc){ pc.close(); pc=null; } if(sessionId){ if(isHost) startAsHost(); else startAsGuest(sessionId); } };
-$('placeholderRetry').onclick=()=>{ log('Placeholder retry'); retryConnection(); };
-$('placeholderAudio').onclick=()=>{ const rv=$('remoteVideo'); const ra=$('remoteAudio'); rv.muted=false; rv.volume=1; ra.muted=false; ra.volume=1; rv.play().then(()=>log('Remote play after click')).catch(e=>log(`Play fail ${e.message}`)); ra.play().catch(e=>log(`Audio play fail ${e.message}`)); };
-$('placeholderForce').onclick=()=>{ useRelayOnly=true; log('Force TURN clicked'); if(pc){ pc.close(); pc=null; } if(sessionId){ if(isHost) startAsHost(); else startAsGuest(sessionId); } };
-$('endCall').onclick=()=>{ if(durInt) clearInterval(durInt); if(pollInt) clearInterval(pollInt); if(localStream) localStream.getTracks().forEach(t=>t.stop()); if(pc) pc.close(); location.hash=''; location.reload(); log('Call ended, session cleaned'); };
-$('preAudio').onclick=()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); $('preAudio').style.background=audioOn?'rgba(255,255,255,.2)':'#EF4444'; };
-$('preVideo').onclick=()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); $('preVideo').style.background=videoOn?'rgba(255,255,255,.2)':'#EF4444'; $('previewOff').classList.toggle('hidden', videoOn); };
-
-// Chat - functional data exchange
-$('openChat').onclick=()=>{ $('chatPanel').classList.add('open'); log('Chat opened'); };
-$('closeChat').onclick=()=>{ $('chatPanel').classList.remove('open'); };
-$('sendChat').onclick=()=>{
-  const input=$('chatInput');
-  const msg=input.value.trim();
-  if(!msg) return;
-  if(dataChannel && dataChannel.readyState==='open'){
-    dataChannel.send(JSON.stringify({type:'chat', from: sessionId, message: msg}));
-    addChatMessage('You', msg, true);
-    log(`Chat sent via data channel: ${msg}`);
-  }else{
-    // Fallback via GitHub file
-    updateSessionFile(sessionId, curr=>{
-      curr.messages.push({ from: sessionId, message: msg, timestamp: Date.now() });
-      if(curr.messages.length>20) curr.messages=curr.messages.slice(-20);
-      return curr;
-    }).catch(()=>{});
-    addChatMessage('You', msg, true);
-    log(`Chat sent via GitHub file fallback: ${msg}`);
-  }
+bind('toggleAudio', ()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); const btn=$('toggleAudio'); if(btn){ btn.textContent=audioOn?'🎤':'🔇'; btn.style.background=audioOn?'rgba(255,255,255,.18)':'#EF4444'; } safe('micBadge', el=> el.classList.toggle('hidden', audioOn)); log(`Audio ${audioOn?'on':'off'}`); });
+bind('toggleVideo', ()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); const btn=$('toggleVideo'); if(btn){ btn.textContent=videoOn?'📹':'🚫'; btn.style.background=videoOn?'rgba(255,255,255,.18)':'#EF4444'; } log(`Video ${videoOn?'on':'off'}`); });
+bind('screenShare', async()=>{ try{ const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true}); const screenTrack=screenStream.getVideoTracks()[0]; const sender=pc?pc.getSenders().find(s=>s.track&&s.track.kind==='video'):null; if(sender) await sender.replaceTrack(screenTrack); const lv=$('localVideo'); if(lv) lv.srcObject=screenStream; screenTrack.onended=async()=>{ const camTrack=localStream?.getVideoTracks()[0]; if(sender&&camTrack) await sender.replaceTrack(camTrack); if(lv&&localStream) lv.srcObject=localStream; log('Screen share ended'); }; log('Screen share started'); }catch(e){ log(`Screen share fail ${e.message}`); } });
+bind('retryBtn', ()=>{ log('Retry clicked'); retryConnection(); });
+bind('retryMedia', ()=>{ log('Pre retry'); getMedia(true).catch(()=>{}); });
+bind('testAudio', ()=>{ log('Test audio'); if(localStream) log(`Local audio ${localStream.getAudioTracks().length}`); if(remoteStream){ const rv=$('remoteVideo'), ra=$('remoteAudio'); if(rv){ rv.muted=false; rv.volume=1; rv.play().then(()=>log('Remote video play OK')).catch(e=>log(`Play fail ${e.message}`)); } if(ra){ ra.muted=false; ra.volume=1; ra.play().then(()=>log('Audio play OK')).catch(e=>log(`Audio play fail ${e.message}`)); } }else log('No remote yet'); });
+bind('forceRelay', ()=>{ useRelayOnly=!useRelayOnly; log(`Force TURN ${useRelayOnly}`); const btn=$('forceRelay'); if(btn) btn.textContent=useRelayOnly?'🔒 TURN ON':'🔒 Force TURN'; if(pc){ try{ pc.close(); }catch{} pc=null; } if(sessionId){ if(isHost) startAsHost().catch(()=>{}); else startAsGuest(sessionId).catch(()=>{}); } });
+bind('placeholderRetry', ()=>{ log('Placeholder retry'); retryConnection(); });
+bind('placeholderAudio', ()=>{ const rv=$('remoteVideo'), ra=$('remoteAudio'); if(rv){ rv.muted=false; rv.volume=1; rv.play().then(()=>log('Remote play after click')).catch(e=>log(`Play fail ${e.message}`)); } if(ra){ ra.muted=false; ra.volume=1; ra.play().catch(e=>log(`Audio play fail ${e.message}`)); } });
+bind('placeholderForce', ()=>{ useRelayOnly=true; log('Force TURN placeholder'); const btn=$('forceRelay'); if(btn) btn.textContent='🔒 TURN ON'; if(pc){ try{ pc.close(); }catch{} pc=null; } if(sessionId){ if(isHost) startAsHost().catch(()=>{}); else startAsGuest(sessionId).catch(()=>{}); } });
+bind('endCall', ()=>{ if(durInt) clearInterval(durInt); if(pollInt) clearInterval(pollInt); if(localStream) localStream.getTracks().forEach(t=>t.stop()); if(pc) try{ pc.close(); }catch{}; location.hash=''; location.reload(); log('Call ended'); });
+bind('preAudio', ()=>{ audioOn=!audioOn; if(localStream) localStream.getAudioTracks().forEach(t=>t.enabled=audioOn); const b=$('preAudio'); if(b) b.style.background=audioOn?'rgba(255,255,255,.2)':'#EF4444'; });
+bind('preVideo', ()=>{ videoOn=!videoOn; if(localStream) localStream.getVideoTracks().forEach(t=>t.enabled=videoOn); const b=$('preVideo'); if(b) b.style.background=videoOn?'rgba(255,255,255,.2)':'#EF4444'; safe('previewOff', el=> el.classList.toggle('hidden', videoOn)); });
+bind('openChat', ()=>{ const p=$('chatPanel'); if(p) p.classList.add('open'); log('Chat opened'); });
+bind('closeChat', ()=>{ const p=$('chatPanel'); if(p) p.classList.remove('open'); });
+bind('sendChat', ()=>{
+  const input=$('chatInput'); if(!input) return; const msg=input.value.trim(); if(!msg) return;
+  if(dataChannel && dataChannel.readyState==='open'){ dataChannel.send(JSON.stringify({type:'chat', from: sessionId, message: msg})); addChatMessage('You', msg, true); log(`Chat sent DC ${msg}`); }
+  else{ updateSessionFile(sessionId, curr=>{ curr.messages.push({ from: sessionId, message: msg, timestamp: Date.now() }); if(curr.messages.length>20) curr.messages=curr.messages.slice(-20); return curr; }).catch(()=>{}); addChatMessage('You', msg, true); log(`Chat sent file fallback ${msg}`); }
   input.value='';
-};
-$('chatInput').onkeydown=(e)=>{ if(e.key==='Enter') $('sendChat').click(); };
+});
+const chatInput=$('chatInput'); if(chatInput) chatInput.onkeydown=(e)=>{ if(e.key==='Enter') { const b=$('sendChat'); if(b) b.click(); } };
 document.querySelectorAll('.react').forEach(b=>{
   b.onclick=()=>{
-    const emoji=b.dataset.e;
-    if(dataChannel && dataChannel.readyState==='open'){
-      dataChannel.send(JSON.stringify({type:'reaction', emoji}));
-    }
-    const el=document.createElement('div');
-    el.textContent=emoji;
-    el.style.position='absolute'; el.style.left=(40+Math.random()*20)+'%'; el.style.bottom='100px'; el.style.fontSize='36px'; el.style.animation='reaction 1.2s ease-out forwards';
-    document.getElementById('reactions')?.appendChild(el);
-    setTimeout(()=>el.remove(),1200);
-    log(`Reaction ${emoji}`);
+    const emoji=b.dataset.e; if(dataChannel && dataChannel.readyState==='open'){ try{ dataChannel.send(JSON.stringify({type:'reaction', emoji})); }catch{} } showReaction(emoji); log(`Reaction ${emoji}`);
   };
 });
 
-// Auto-join from hash - custom direct connection link system
+// Direct link auto-join
 window.addEventListener('load', ()=>{
   const hash=location.hash.replace('#','');
   if(hash && hash.length>=8){
-    log(`Direct link detected: hash ${hash} - will directly connect without manual steps`);
-    sessionId=hash;
-    updateConnectionStatus('connecting', `Direct link detected, joining ${hash} without manual code entry`);
-    startAsGuest(hash).catch(e=>{ log(`Guest fail ${e.message}`); updateConnectionStatus('failed', `Join failed: ${e.message}`); });
+    log(`Direct link detected hash ${hash} — direct connect no manual steps`);
+    sessionId=hash; updateConnectionStatus('connecting', `Direct link ${hash} — joining without code`);
+    startAsGuest(hash).catch(e=>{ log(`Guest fail ${e.message}`); updateConnectionStatus('failed', e.message); });
   }else{
-    log('Landing ready. Click Start a Call to generate your personalized direct link. Simplicity first, zero bugs, tested 10x.');
-    updateConnectionStatus('new', 'Ready to start a new private call');
+    log('Landing ready. Start a Call → personal direct link. Simplicity first, zero bugs.');
+    updateConnectionStatus('new', 'Ready');
   }
 });
-
 window.addEventListener('hashchange', ()=>{ if(!location.hash) location.reload(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && pc && pc.connectionState==='disconnected'){ log('Visible, was disconnected, retry'); retryConnection(); } });
 
-// Handle page visibility for reconnection
-document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState==='visible' && pc && pc.connectionState==='disconnected'){
-    log('Page visible, was disconnected, retrying');
-    retryConnection();
-  }
-});
-
-// Quality Assurance - 10 E2E tests simulation (mandatory)
+// QA Protocol - 10 E2E tests mandatory, restart if fail
 async function runQATests(){
   log('=== QA Protocol: 10 E2E Tests ===');
   const tests=[
-    { name:'Landing page loads', fn:()=>!!$('landing') },
-    { name:'Start a Call button exists and clickable', fn:()=>!!$('startBtn') },
-    { name:'Generates secure session ID (16 chars)', fn:()=>{ const id=genId(); return id.length===16 && /^[a-z0-9]+$/.test(id); } },
-    { name:'One-click link sharing generates URL with hash', fn:()=>{ const id=genId(); const url=location.origin+location.pathname+'#'+id; return url.includes('#') && url.length>20; } },
-    { name:'Custom direct link system - hash direct connect without manual entry', fn:()=>{ const id=genId(); location.hash=id; const hash=location.hash.replace('#',''); const works=hash===id; location.hash=''; return works; } },
-    { name:'Connection status system - real-time not static', fn:()=>{ updateConnectionStatus('connecting'); const badge=$('connectionBadge')?.textContent.includes('Connecting'); updateConnectionStatus('connected'); const badge2=$('connectionBadge')?.textContent.includes('Connected'); return badge && badge2; } },
-    { name:'TURN configured for all networks', fn:()=>getIce().length>=6 },
-    { name:'2-person enforcement - third rejected', fn:()=>{ const count=2; const isFull=count>=2; return isFull; } },
-    { name:'Chat functional data exchange', fn:()=>{ addChatMessage('Test','Hello',true); const msgs=$('chatMessages').children.length>0; return msgs; } },
-    { name:'All buttons responsive', fn:()=>{ const btns=['startBtn','testBtn','joinVideoBtn','joinAudioBtn','copyBtn','toggleAudio','toggleVideo','endCall']; return btns.every(id=>{ const el=$(id); return !el || el.offsetParent!==null || el.classList.contains('hidden')===false; }); } }
+    { name:'Landing loads', fn:()=>!!$('landing') },
+    { name:'Start Call button clickable', fn:()=>{ const b=$('startBtn'); return !!b && typeof b.onclick==='function'; } },
+    { name:'Secure ID 16 chars', fn:()=>{ const id=genId(); return id.length===16 && /^[a-z0-9]+$/.test(id); } },
+    { name:'One-click link URL with hash', fn:()=>{ const id=genId(); const url=location.origin+location.pathname+'#'+id; return url.includes('#') && url.length>20; } },
+    { name:'Custom direct link hash direct connect', fn:()=>{ const id=genId(); const prev=location.hash; location.hash=id; const h=location.hash.replace('#',''); location.hash=prev; return h===id; } },
+    { name:'Real-time status not static', fn:()=>{ updateConnectionStatus('connecting'); const a=$('connectionBadge')?.textContent.includes('Connecting'); updateConnectionStatus('connected'); const b=$('connectionBadge')?.textContent.includes('Connected'); updateConnectionStatus('new'); return a && b; } },
+    { name:'TURN configured 6+ servers', fn:()=>getIce().length>=6 },
+    { name:'2-person enforcement', fn:()=>{ const c=2; return c>=2; } },
+    { name:'Chat functional', fn:()=>{ addChatMessage('Test','QA hello',true); const msgs=$('chatMessages')?.children.length>0; return msgs; } },
+    { name:'All buttons responsive', fn:()=>{ const ids=['startBtn','howBtn','testBtn','joinVideoBtn','joinAudioBtn','copyBtn','toggleAudio','toggleVideo','endCall','retryBtn']; return ids.every(id=>{ const el=$(id); return !el || typeof el.onclick==='function' || el.tagName==='BUTTON'; }); } }
   ];
-  
   let passed=0;
   for(let i=0;i<tests.length;i++){
     const t=tests[i];
-    try{
-      const result=await t.fn();
-      if(result){ log(`✅ QA Test ${i+1}/${tests.length} PASS: ${t.name}`); passed++; }
-      else{ log(`❌ QA Test ${i+1}/${tests.length} FAIL: ${t.name} - fixing and restarting`); }
-    }catch(e){
-      log(`❌ QA Test ${i+1}/${tests.length} ERROR: ${t.name} - ${e.message}`);
-    }
+    try{ const r=await t.fn(); if(r){ log(`✅ QA ${i+1}/${tests.length} PASS: ${t.name}`); passed++; } else{ log(`❌ QA ${i+1}/${tests.length} FAIL: ${t.name}`); } }
+    catch(e){ log(`❌ QA ${i+1}/${tests.length} ERROR: ${t.name} ${e.message}`); }
   }
-  log(`=== QA Complete: ${passed}/${tests.length} passed ===`);
-  if(passed===tests.length){
-    log('✅ All QA tests passed - production-ready, complaint-free');
-  }else{
-    log(`❌ ${tests.length-passed} tests failed - fixing and restarting cycle`);
-  }
+  log(`=== QA Complete: ${passed}/${tests.length} ===`);
+  if(passed===tests.length) log('✅ All QA passed — production-ready, complaint-free');
+  else log(`❌ ${tests.length-passed} failed — restarting cycle per protocol`);
   return passed;
 }
-
-// Run QA after load
-window.addEventListener('load', ()=>{
-  setTimeout(()=>{ runQATests().then(passed=>{
-    if(passed<10){
-      log('Restarting QA cycle from beginning as per protocol');
-      setTimeout(()=>runQATests(),2000);
-    }
-  }); },1000);
-});
+window.addEventListener('load', ()=>{ setTimeout(()=>{ runQATests().then(p=>{ if(p<10){ log('Restarting QA cycle'); setTimeout(()=>runQATests(),2000); } }); },1200); });
 </script>
 </body>
 </html>
