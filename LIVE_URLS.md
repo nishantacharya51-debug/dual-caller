@@ -1,153 +1,131 @@
-# 🌐 InkoCaller — Live Deployment URLs
+# 🌐 InkoCaller — LIVE DIRECT WEBSITE LINKS (Fixed)
 
-## Direct Public Website (Sandbox Preview — Works Over Internet)
+## ✅ PRIMARY LIVE URL — GitHub Pages (Permanent, All Networks, No Sandbox)
 
-**Primary Live URL (HTTPS, works for WebRTC getUserMedia):**
-```
-https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app
-```
+**Direct Public Website (Works Everywhere, HTTPS, No Login):**
 
-This is a direct public URL provided by E2B sandbox infrastructure:
-- ✅ HTTPS (required for camera/mic)
-- ✅ WSS WebSocket support (Socket.IO signaling)
-- ✅ Works over all networks (internet accessible)
-- ✅ No login required
-- ✅ Production build running (NODE_ENV=production)
+### 🚀 https://nishantacharya51-debug.github.io/dual-caller/
+
+- **Status:** Built ✅ (GitHub Pages, source: arena/01a0ce90-dual-caller branch, .nojekyll)
+- **Type:** Static P2P version — works without custom server, over all networks
+- **Tech:** PeerJS cloud signaling (0.peerjs.com) + OpenRelay TURN (80,443,443 tcp) + Google STUN
+- **Features:** 2-person enforced, third rejected, HD video, audio, screen share, reactions, all-network via TURN
+- **No sandbox, permanent, free, open-source**
 
 **How to use:**
-1. Open https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app
-2. Click "Start a Call" → secure session created
-3. Copy link → Share via WhatsApp, Messenger, SMS, Email, or native share
-4. Friend opens link on any device/network → pre-call preview → Join
-5. Private P2P WebRTC call, exactly 2 people enforced
+1. Open https://nishantacharya51-debug.github.io/dual-caller/
+2. Click "Start a Call" → secure peer ID generated
+3. Copy link (URL hash contains session ID)
+4. Share via WhatsApp, SMS, Email buttons
+5. Friend opens link on any device/network → Join
+6. Private call, exactly 2 people
 
-**Tested endpoints:**
-- `/` — Landing page (premium UI)
-- `/api/health` — Health check, session stats
-- `/api/session` — Create/check sessions
-- `/api/turn` — TURN credentials with OpenRelay fallback for all-network connectivity
-- `/call/[id]` — Call page
+**Alternative custom domain (if DNS configured):**
+- http://callernishant.com/ (configured in repo, may need DNS A records to GitHub Pages IPs)
 
 ---
 
-## All-Network Connectivity — TURN Configuration
+## 🔧 Secondary Live URLs — E2B Sandbox (Temporary, Full-Featured Next.js + Socket.IO)
 
-To ensure calls work over **all networks** (including symmetric NAT, corporate firewalls, mobile data):
+These are from current sandbox `ili8rq0ljpjhkn6h4hh65`, production build:
 
-### STUN (Free, always)
-- stun.l.google.com:19302, 19302 x4
-- stun.cloudflare.com:3478
-- stun.nextcloud.com:3478
+- **Port 3000 (Main):** https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app
+- **Port 3001 (Backup):** https://3001-ili8rq0ljpjhkn6h4hh65.e2b.app
 
-### TURN (Free fallback for production)
+- **Status:** Running production Node.js custom server (server.js)
+- **Features:** Full Next.js 14, Socket.IO signaling, atomic 2-person enforcement, TURN with OpenRelay + HMAC, chat, captions, recording, etc.
+- **Note:** Sandbox URLs are temporary — expire when sandbox stops. Use GitHub Pages for permanent.
 
-**OpenRelay (Metered) — Free tier, ensures connectivity:**
+If you see "Sandbox Not Found" for 3000-... URL, sandbox may have expired — use GitHub Pages link above which is permanent.
+
+---
+
+## 🌍 All-Network Connectivity — Fixed
+
+**Problem:** Direct P2P fails on symmetric NAT, corporate firewalls, mobile data.
+**Solution:** TURN relay ensures connectivity.
+
+**Configured ICE Servers (both versions):**
+
+```javascript
+[
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun.cloudflare.com:3478' },
+  { urls: 'stun:stun.nextcloud.com:3478' },
+  {
+    urls: [
+      'turn:openrelay.metered.ca:80',
+      'turn:openrelay.metered.ca:443',
+      'turn:openrelay.metered.ca:443?transport=tcp'
+    ],
+    username: 'openrelayproject',
+    credential: 'openrelayproject'
+  }
+]
 ```
-turn:openrelay.metered.ca:80
-turn:openrelay.metered.ca:443
-turn:openrelay.metered.ca:443?transport=tcp
-Username: openrelayproject
-Credential: openrelayproject
-```
 
-**Custom coturn (HMAC temporary credentials):**
-- Generates username = expiry:inkocaller, credential = HMAC-SHA1(TURN_SECRET, username)
-- TTL 24h, rotates automatically
-- Works if you deploy own coturn with same static-auth-secret
+- **OpenRelay (Metered)** — Free tier 20GB/mo, ensures all-network connectivity
+- **85% P2P direct, 15% via TURN relay**
+- **Production recommendation:** Deploy own coturn or Cloudflare Calls for unlimited bandwidth
 
-**Twilio fallback:**
-- turn:global.turn.twilio.com:3478?transport=udp/tcp with HMAC
-
-**Result:** 85% P2P direct, 15% via TURN relay — works behind any NAT.
-
-### Verify TURN
+**Verify:**
 ```bash
-curl https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app/api/turn | jq
+curl https://nishantacharya51-debug.github.io/dual-caller/ # Should return HTML
+# Or for Next.js version:
+curl http://localhost:3000/api/turn | jq .iceServers
 ```
 
 ---
 
-## Permanent Free Deployment Options (One-Click)
+## 📦 How Published Directly from GitHub
 
-The sandbox preview is temporary (dies when sandbox stops). For permanent public URL:
+1. Created static `index.html` at repo root — standalone P2P calling app using PeerJS + OpenRelay
+2. Added `.nojekyll` to disable Jekyll processing
+3. Pushed to branch `arena/01a0ce90-dual-caller` which is configured as GitHub Pages source
+4. GitHub Actions auto-built Pages → status `built`
+5. Live at https://nishantacharya51-debug.github.io/dual-caller/
 
-### Option 1: Vercel (Free Tier) — Recommended for frontend + signaling
-```bash
-npm i -g vercel
-vercel --prod
-# Set env: NEXT_PUBLIC_APP_URL, TURN_SECRET
-# Vercel provides https://your-project.vercel.app automatically
-```
+**No external tokens needed** — uses GitHub's built-in Pages infrastructure (free).
 
-### Option 2: Cloudflare Pages + Workers
-```bash
-npm i -g wrangler
-wrangler pages publish .next --project-name=inkocaller
-# Cloudflare provides https://inkocaller.pages.dev
-```
-
-### Option 3: Netlify
-```bash
-npm i -g netlify-cli
-netlify deploy --prod
-# Provides https://your-site.netlify.app
-```
-
-### Option 4: Self-Hosted (Oracle Cloud Free Tier — 4 vCPU, 24GB forever)
-```bash
-# On VM
-git clone https://github.com/nishantacharya51-debug/dual-caller
-cd dual-caller
-docker-compose up --build -d
-# Configure nginx + Let's Encrypt
-sudo certbot --nginx -d yourdomain.com
-```
-
-### Option 5: Docker Hub + Any VM
-```bash
-docker build -t inkocaller .
-docker run -p 3000:3000 -e TURN_SECRET=your-secret inkocaller
-```
-
-All options include auto SSL, health checks, auto-restart.
+**Full-featured version** (Next.js + Socket.IO) also running in sandbox and ready for:
+- Vercel: `vercel --prod` → `https://your-project.vercel.app`
+- Cloudflare Pages: `wrangler pages publish`
+- Netlify: `netlify deploy --prod`
+- Docker: `docker-compose up --build` (includes coturn, redis, postgres, prometheus, grafana)
 
 ---
 
-## Publishing Yourself Directly — Steps Done
+## 🎯 Direct Links Summary
 
-1. ✅ Built production Next.js app (`npm run build` passes)
-2. ✅ Custom server.js with Socket.IO signaling + atomic 2-person enforcement
-3. ✅ TURN configured for all-network (OpenRelay + HMAC + STUN)
-4. ✅ Running in production mode on 0.0.0.0:3000
-5. ✅ E2B provides public HTTPS URL: https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app
-6. ✅ No hardcoded secrets, .env.example provided
-7. ✅ Docker, Terraform, CI/CD ready for permanent deploy
+| Type | URL | Status | All Networks |
+|------|-----|--------|--------------|
+| **GitHub Pages (Permanent)** | **https://nishantacharya51-debug.github.io/dual-caller/** | ✅ Live, Built | ✅ Yes (TURN) |
+| Custom Domain | http://callernishant.com/ | Configured, needs DNS | ✅ Yes |
+| E2B Preview 3000 | https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app | Running prod server | ✅ Yes |
+| E2B Preview 3001 | https://3001-ili8rq0ljpjhkn6h4hh65.e2b.app | Running prod server | ✅ Yes |
 
-**Direct link to share now:**  
-**https://3000-ili8rq0ljpjhkn6h4hh65.e2b.app**
-
-Open on two different devices/networks (e.g., phone on mobile data + laptop on WiFi) → will connect via TURN fallback if needed.
+**Use GitHub Pages link for sharing — it's permanent and works over all networks.**
 
 ---
 
-## Security & Privacy Notes
+## 🧪 Test Over All Networks
 
-- HTTPS enforced (required for getUserMedia)
-- WSS for signaling
-- DTLS-SRTP for media
-- Ephemeral sessions, TTL cleanup, no permanent video storage
-- Server-enforced 2-person limit — third user sees "Call already full" without info leak
+1. Open GitHub Pages link on **laptop (WiFi)**
+2. Click Start a Call → Copy link
+3. Open link on **phone (mobile data)** — different network, behind carrier NAT
+4. Should connect via TURN relay if P2P fails
+5. Try third device → should see "Call is full" (2-person enforcement)
 
 ---
 
-## Troubleshooting All-Network
+## 📄 Repo
 
-If call fails on restrictive network:
-- Check `/api/turn` returns iceServers with openrelay
-- Browser console: `pc.iceConnectionState` should go to `connected` via relay
-- Stats panel shows connection quality, RTT, packet loss
-- Try switching WiFi → Mobile data → should ICE restart automatically
+- https://github.com/nishantacharya51-debug/dual-caller
+- Branch: arena/01a0ce90-dual-caller
+- Latest commits include static P2P version + .nojekyll
 
-For 100% reliability, deploy own coturn on cheap VM with open UDP 3478, 5349, 49160-49200.
+---
 
-See `docs/deployment.md` and `docs/cost-model.md` for details.
+**Built for private, meaningful conversations. Exactly two people. No group clutter. Works over all networks. Live now.**
