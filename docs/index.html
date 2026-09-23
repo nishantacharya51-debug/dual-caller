@@ -64,7 +64,9 @@ h1,h2,h3{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em}
         <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.15);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;box-shadow:0 2px 8px -2px rgba(37,99,235,.1);width:fit-content"><span class="dot dot-green"></span>Simple • Private • Works over all networks • No signup</div>
         <h1 style="font-size:clamp(36px,6vw,56px);line-height:.9;font-weight:800;letter-spacing:-0.03em">Private calls.<br><span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Just two people.</span></h1>
         <p style="font-size:17px;line-height:1.6;color:#475569;max-width:520px">One link, two people, instant connection. No groups, no clutter. Video, voice, chat — works over WiFi, mobile data, and firewalls.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap"><button id="startBtn" class="btn btn-dark">Start a Private Call →</button><button id="howBtn" class="btn btn-light">How it works</button><button id="testBtn" class="btn btn-light">Test Camera</button></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:10"><button id="startBtn" type="button" class="btn btn-dark" style="position:relative;z-index:20;pointer-events:auto!important;touch-action:manipulation" onclick="window.__startCall && window.__startCall()">Start a Private Call →</button><button id="howBtn" type="button" class="btn btn-light" style="position:relative;z-index:10;pointer-events:auto">How it works</button><button id="testBtn" type="button" class="btn btn-light" style="position:relative;z-index:10;pointer-events:auto">Test Camera</button></div>
+        <!-- Fallback floating button for mobile if main not clickable -->
+        <div id="fallbackStart" style="position:fixed;bottom:20px;left:20px;right:20px;z-index:9999;display:none"><button type="button" class="btn btn-dark" style="width:100%;height:56px;font-size:16px;box-shadow:0 12px 40px rgba(0,0,0,.3)" onclick="window.__startCall && window.__startCall()">📞 Start a Private Call (Tap Here)</button></div>
         <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#64748B"><span>✓ No signup</span><span>✓ Encrypted</span><span>✓ Works in browser</span><span>✓ All networks</span></div>
         
         <div style="background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;max-width:520px" class="slide-in">
@@ -606,8 +608,46 @@ async function retryConnection(){
   }
 }
 
-// All buttons — zero broken
-function bind(id, fn){ const el=$(id); if(el) el.onclick=fn; }
+// All buttons — zero broken — FIXED CLICKABLE
+function bind(id, fn){
+  const el=$(id);
+  if(!el){ log(`bind: ${id} not found`); return; }
+  el.style.pointerEvents='auto';
+  el.style.position='relative';
+  el.style.zIndex='20';
+  // Use both onclick and addEventListener for maximum compatibility
+  el.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); log(`Button ${id} clicked via onclick`); fn(e); };
+  el.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); log(`Button ${id} clicked via addEventListener`); fn(e); }, {capture:true});
+  el.addEventListener('touchend', (e)=>{ e.preventDefault(); log(`Button ${id} touchend`); fn(e); }, {passive:false});
+  log(`bind OK ${id} clickable`);
+}
+// Global start function for inline onclick fallback
+window.__startCall = ()=>{ log('Start clicked via global __startCall - generating direct link'); startAsHost().catch(e=>{ log(`Host fail ${e.message}`); updateConnectionStatus('failed', e.message); }); };
+function ensureClickable(){
+  const btn=$('startBtn');
+  if(btn){
+    log(`startBtn found: ${btn.tagName} visible=${!!btn.offsetParent} disabled=${btn.disabled} pointerEvents=${getComputedStyle(btn).pointerEvents}`);
+    // Force clickable
+    btn.disabled=false;
+    btn.style.pointerEvents='auto';
+    btn.style.cursor='pointer';
+    btn.style.opacity='1';
+    // Show fallback if main not visible or not clickable after 3s
+    setTimeout(()=>{
+      const rect=btn.getBoundingClientRect();
+      const visible=rect.width>0 && rect.height>0 && rect.top>=0;
+      log(`startBtn rect visible=${visible} w=${rect.width} h=${rect.height} top=${rect.top}`);
+      if(!visible || !btn.offsetParent){
+        const fb=$('fallbackStart');
+        if(fb){ fb.style.display='block'; log('Showing fallback start button'); }
+      }
+    },2000);
+  }else{
+    log('startBtn NOT FOUND - showing fallback');
+    const fb=$('fallbackStart');
+    if(fb) fb.style.display='block';
+  }
+}
 bind('startBtn', ()=>{ log('Start clicked - generating direct link'); startAsHost().catch(e=>{ log(`Host fail ${e.message}`); updateConnectionStatus('failed', e.message); }); });
 bind('howBtn', ()=>{ const h=$('how'); if(h) h.scrollIntoView({behavior:'smooth'}); });
 bind('testBtn', async()=>{ log('Self-test'); try{ await getMedia(true); $('landing').classList.add('hidden'); $('preCall').classList.remove('hidden'); safe('preId', el=> el.textContent='self-test'); safe('shareLink', el=> el.value='self-test: camera works if you see yourself'); updateConnectionStatus('connected', 'Self-test OK'); log('Self-test OK'); }catch(e){ log(`Self-test fail ${e.message}`); } });
@@ -657,16 +697,24 @@ document.querySelectorAll('.react').forEach(b=>{
   };
 });
 
+// Ensure clickable on DOM ready
+document.addEventListener('DOMContentLoaded', ()=>{ log('DOMContentLoaded'); ensureClickable(); });
+window.addEventListener('DOMContentLoaded', ()=>{ log('DOMContentLoaded (window)'); ensureClickable(); });
+
 // Direct link auto-join
 window.addEventListener('load', ()=>{
+  log('Window load - ensuring clickable');
+  ensureClickable();
   const hash=location.hash.replace('#','');
   if(hash && hash.length>=8){
     log(`Direct link detected hash ${hash} — direct connect no manual steps`);
     sessionId=hash; updateConnectionStatus('connecting', `Direct link ${hash} — joining without code`);
     startAsGuest(hash).catch(e=>{ log(`Guest fail ${e.message}`); updateConnectionStatus('failed', e.message); });
   }else{
-    log('Landing ready. Start a Call → personal direct link. Simplicity first, zero bugs.');
+    log('Landing ready. Start a Call → personal direct link. Simplicity first, zero bugs. Button should be clickable now.');
     updateConnectionStatus('new', 'Ready');
+    // Extra check after 1s
+    setTimeout(()=>{ ensureClickable(); const b=$('startBtn'); if(b){ b.style.outline='2px solid #22C55E'; setTimeout(()=>b.style.outline='',2000); log('startBtn highlighted for visibility'); } },1000);
   }
 });
 window.addEventListener('hashchange', ()=>{ if(!location.hash) location.reload(); });
