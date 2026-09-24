@@ -14,9 +14,13 @@ STUN can discover a network address; it cannot relay audio/video through a restr
 
 Public/free TURN services and demo credentials can be rate-limited, withdrawn, or changed without notice. V8 never labels a TURN server “working” merely because its DNS name resolves. The real-browser test (two devices on different networks, with the app showing a relay candidate) is the acceptance check for a deployment. The sandbox cannot prove that a third-party relay will accept credentials or pass packets from every ISP, country, VPN, or corporate firewall. Do not treat a static free relay as a production SLA.
 
+### Quick temporary connectivity test
+
+The call's **Show details** panel has a link to [rstream's free TURN credential tester](https://rstream.io/tools/turn-server). Its evaluation credentials last one hour and are intended for interoperability testing, not a production guarantee. Generate the values on that provider page, return to InkoCaller, and enter its TURN URI, username, and password. The app probes for a real relay candidate. Each caller/network needs a working path; repeat the test from the other device/network if it still cannot connect.
+
 ### Configure a managed relay
 
-1. Create a TURN account with a service you control or trust and create credentials for browser clients. Prefer short-lived credentials minted by a backend rather than permanent credentials embedded in a public HTML file.
+1. For ongoing use, create a TURN account with a service you control or trust and create credentials for browser clients. Prefer short-lived credentials minted by a backend rather than permanent credentials embedded in a public HTML file.
 2. In InkoCaller, open a call, choose **Show details**, paste a `turn:` or `turns:` URI, username, and password, then choose **Save relay**.
 3. The browser performs an ICE relay-candidate check. If it succeeds, the network row reports the reachable relay; start a new call after saving it (both callers should use the new values if their earlier ICE configuration has been cached).
 4. Keep credentials out of screenshots, public issues, and committed files.

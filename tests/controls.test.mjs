@@ -208,6 +208,9 @@ test('35. Details panel toggles and shows the relay test results', async () => {
   await A.click('toggleDebug');
   assert.equal(A.$('preDebug').style.display, 'block');
   assert.equal(A.$('turnForm').style.display, 'flex', 'relay settings reachable');
+  assert.equal(A.$('getTestTurn').href, 'https://rstream.io/tools/turn-server');
+  assert.equal(A.$('getTestTurn').target, '_blank');
+  assert.equal(A.$('getTestTurn').rel, 'noopener noreferrer');
   assert.match(A.$('relayDetail').textContent, /✓ OpenRelay 80/);
   assert.match(A.$('relayDetail').textContent, /✗ ExpressTURN 1/);
   await A.click('testNet');
