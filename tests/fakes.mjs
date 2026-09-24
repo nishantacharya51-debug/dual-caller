@@ -22,6 +22,7 @@ export function createBus(opts = {}) {
     peers: new Map(),
     links: new Map(),
     workingRelays: opts.workingRelays || ['ExpressTURN 1', 'OpenRelay 443'],
+    turnServers: opts.turnServers,
     failNextMedia: opts.failNextMedia || 0,
     mediaFailSticky: !!opts.mediaFailSticky,
     relayUsed: false,

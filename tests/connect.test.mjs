@@ -75,7 +75,7 @@ test('25. Relay probe keeps only relays that actually answer, and caches them', 
   assert.equal(relayCfg.iceServers.every(s => !!s.name), true, 'relay-only has no STUN entries');
   const cache = JSON.parse(A.win.localStorage.getItem('inko.relays'));
   assert.ok(cache && cache.ok.includes('OpenRelay 443'), 'result cached on device');
-  assert.match(A.text('netLineText'), /Ready — works on any network/);
+  assert.match(A.text('netLineText'), /TURN relay reachable from this network/);
   close(A);
 });
 
@@ -85,7 +85,17 @@ test('26. A saved personal relay is tried first', async () => {
   await waitFor(() => A.state().probed === true, { label: 'probe finished', timeout: 9000 });
   assert.equal(A.state().relays.map(r => r.name).join(','), 'My relay');
   assert.equal(A.state().relays[0].username, 'u1');
-  assert.match(A.text('netLineText'), /Ready — works on any network/);
+  assert.match(A.text('netLineText'), /TURN relay reachable from this network/);
+  close(A);
+});
+
+test('27a. Static Pages with no TURN config clearly reports that cross-network relay is missing', async () => {
+  const bus = createBus({ turnServers: [] });
+  const A = await makeClient({ bus, name: 'A' });
+  await waitFor(() => A.state().probed === true, { label: 'relay probe finished', timeout: 4000 });
+  assert.equal(A.state().relays.length, 0);
+  assert.match(A.text('netLineText'), /No relay configured/);
+  assert.match(A.$('relayDetail').textContent, /Add and test a TURN relay/);
   close(A);
 });
 
@@ -94,7 +104,7 @@ test('27. No relay available → honest warning plus a way to fix it', async () 
   const A = await makeClient({ bus, name: 'A' });
   await waitFor(() => A.state().probed === true, { label: 'probe finished', timeout: 9000 });
   assert.equal(A.state().relays.length, 0);
-  assert.match(A.text('netLineText'), /Direct calls only/);
+  assert.match(A.text('netLineText'), /Configured relay unavailable/);
   await A.click('startBtn');
   await waitFor(() => A.state().sigOk, { label: 'host ready' });
   await A.click('joinVideoBtn');

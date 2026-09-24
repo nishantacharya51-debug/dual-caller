@@ -37,7 +37,7 @@ export async function makeClient({ bus, name = 'A', hash = '', storage = null, u
   installFakes(win, bus, name);
   // Runtime-only test fixtures; never shipped in the site HTML.
   win.INKO_DISABLE_TURN_CREDENTIALS = true;
-  win.INKO_TURN_SERVERS = [
+  win.INKO_TURN_SERVERS = bus.turnServers || [
     { name: 'ExpressTURN 1', urls: ['turn:relay1.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },
     { name: 'ExpressTURN 2', urls: ['turn:relay2.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },
     { name: 'ExpressTURN 3', urls: ['turn:relay3.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },

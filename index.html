@@ -126,9 +126,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   <section style="padding:40px 20px 56px;background:radial-gradient(at 20% 30%,rgba(37,99,235,.06) 0,transparent 50%),radial-gradient(at 80% 20%,rgba(124,58,237,.06) 0,transparent 50%),#F8FAFC">
     <div style="max-width:1100px;margin:0 auto;display:grid;gap:40px;align-items:center" id="hero"><style>@media(min-width:900px){#hero{grid-template-columns:1fr 1fr}}</style>
       <div style="display:flex;flex-direction:column;gap:20px">
-        <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.12);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;width:fit-content"><span class="dot dot-green"></span>Works anywhere in the world</div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(37,99,235,.12);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:#2563EB;width:fit-content"><span class="dot dot-green"></span>Private, simple 1:1 calling</div>
         <h1 style="font-size:clamp(36px,6vw,52px);line-height:.95;font-weight:800;letter-spacing:-0.03em">Private calls.<br><span style="background:linear-gradient(90deg,#2563EB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Just two people.</span></h1>
-        <p style="font-size:17px;line-height:1.6;color:#475569;max-width:480px">One tap to start. Share the link. Your friend taps it and you are connected — even on different networks, different cities, different countries. Video, voice and private chat.</p>
+        <p style="font-size:17px;line-height:1.6;color:#475569;max-width:480px">One tap to start. Share the link. Your friend taps it and you are connected. Calls work directly when possible; cross-network calls need a TURN relay, which you can configure and test. Video, voice and private chat.</p>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <button id="startBtn" type="button" class="btn btn-dark" style="height:56px;padding:0 32px;font-size:16px">Start a Private Call →</button>
           <button id="howBtn" type="button" class="btn btn-light">How it works</button>
@@ -146,7 +146,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
             </div>
           </div>
         </div>
-        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="card" style="padding:14px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center">✓</div><div><div style="font-size:13px;font-weight:600">Chat that works</div><div style="font-size:11px;color:#64748B">Delivered &amp; read ticks</div></div></div><div class="card" style="padding:14px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center">✓</div><div><div style="font-size:13px;font-weight:600">Any network</div><div style="font-size:11px;color:#64748B">Auto relay when needed</div></div></div></div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="card" style="padding:14px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center">✓</div><div><div style="font-size:13px;font-weight:600">Chat that works</div><div style="font-size:11px;color:#64748B">Delivered &amp; read ticks</div></div></div><div class="card" style="padding:14px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:#0B1020;color:#fff;display:flex;align-items:center;justify-content:center">✓</div><div><div style="font-size:13px;font-weight:600">Network-aware</div><div style="font-size:11px;color:#64748B">Tests relay before use</div></div></div></div>
       </div>
     </div>
   </section>
@@ -187,7 +187,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span id="relayLine">Network: checking…</span><button id="testNet" type="button" style="background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:9999px;padding:5px 12px;font-size:11px;cursor:pointer;flex:none">Test</button></div>
         <div id="relayDetail" class="mono" style="font-size:10px;color:#64748B;white-space:pre-wrap;display:none"></div>
         <div id="turnForm" style="display:none;flex-direction:column;gap:8px;border-top:1px solid rgba(255,255,255,.1);padding-top:10px">
-          <div style="font-size:11px;color:#94A3B8;line-height:1.5">If your network blocks calls, add your own relay server (free). Paste the three values and save.</div>
+          <div style="font-size:11px;color:#94A3B8;line-height:1.5">For cross-network calls, enter the TURN address and login details from a relay provider. Some providers offer limited free tiers; no relay credentials are included with this site.</div>
           <div class="field" style="color:#fff"><label style="color:#94A3B8">Relay address</label><input id="turnUrl" placeholder="turn:your-server.com:3478" style="background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.16);color:#fff"></div>
           <div style="display:flex;gap:8px"><div class="field" style="flex:1;color:#fff"><label style="color:#94A3B8">Username</label><input id="turnUser" placeholder="username" style="background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.16);color:#fff"></div><div class="field" style="flex:1;color:#fff"><label style="color:#94A3B8">Password</label><input id="turnPass" type="password" placeholder="password" style="background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.16);color:#fff"></div></div>
           <div style="display:flex;gap:8px"><button id="saveTurn" type="button" style="flex:1;height:38px;border-radius:9999px;background:#2563EB;color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer">Save relay</button><button id="clearTurn" type="button" style="height:38px;border-radius:9999px;background:rgba(255,255,255,.14);color:#fff;border:none;font-size:12px;padding:0 14px;cursor:pointer">Remove</button></div>
@@ -465,9 +465,11 @@ function renderRelayUI(){
   var okc=res.filter(function(r){return r.ok;}).length;
   var detail=res.map(function(r){ return (r.ok?'✓ ':'✗ ')+r.name+(r.ok?(r.addr?' → '+r.addr:''):' ('+r.why+')'); }).join('\n');
   if(S.relays&&S.relays.length){
-    setNetLine('Ready — works on any network ('+S.relays.length+' relay'+(S.relays.length>1?'s':'')+' found)','#22C55E',detail);
+    setNetLine('TURN relay reachable from this network ('+S.relays.length+' found)','#22C55E',detail);
+  }else if(S.probed&&!relayList().length){
+    setNetLine('No relay configured — cross-network calls need one','#F59E0B',detail||'Direct calls may work on some networks. Add and test a TURN relay in Show details.');
   }else if(S.probed){
-    setNetLine('Direct calls only — add a free relay for long distance','#F59E0B',detail||'No relay answered. Same-network calls still work.');
+    setNetLine('Configured relay unavailable — direct calls only','#F59E0B',detail||'No configured relay answered. Same-network calls may still work.');
   }else{
     setNetLine('Checking your network…','#F59E0B','');
   }
@@ -1309,7 +1311,7 @@ async function fixConnection(manual){
   await probeRelays(true);
   if(S.mode!=='relay'){ S.mode='relay'; }
   if(!S.relays||!S.relays.length){
-    showModal({icon:'🌐',title:'Your network needs a relay',body:'Some internet providers block direct calls. We could not find a free relay that works from your network right now.<br><br>Switch to mobile data, or add a free relay server under <b>Show details</b> on the start screen.',
+    showModal({icon:'🌐',title:'Your network needs a relay',body:'Some internet providers block direct calls. No working TURN relay is configured for this call right now.<br><br>Switching Wi-Fi/mobile data may help. For dependable cross-network calls, add credentials from a TURN provider under <b>Show details</b> before starting a new call.',
       actions:[{label:'Try again',cls:'btn-dark',fn:function(){ hideModal(); fixConnection(true); }},{label:'Close',cls:'btn-light',fn:hideModal}]});
     S.mode='all';
     return;
@@ -1408,7 +1410,7 @@ bind('testNet',async function(){
   var b=$('testNet'); if(b){ b.disabled=true; b.textContent='Testing…'; }
   await probeRelays(true);
   if(b){ b.disabled=false; b.textContent='Test'; }
-  toast(S.relays.length?'Relay found — long distance calls will work':'No relay found — see details below');
+  toast(S.relays.length?'Relay reachable from your network':'No relay found — see details below');
 });
 bind('saveTurn',function(){
   var url=(($('turnUrl')||{}).value||'').trim();
