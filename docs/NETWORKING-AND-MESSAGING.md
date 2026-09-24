@@ -2,7 +2,7 @@
 
 ## What changed in V8
 
-The browser app now checks TURN relays by gathering actual `typ relay` ICE candidates before advertising that relay routing is available. It tests multiple providers, caches successful results for six hours, prefers relays that answered, and automatically retries with relay-only ICE when a direct media connection fails or stalls. The in-call **Fix connection** button runs the same check again. The call status is driven by PeerJS/WebRTC connection states rather than a static “connected” label.
+The browser app checks configured TURN relays by gathering actual `typ relay` ICE candidates before advertising that relay routing is available. It caches successful results for six hours, prefers relays that answered, and automatically retries with relay-only ICE when a direct media connection fails or stalls. The in-call **Fix connection** button runs the same check again. The call status is driven by PeerJS/WebRTC connection states rather than a static “connected” label. TURN usernames/passwords are not embedded in the public page; configure short-lived relays at runtime or add your own relay in **Show details**.
 
 Private chat uses the PeerJS/WebRTC data channel, not an HTTP write to GitHub. Messages have stable IDs, send/delivered/read states, retry on reconnect, local queueing while the other person is joining, duplicate suppression, typing status, emoji reactions, unread counts, and local-only history. The peer channel uses WebRTC data-channel transport encryption. Messages are not stored on InkoCaller servers. Local device history is kept in browser storage for this device and this call link; clearing site data removes it.
 

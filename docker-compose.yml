@@ -9,7 +9,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - NEXT_PUBLIC_APP_URL=http://localhost:3000
-      - TURN_SECRET=${TURN_SECRET:-inkocaller-dev-secret}
+      - TURN_SECRET=${TURN_SECRET:?Set TURN_SECRET in your .env file}
       - DATABASE_URL=${DATABASE_URL:-}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
     depends_on:
@@ -53,13 +53,13 @@ services:
       - "5349:5349/udp"
       - "49160-49200:49160-49200/udp"
     environment:
-      - TURN_SECRET=${TURN_SECRET:-inkocaller-dev-secret}
+      - TURN_SECRET=${TURN_SECRET:?Set TURN_SECRET in your .env file}
     command: >
       -n --log-file=stdout
       --external-ip=$$(detect-external-ip)
       --listening-port=3478 --tls-listening-port=5349
       --min-port=49160 --max-port=49200
-      --fingerprint --lt-cred-mech --use-auth-secret --static-auth-secret=${TURN_SECRET:-inkocaller-dev-secret}
+      --fingerprint --lt-cred-mech --use-auth-secret --static-auth-secret=${TURN_SECRET:?Set TURN_SECRET in your .env file}
       --realm=inkocaller.app --no-multicast-peers --no-cli
       --no-tls --no-dtls
     restart: unless-stopped

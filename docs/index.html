@@ -369,20 +369,44 @@ function stopTimer(){ if(S.timer){ clearInterval(S.timer); S.timer=null; } }
 
 /* ============================== 3. relay (worldwide) engine ============================== */
 var STUN=[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']}];
-var RELAYS=[
-  {name:'ExpressTURN 1',urls:['turn:relay1.expressturn.com:3478','turns:relay1.expressturn.com:443?transport=tcp'],username:'efQUQ79N77B5BNVVKF',credential:'N4EAUgpjMzPLrxSS'},
-  {name:'ExpressTURN 2',urls:['turn:relay2.expressturn.com:3478','turns:relay2.expressturn.com:443?transport=tcp'],username:'efQUQ79N77B5BNVVKF',credential:'N4EAUgpjMzPLrxSS'},
-  {name:'ExpressTURN 3',urls:['turn:relay3.expressturn.com:3478','turns:relay3.expressturn.com:443?transport=tcp'],username:'efQUQ79N77B5BNVVKF',credential:'N4EAUgpjMzPLrxSS'},
-  {name:'OpenRelay 80',urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:80?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'},
-  {name:'OpenRelay 443',urls:['turn:openrelay.metered.ca:443','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'},
-  {name:'FreeSTUN',urls:['turn:freestun.net:3478','turn:freestun.net:3478?transport=tcp'],username:'free',credential:'free'}
-];
+// TURN credentials are deliberately not embedded in this public static page.
+// A deployment can inject short-lived provider credentials at runtime with
+// window.INKO_TURN_SERVERS; individual users can add their own relay below.
+var RELAYS=Array.isArray(window.INKO_TURN_SERVERS)?window.INKO_TURN_SERVERS.filter(function(r){
+  return r&&Array.isArray(r.urls)&&r.urls.length&&r.username&&r.credential;
+}).map(function(r){return {name:String(r.name||'Configured relay'),urls:r.urls,username:r.username,credential:r.credential};}):[];
 function customRelay(){
   var c=LS.get('inko.turn',null);
   if(c&&c.url) return {name:'My relay',urls:[c.url],username:c.user||'',credential:c.pass||'',custom:true};
   return null;
 }
 function relayList(){ var c=customRelay(); return c?[c].concat(RELAYS):RELAYS.slice(); }
+var relayConfigPromise=null;
+function loadRelayConfig(){
+  if(relayConfigPromise) return relayConfigPromise;
+  if(window.INKO_DISABLE_TURN_CREDENTIALS||typeof fetch!=='function') return Promise.resolve(RELAYS);
+  var endpoint=window.INKO_TURN_CREDENTIALS_URL||'';
+  // On an API-backed deployment use its same-origin endpoint. GitHub Pages is static.
+  if(!endpoint&&!/\.github\.io$/i.test(location.hostname)) endpoint='/api/turn';
+  if(!endpoint) return Promise.resolve(RELAYS);
+  relayConfigPromise=fetch(endpoint,{cache:'no-store',credentials:'same-origin'}).then(function(r){
+    if(!r.ok) throw new Error('TURN credential service returned '+r.status);
+    return r.json();
+  }).then(function(data){
+    var list=Array.isArray(data)?data:(data&&data.iceServers)||[];
+    var turns=[];
+    list.forEach(function(server){
+      if(!server||!server.username||!server.credential) return;
+      var urls=Array.isArray(server.urls)?server.urls:[server.urls];
+      urls=urls.filter(function(url){return typeof url==='string'&&/^turns?:/i.test(url);});
+      if(urls.length) turns.push({name:server.name||'Configured relay',urls:urls,username:server.username,credential:server.credential});
+    });
+    if(turns.length){ RELAYS=turns; log('loaded',turns.length,'short-lived relay configuration(s)'); }
+    else log('credential service returned no configured TURN relays');
+    return RELAYS;
+  }).catch(function(e){ log('TURN credential service unavailable:',e&&e.message); return RELAYS; });
+  return relayConfigPromise;
+}
 function probeOne(relay,timeout){
   return new Promise(function(res){
     var done=false,p=null;
@@ -1099,7 +1123,8 @@ async function startRoom(forcedId){
     setStatus('starting');
     try{ await ensureMedia(true,true); }
     catch(e){ log('host media failed:',e&&e.message); toast('Camera blocked — you can still join with voice'); S.receiveOnly=true; }
-    await Promise.race([probeRelays(false),sleep(1600)]);
+    await loadRelayConfig();
+    await probeRelays(false);
     try{ await initPeer(peerId()); }
     catch(e){
       if(e&&e.type==='unavailable-id'){ S.roomId=hex(12); updateLink(); await initPeer(peerId()); }
@@ -1124,7 +1149,8 @@ async function joinRoom(roomId){
   setStatus('guest preview');
   try{ await ensureMedia(true,true); }
   catch(e){ log('guest media failed:',e&&e.message); toast('Camera blocked — you can still join and listen'); S.receiveOnly=true; }
-  await Promise.race([probeRelays(false),sleep(1600)]);
+  await loadRelayConfig();
+  await probeRelays(false);
   Chat.load(); Chat.render();
 }
 async function joinCall(withVideo){
@@ -1496,7 +1522,7 @@ function boot(){
     joinRoom(hash);
   }else{
     setStatus();
-    probeRelays(false);
+    loadRelayConfig().then(function(){ return probeRelays(false); });
     log('landing ready');
   }
 }

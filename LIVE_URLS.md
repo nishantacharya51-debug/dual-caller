@@ -122,7 +122,7 @@
 
 ---
 
-## 🌍 All-Network TURN (Works Over WiFi, Mobile Data, Firewalls)
+## 🌍 TURN relay configuration (required for some networks)
 
 ```javascript
 [
@@ -132,20 +132,19 @@
   { urls: 'stun:stun3.l.google.com:19302' },
   { urls: 'stun:stun.cloudflare.com:3478' },
   { urls: 'stun:stun.nextcloud.com:3478' },
-  { urls: ['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'], username:'openrelayproject', credential:'openrelayproject' },
-  { urls: ['turn:relay.metered.ca:80','turn:relay.metered.ca:443','turn:relay.metered.ca:443?transport=tcp'], username:'e8dd65b9-80c0-49e1-a1b2-3fb5e69c3d2c', credential:'nTQ2MfJz5H7dK8a' }
+  // Add short-lived TURN credentials from your relay provider; none are committed in this project.
 ]
 ```
 
-- TCP 443 fallback looks like HTTPS, works behind strict firewalls blocking UDP
-- Force TURN button toggles relay-only mode for testing
-- For production self-host: `docker-compose up coturn -d`
+- GitHub Pages is static and does not include TURN credentials. Configure a trusted relay in the call settings or run the API-backed app with TURN_SERVER and TURN_SECRET set.
+- The browser probes for an actual relay candidate; public/demo credentials are intentionally not embedded.
+- The Compose coturn service requires TURN_SECRET and public firewall/NAT configuration before external callers can use it.
 
 ---
 
 ## 📦 GitHub Direct Publish
 
-- Static `index.html` at root + `docs/index.html` (both V5.1 polished)
+- Static `index.html` at root + `docs/index.html` (both use the current single-page caller)
 - `.nojekyll` to bypass Jekyll
 - `.github/workflows/pages.yml` → `deploy-pages@v4` → GitHub Pages
 - Push to `arena/01a0ce90-dual-caller` → Actions → pages build and deployment → success → built → live at https://nishantacharya51-debug.github.io/dual-caller/

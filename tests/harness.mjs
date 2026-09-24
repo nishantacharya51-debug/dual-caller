@@ -35,6 +35,16 @@ export async function makeClient({ bus, name = 'A', hash = '', storage = null, u
     win.console = { log: quiet, info: quiet, warn: quiet, error: quiet, debug: quiet };
   }
   installFakes(win, bus, name);
+  // Runtime-only test fixtures; never shipped in the site HTML.
+  win.INKO_DISABLE_TURN_CREDENTIALS = true;
+  win.INKO_TURN_SERVERS = [
+    { name: 'ExpressTURN 1', urls: ['turn:relay1.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },
+    { name: 'ExpressTURN 2', urls: ['turn:relay2.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },
+    { name: 'ExpressTURN 3', urls: ['turn:relay3.expressturn.com:3478'], username: 'test-user', credential: 'test-password' },
+    { name: 'OpenRelay 80', urls: ['turn:openrelay.metered.ca:80'], username: 'test-user', credential: 'test-password' },
+    { name: 'OpenRelay 443', urls: ['turn:openrelay.metered.ca:443'], username: 'test-user', credential: 'test-password' },
+    { name: 'FreeSTUN', urls: ['turn:freestun.net:3478'], username: 'test-user', credential: 'test-password' },
+  ];
   if (storage) Object.keys(storage).forEach(k => win.localStorage.setItem(k, typeof storage[k] === 'string' ? storage[k] : JSON.stringify(storage[k])));
   win.eval(SCRIPT);
   await sleep(20);
